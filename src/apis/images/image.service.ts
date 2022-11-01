@@ -48,6 +48,50 @@ export class ImageService {
       //user: data.userId,
     };
     const image = await this.createImage({ image: databaseInput });
+    return image;
+  }
+
+  async uploadMany({ data }: { data: ImageUploadData[] }) {
+    const minioClient = new Minio.Client({
+      endPoint: process.env.OBJ_STORAGE_ENDPOINT,
+      useSSL: true,
+      accessKey: process.env.OBJ_STORAGE_ACCESS_KEY_ID,
+      secretKey: process.env.OBJ_STORAGE_ACCESS_KEY_SECRET,
+    });
+    const result: string[] = await Promise.all(
+      data.map(async (image) => {
+        return await new Promise((res, rej) => {
+          const origin_fname = image.image.filename;
+          const fname = `${getToday()}/origin/${uuid()}-${origin_fname}`;
+          minioClient.putObject(
+            process.env.OBJ_STORAGE_BUCKET,
+            fname,
+            image.image.createReadStream(),
+            (err, etag) => {
+              if (err) {
+                rej(err);
+              }
+              console.log('========= etag =========', etag);
+              res(`${fname}`);
+            },
+          );
+        });
+      }),
+    );
+    const databaseInput: Partial<Image>[] = result.map((image, index) => {
+      return {
+        imageUrl: image,
+        fileName: data[index].image.filename,
+        isMain: data[index].isMain,
+        isContents: data[index].isContents,
+        //contentsOrder: data[index].contentsOrder,
+        //user: data[index].userId,
+      };
+    });
+    const images = databaseInput.map(
+      async (image) => await this.createImage({ image }),
+    );
+    return images;
   }
 
   async createImage({ image }) {
