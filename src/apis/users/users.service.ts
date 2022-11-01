@@ -12,6 +12,10 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
+  private readonly encryptPassword = async (inputPassword): Promise<string> => {
+    return await bcrypt.hash(inputPassword, parseInt(process.env.BCRYPT_SALT));
+  };
+
   async findOne(loginId) {
     return this.usersRepository.findOne({ where: { loginId } });
   }
@@ -22,11 +26,29 @@ export class UsersService {
     });
     if (user) throw new ConflictException('이미 등록된 이메일입니다.');
 
-    createUserInput.loginPassword = await bcrypt.hash(
+    createUserInput.loginPassword = await this.encryptPassword(
       createUserInput.loginPassword,
-      10,
     );
 
     return this.usersRepository.save(createUserInput);
+  }
+
+  async update({ userId, updateUserInput }) {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (updateUserInput.loginPassword) {
+      updateUserInput.loginPassword = await this.encryptPassword(
+        updateUserInput.loginPassword,
+      );
+    }
+
+    const result = this.usersRepository.save({
+      ...user,
+      ...updateUserInput,
+    });
+
+    return result;
   }
 }
