@@ -1,29 +1,49 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
 export class Image {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
+  @Field(() => String)
   imageUrl: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
+  @Field(() => String)
+  fileName: string;
+
+  @Column({ type: 'tinyint', default: 0 })
   @Field(() => Boolean, { defaultValue: false })
   isMain: boolean;
 
-  @Column()
+  @Column({ type: 'tinyint', default: 0 })
   @Field(() => Boolean, { defaultValue: false })
   isContents: boolean;
 
-  @Column()
-  @Field(() => Int, { nullable: true })
-  contentsOrder: number;
+  // @Column({ type: 'int' })
+  // @Field(() => Int, { nullable: true })
+  // contentsOrder: number;
+
+  @CreateDateColumn()
+  @Field(() => Date)
+  createdAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date, { nullable: true })
+  deletedAt: Date;
 
   @ManyToOne(() => User)
-  userId: User;
+  user: User;
 }
