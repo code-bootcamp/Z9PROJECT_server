@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  zero9-server:
+    container_name: zero9-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/zero9/src
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.docker
+    environment:
+      - TZ=Asia/Seoul
+    depends_on:
+      - zero9-db
+
+  zero9-db:
+    platform: linux/x86_64 # M1 맥북용. ubuntu/windows에선 주석처리 할 것.
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'zero9'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+
+  zero9-redis:
+    image: redis:alpine
+    container_name: zero9-redis

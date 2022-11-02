@@ -1,0 +1,47 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  loginId: String!
+  name: String
+  phone: String
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}
+
+enum SNS_TYPE_ENUN {
+  YOUTUBE
+  INSTAGRAM
+}
+
+enum USER_TYPE_ENUM {
+  COMMON_USER
+  CREATOR
+}
+
+type Query {
+  fetchUser(loginId: String!): User!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+}
+
+input CreateUserInput {
+  loginId: String!
+  loginPassword: String!
+  name: String!
+  phone: String!
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}
