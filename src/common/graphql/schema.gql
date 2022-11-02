@@ -31,6 +31,7 @@ type Query {
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
 }
 
 input CreateUserInput {
@@ -38,6 +39,19 @@ input CreateUserInput {
   loginPassword: String!
   name: String!
   phone: String!
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}
+
+input UpdateUserInput {
+  loginId: String
+  loginPassword: String
+  name: String
+  phone: String
   address: String
   addressDetail: String
   snsLink: String
