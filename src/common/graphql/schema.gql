@@ -26,12 +26,18 @@ enum USER_TYPE_ENUM {
 }
 
 type Query {
-  fetchUser(loginId: String!): User!
+  fetchUser(userId: String!): User!
+  fetchLoginUser: User!
 }
 
 type Mutation {
+  login(loginId: String!, loginPassword: String!): String!
+  restoreAccessToken: String!
+  logout: String!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+  updateUserPwd(userId: String!, loginPassword: String!): User!
+  deleteLoginUser(userId: String!): Boolean!
 }
 
 input CreateUserInput {
