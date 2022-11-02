@@ -15,7 +15,7 @@ export class UsersService {
   private readonly encryptPassword = async (inputPassword): Promise<string> => {
     return await bcrypt.hash(inputPassword, parseInt(process.env.BCRYPT_SALT));
   };
-
+  
   async findOne(loginId) {
     return this.usersRepository.findOne({ where: { loginId } });
   }
@@ -32,7 +32,7 @@ export class UsersService {
 
     return this.usersRepository.save(createUserInput);
   }
-
+  
   async update({ userId, updateUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
