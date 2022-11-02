@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/createUser.input';
@@ -15,8 +19,12 @@ export class UsersService {
   private readonly encryptPassword = async (inputPassword): Promise<string> => {
     return await bcrypt.hash(inputPassword, parseInt(process.env.BCRYPT_SALT));
   };
-  
-  async findOne(loginId) {
+
+  async findOneByUserId(userId) {
+    return this.usersRepository.findOne({ where: { id: userId } });
+  }
+
+  async findOneByLoginId(loginId) {
     return this.usersRepository.findOne({ where: { loginId } });
   }
 
@@ -32,7 +40,7 @@ export class UsersService {
 
     return this.usersRepository.save(createUserInput);
   }
-  
+
   async update({ userId, updateUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -50,5 +58,21 @@ export class UsersService {
     });
 
     return result;
+  }
+
+  async delete(userId: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user)
+      throw new UnprocessableEntityException(
+        '해당 유저 정보를 찾을 수 없습니다.',
+      );
+
+    const result = await this.usersRepository.delete({
+      id: userId,
+    });
+    return result.affected ? true : false;
   }
 }
