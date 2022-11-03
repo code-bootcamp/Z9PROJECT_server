@@ -3,6 +3,9 @@ import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImageModule } from './apis/images/image.module';
+import { ProductModule } from './apis/product/product.module';
+import { ProductLikeModule } from './apis/productLike/productLike.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
@@ -11,6 +14,9 @@ import { RedisClientOptions } from 'redis';
 
 @Module({
   imports: [
+    ProductModule,
+    ProductLikeModule,
+    ImageModule,
     AuthModule,
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -37,6 +43,6 @@ import { RedisClientOptions } from 'redis';
     }),
   ],
   controllers: [AppController],
-  providers: [],
+  // providers: [],
 })
 export class AppModule {}

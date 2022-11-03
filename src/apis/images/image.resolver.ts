@@ -3,6 +3,7 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { ImageUploadData } from 'src/common/types/image.types';
 import { User } from '../users/entities/user.entity';
 import { ImageService } from './image.service';
+import { Image } from './entities/image.entity';
 
 @Resolver()
 export class ImageResolver {

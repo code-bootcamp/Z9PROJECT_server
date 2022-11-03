@@ -1,8 +1,11 @@
 export interface IUser {
   user?: {
-    id: string;
+    userId: string;
     loginId: string;
+    id: string;
   };
+  id: string;
+  loginId: string;
 }
 
 export interface IContext {
