@@ -34,6 +34,8 @@ type Mutation {
   login(loginId: String!, loginPassword: String!): String!
   restoreAccessToken: String!
   logout: String!
+  postSmsToken(phone: String!): String!
+  patchSmsToken(phone: String!, smsToken: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
   updateUserPwd(userId: String!, loginPassword: String!): User!
