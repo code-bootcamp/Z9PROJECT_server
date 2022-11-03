@@ -31,7 +31,7 @@
     "@nestjs/typeorm": "^9.0.1",
     "apollo-server-express": "^3.10.3",
     "graphql": "^16.6.0",
-    "graphql-upload": "^16.0.2",
+    "graphql-upload": "^13.0.0",
     "minio": "^7.0.32",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",

@@ -3,10 +3,16 @@ import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImageModule } from './apis/images/image.module';
+import { ProductModule } from './apis/product/product.module';
+import { ProductLikeModule } from './apis/productLike/productLike.module';
 import { AppController } from './app.controller';
 
 @Module({
   imports: [
+    ProductModule,
+    ProductLikeModule,
+    ImageModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -26,6 +32,6 @@ import { AppController } from './app.controller';
     }),
   ],
   controllers: [AppController],
-  providers: [],
+  // providers: [],
 })
 export class AppModule {}
