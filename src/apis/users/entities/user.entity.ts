@@ -6,7 +6,7 @@ export enum SNSTYPE_ENUM {
   INSTAGRAM = 'instagram',
 }
 
-export enum USER_TYPE_ENUM {
+export enum USERTYPE_ENUM {
   COMMON_USER = 'commonUser',
   CREATOR = 'creator',
 }
@@ -16,8 +16,8 @@ registerEnumType(SNSTYPE_ENUM, {
   name: 'SNSTYPE_ENUM',
 });
 
-registerEnumType(USER_TYPE_ENUM, {
-  name: 'USER_TYPE_ENUM',
+registerEnumType(USERTYPE_ENUM, {
+  name: 'USERTYPE_ENUM',
 });
 
 @Entity()
