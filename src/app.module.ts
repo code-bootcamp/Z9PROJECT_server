@@ -12,7 +12,7 @@ import { RedisClientOptions } from 'redis';
 @Module({
   imports: [
     AuthModule,
-    UsersModule, //
+    UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
