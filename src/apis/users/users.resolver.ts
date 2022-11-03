@@ -44,7 +44,7 @@ export class UsersResolver {
   async updateUserPwd(
     @Args('userId') userId: string,
     @Args('loginPassword') loginPassword: string,
-    @Context() ctx: any,
+    @Context() ctx: IContext,
   ) {
     if (userId !== ctx.req.user.userId)
       new UnauthorizedException(
@@ -57,7 +57,7 @@ export class UsersResolver {
   @Mutation(() => Boolean)
   deleteLoginUser(
     @Args('userId') userId: string, //
-    @Context() ctx: any,
+    @Context() ctx: IContext,
   ) {
     if (userId !== ctx.req.user.userId)
       new UnauthorizedException('로그인한 회원정보 삭제는 본인만 가능합니다.');

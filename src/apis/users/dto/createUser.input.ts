@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { SNS_TYPE_ENUN, USER_TYPE_ENUM } from '../entities/user.entity';
+import { SNSTYPE_ENUM, USERTYPE_ENUM } from '../entities/user.entity';
 
 @InputType()
 export class CreateUserInput {
@@ -24,13 +24,13 @@ export class CreateUserInput {
   @Field(() => String, { nullable: true })
   snsLink: string;
 
-  @Field(() => SNS_TYPE_ENUN, { nullable: true })
-  snsType: SNS_TYPE_ENUN;
+  @Field(() => SNSTYPE_ENUM, { nullable: true })
+  snsType: SNSTYPE_ENUM;
 
   // 추후 다른 api나 dto로 따로 빼는거 고려
   @Field(() => Boolean, { nullable: true })
   isValidCreator: boolean;
 
-  @Field(() => USER_TYPE_ENUM, { nullable: true })
-  userType: USER_TYPE_ENUM;
+  @Field(() => USERTYPE_ENUM, { nullable: true })
+  userType: USERTYPE_ENUM;
 }

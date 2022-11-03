@@ -1204,13 +1204,6 @@
     "@types/connect" "*"
     "@types/node" "*"
 
-"@types/busboy@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@types/busboy/-/busboy-1.5.0.tgz#62681556cbbd2afc8d2efa6bafaa15602f0838b9"
-  integrity sha512-ncOOhwmyFDW76c/Tuvv9MA9VGYUCn8blzyWmzYELcNGDb0WXWLSmFi7hJq25YdRBYJrmMBB5jZZwUjlJe9HCjQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/cache-manager-redis-store@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/cache-manager-redis-store/-/cache-manager-redis-store-2.0.1.tgz#42cf1400a6dbf42d06fbcbd82e04b0a44856e50a"
@@ -3484,21 +3477,6 @@ function-bind@^1.1.1:
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
   integrity sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
 
-function.prototype.name@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/function.prototype.name/-/function.prototype.name-1.1.5.tgz#cce0505fe1ffb80503e6f9e46cc64e46a12a9621"
-  integrity sha512-uN7m/BzVKQnCUF/iW8jYea67v++2u7m5UgENbHRtdDVclOUP+FMPlCNdmk0h/ysGyo2tavMJEDqJAkJdRa1vMA==
-  dependencies:
-    call-bind "^1.0.2"
-    define-properties "^1.1.3"
-    es-abstract "^1.19.0"
-    functions-have-names "^1.2.2"
-
-functions-have-names@^1.2.2:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
-  integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
-
 gauge@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/gauge/-/gauge-3.0.2.tgz#03bf4441c044383908bcfa0656ad91803259b395"
@@ -3757,7 +3735,7 @@ http-errors@^1.8.1:
     setprototypeof "1.2.0"
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.1"
-    
+
 https-proxy-agent@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz#c59ef224a04fe8b754f3db0063a25ea30d0005d6"
@@ -6290,16 +6268,6 @@ uid2@0.0.x:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/uid2/-/uid2-0.0.4.tgz#033f3b1d5d32505f5ce5f888b9f3b667123c0a44"
   integrity sha512-IevTus0SbGwQzYh3+fRsAMTVVPOoIVufzacXcHPmdlle1jUpq7BRL+mw3dgeLanvGZdwwbWhRV6XrcFNdBmjWA==
-
-unbox-primitive@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/unbox-primitive/-/unbox-primitive-1.0.2.tgz#29032021057d5e6cdbd08c5129c226dff8ed6f9e"
-  integrity sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==
-  dependencies:
-    call-bind "^1.0.2"
-    has-bigints "^1.0.2"
-    has-symbols "^1.0.3"
-    which-boxed-primitive "^1.0.2"
 
 universalify@^2.0.0:
   version "2.0.0"
