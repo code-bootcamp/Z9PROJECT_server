@@ -6,7 +6,7 @@ export enum SNSTYPE_ENUM {
   INSTAGRAM = 'instagram',
 }
 
-export enum USERTYPE_ENUM {
+export enum USER_TYPE_ENUM {
   COMMON_USER = 'commonUser',
   CREATOR = 'creator',
 }
@@ -16,8 +16,8 @@ registerEnumType(SNSTYPE_ENUM, {
   name: 'SNSTYPE_ENUM',
 });
 
-registerEnumType(USERTYPE_ENUM, {
-  name: 'USERTYPE_ENUM',
+registerEnumType(USER_TYPE_ENUM, {
+  name: 'USER_TYPE_ENUM',
 });
 
 @Entity()
@@ -58,11 +58,15 @@ export class User {
   @Field(() => SNSTYPE_ENUM, { nullable: true })
   snsType: string;
 
-  @Column({ nullable: true })
+  @Column({ default: false })
   @Field(() => Boolean, { nullable: true })
   isValidCreator: boolean;
 
-  @Column({ type: 'enum', enum: USERTYPE_ENUM, nullable: true })
-  @Field(() => USERTYPE_ENUM, { nullable: true })
-  userType: string;
+  @Column({
+    type: 'enum',
+    enum: USER_TYPE_ENUM,
+    default: USER_TYPE_ENUM.COMMON_USER,
+  })
+  @Field(() => USER_TYPE_ENUM, { nullable: true })
+  userType: USER_TYPE_ENUM;
 }
