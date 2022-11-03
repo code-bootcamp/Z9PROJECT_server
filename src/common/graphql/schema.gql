@@ -1,0 +1,67 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  loginId: String!
+  name: String
+  phone: String
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}
+
+enum SNS_TYPE_ENUN {
+  YOUTUBE
+  INSTAGRAM
+}
+
+enum USER_TYPE_ENUM {
+  COMMON_USER
+  CREATOR
+}
+
+type Query {
+  fetchUser(userId: String!): User!
+  fetchLoginUser: User!
+}
+
+type Mutation {
+  login(loginId: String!, loginPassword: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+  updateUserPwd(userId: String!, loginPassword: String!): User!
+  deleteLoginUser(userId: String!): Boolean!
+}
+
+input CreateUserInput {
+  loginId: String!
+  loginPassword: String!
+  name: String!
+  phone: String!
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}
+
+input UpdateUserInput {
+  loginId: String
+  loginPassword: String
+  name: String
+  phone: String
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUN
+  isValidCreator: Boolean
+  userType: USER_TYPE_ENUM
+}

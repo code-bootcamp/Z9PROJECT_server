@@ -1,23 +1,23 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum SNSTYPE_ENUN {
+export enum SNS_TYPE_ENUN {
   YOUTUBE = 'youtube',
   INSTAGRAM = 'instagram',
 }
 
-export enum USERTYPE_ENUM {
+export enum USER_TYPE_ENUM {
   COMMON_USER = 'commonUser',
   CREATOR = 'creator',
 }
 
 // enum타입을 graphql에 등록
-registerEnumType(SNSTYPE_ENUN, {
-  name: 'SNSTYPE_ENUN',
+registerEnumType(SNS_TYPE_ENUN, {
+  name: 'SNS_TYPE_ENUN',
 });
 
-registerEnumType(USERTYPE_ENUM, {
-  name: 'USERTYPE_ENUM',
+registerEnumType(USER_TYPE_ENUM, {
+  name: 'USER_TYPE_ENUM',
 });
 
 @Entity()
@@ -54,15 +54,19 @@ export class User {
   @Field(() => String, { nullable: true })
   snsLink: string;
 
-  @Column({ type: 'enum', enum: SNSTYPE_ENUN, nullable: true })
-  @Field(() => SNSTYPE_ENUN, { nullable: true })
-  snsType: string;
+  @Column({ type: 'enum', enum: SNS_TYPE_ENUN, nullable: true })
+  @Field(() => SNS_TYPE_ENUN, { nullable: true })
+  snsType: SNS_TYPE_ENUN;
 
-  @Column({ nullable: true })
+  @Column({ default: false })
   @Field(() => Boolean, { nullable: true })
   isValidCreator: boolean;
 
-  @Column({ type: 'enum', enum: USERTYPE_ENUM, nullable: true })
-  @Field(() => USERTYPE_ENUM, { nullable: true })
-  userType: string;
+  @Column({
+    type: 'enum',
+    enum: USER_TYPE_ENUM,
+    default: USER_TYPE_ENUM.COMMON_USER,
+  })
+  @Field(() => USER_TYPE_ENUM, { nullable: true })
+  userType: USER_TYPE_ENUM;
 }
