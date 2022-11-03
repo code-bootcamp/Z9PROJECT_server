@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  zero9-server:
+    image: asia.gcr.io/z9-team-project-server/zero9-nestjs:0.0.3
+    platform: linux/x86_64
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./.env.dev
+    ports:
+      - 3000:3000
