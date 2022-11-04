@@ -11,6 +11,7 @@ import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
+import { HttpException } from '@nestjs/common/exceptions';
 
 @Module({
   imports: [
@@ -24,6 +25,19 @@ import { RedisClientOptions } from 'redis';
       driver: ApolloDriver,
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      cors: {
+        origin: function (origin, callback) {
+          if (
+            !origin ||
+            process.env.FRONTEND_URLS.split(',').indexOf(origin) !== -1
+          ) {
+            callback(null, true);
+          } else {
+            callback(new HttpException(`Not allowed by CORS`, 400));
+          }
+        },
+        Credential: true,
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql',
