@@ -13,7 +13,7 @@ export class UsersResolver {
 
   @Query(() => User)
   fetchUser(@Args('userId') userId: string) {
-    return this.usersService.findOneByLoginId(userId);
+    return this.usersService.findOneByUserId(userId);
   }
 
   @UseGuards(GqlAuthAccessGuard)
