@@ -38,7 +38,7 @@ import { RedisClientOptions } from 'redis';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://zero9-redis:6379',
+      url: 'redis://10.41.48.3:6379',
       isGlobal: true,
     }),
   ],

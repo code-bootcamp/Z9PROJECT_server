@@ -1,0 +1,23 @@
+steps:
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - /docker-compose.dev.yaml
+      - build
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - docker-compose.dev.yaml
+      - push
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      [
+        'set',
+        'image',
+        'deployment/zero9-nestjs',
+        'zero9-nestjs-sha-256-1=asia.gcr.io/z9-team-project-server/zero9-nestjs:0.0.9',
+      ]
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
+      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
