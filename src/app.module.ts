@@ -3,14 +3,21 @@ import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImageModule } from './apis/images/image.module';
+import { ProductModule } from './apis/product/product.module';
+import { ProductLikeModule } from './apis/productLike/productLike.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
+import { HttpException } from '@nestjs/common/exceptions';
 
 @Module({
   imports: [
+    ProductModule,
+    ProductLikeModule,
+    ImageModule,
     AuthModule,
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -18,6 +25,19 @@ import { RedisClientOptions } from 'redis';
       driver: ApolloDriver,
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      cors: {
+        origin: function (origin, callback) {
+          if (
+            !origin ||
+            process.env.FRONTEND_URLS.split(',').indexOf(origin) !== -1
+          ) {
+            callback(null, true);
+          } else {
+            callback(new HttpException(`Not allowed by CORS`, 400));
+          }
+        },
+        Credential: true,
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql',
@@ -32,7 +52,7 @@ import { RedisClientOptions } from 'redis';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://zero9-redis:6379',
+      url: process.env.REDIS_URL,
       isGlobal: true,
     }),
   ],

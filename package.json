@@ -37,7 +37,7 @@
     "cache-manager-redis-store": "^2.0.0",
     "coolsms-node-sdk": "^2.0.1",
     "graphql": "^16.6.0",
-    "graphql-upload": "^16.0.2",
+    "graphql-upload": "^13.0.0",
     "jsonwebtoken": "^8.5.1",
     "minio": "^7.0.32",
     "mysql2": "^2.3.3",

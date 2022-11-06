@@ -2,6 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER, Inject, UnauthorizedException } from '@nestjs/common';
+import { IUser } from '../types/context';
 
 /** 'access' strategy
  *    :  GqlAuthAccessGuard 에서 'access' 란 이름으로 연동해서 사용
@@ -20,10 +21,11 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
     const isToken = await this.cacheManager.get(`accessToken:${token}`);
 
     if (isToken) throw new UnauthorizedException('레디스 블랙리스트');
-
-    return {
+    const authResult: IUser = {
       loginId: payload.loginId,
       id: payload.sub,
-    }; // 리턴값이 req.user에 저장됨.
+    };
+
+    return authResult; // 리턴값이 req.user에 저장됨.
   }
 }

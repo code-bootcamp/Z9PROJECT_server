@@ -13,7 +13,7 @@ export class UsersResolver {
 
   @Query(() => User)
   fetchUser(@Args('userId') userId: string) {
-    return this.usersService.findOneByLoginId(userId);
+    return this.usersService.findOneByUserId(userId);
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -44,7 +44,7 @@ export class UsersResolver {
   async updateUserPwd(
     @Args('userId') userId: string,
     @Args('loginPassword') loginPassword: string,
-    @Context() ctx: any,
+    @Context() ctx: IContext,
   ) {
     if (userId !== ctx.req.user.userId)
       new UnauthorizedException(
@@ -57,7 +57,7 @@ export class UsersResolver {
   @Mutation(() => Boolean)
   deleteLoginUser(
     @Args('userId') userId: string, //
-    @Context() ctx: any,
+    @Context() ctx: IContext,
   ) {
     if (userId !== ctx.req.user.userId)
       new UnauthorizedException('로그인한 회원정보 삭제는 본인만 가능합니다.');
