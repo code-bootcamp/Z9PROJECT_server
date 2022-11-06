@@ -1,10 +1,11 @@
 import {
   CACHE_MANAGER,
   Inject,
+  ServiceUnavailableException,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Resolver } from '@nestjs/graphql';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
@@ -14,8 +15,9 @@ import {
   GqlAuthRefreshGuard,
 } from 'src/common/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
-import { SmsAuth } from './sms.service.js';
-import { ISmsToken } from 'src/common/types/auth.types';
+import { SmsAuth } from './sms.service';
+import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
+import { SmsPostReturn } from './dto/sms.output';
 
 @Resolver()
 export class AuthResolver {
@@ -63,47 +65,55 @@ export class AuthResolver {
     return this.authService.logout({ req: context.req, res: context.res });
   }
 
-  @Mutation(() => String)
-  async postSmsToken(@Args('phone') phone: string) {
-    if (!SmsAuth.checkPhoneDigit(phone))
+  @Mutation(() => SmsPostReturn)
+  async postSmsToken(@Args('phoneNumber') phoneNumber: string) {
+    if (!SmsAuth.checkPhoneDigit(phoneNumber))
       throw new UnprocessableEntityException('휴대폰 번호를 확인해주세요.');
 
-    const token = SmsAuth.getSmsToken();
-    if (!token)
-      throw new UnprocessableEntityException('토큰 생성에 실패했습니다.');
+    const smsToken = SmsAuth.getSmsToken();
+    if (!smsToken)
+      throw new ServiceUnavailableException('토큰 생성에 실패했습니다.');
 
+    await SmsAuth.sendSmsTokenToPhone(phoneNumber, smsToken);
+
+    const smsAuthTime = 120;
     await this.cacheManager.set(
-      `smsToken:${phone}`,
-      JSON.stringify({ isAuth: false, token: token }),
-      {
-        ttl: 60,
-      },
+      SMS_TOKEN_KEY_PREFIX + phoneNumber,
+      { isAuth: false, smsToken },
+      { ttl: smsAuthTime },
     );
 
-    await SmsAuth.sendSmsTokenToPhone(phone, token);
-
-    return '핸드폰으로 인증 문자가 전송되었습니다!';
+    return {
+      smsAuthTime,
+      message: '핸드폰으로 인증 문자가 전송되었습니다!' + ` : ${smsToken}`,
+    };
   }
 
-  private checkAndUpdateSmsToken = async (phone, token) => {
-    const cacheResult: string = await this.cacheManager.get(
-      `smsToken:${phone}`,
+  private checkAndUpdateSmsToken = async (
+    phoneNumber,
+    smsToken,
+    createUserStepId,
+  ) => {
+    const smsTokenResult: ISmsToken = await this.cacheManager.get(
+      SMS_TOKEN_KEY_PREFIX + phoneNumber,
     );
-    const smsToken: ISmsToken = JSON.parse(cacheResult);
-
-    if (!smsToken)
+    if (!smsTokenResult)
       throw new UnprocessableEntityException(
         '핸드폰 번호가 디비(Cache)에 존재하지 않거나 인증되지 않았습니다',
       );
 
-    if (smsToken.token !== token) {
+    if (smsTokenResult.smsToken !== smsToken) {
       throw new UnprocessableEntityException(
         '에러! 토큰 번호가 일치하지 않습니다.',
       );
-    } else if (smsToken.token === token) {
+    } else if (smsTokenResult.smsToken === smsToken) {
       await this.cacheManager.set(
-        `smsToken:${phone}`,
-        JSON.stringify({ isAuth: true, token: token }),
+        SMS_TOKEN_KEY_PREFIX + phoneNumber,
+        {
+          isAuth: true,
+          createUserStepId,
+        },
+        { ttl: 3600 * 24 },
       );
 
       return true;
@@ -112,10 +122,14 @@ export class AuthResolver {
 
   @Mutation(() => Boolean)
   async patchSmsToken(
-    @Args('phone') phone: string,
+    @Args('phoneNumber') phoneNumber: string,
     @Args('smsToken') smsToken: string,
+    @Args('createUserStepId') createUserStepId: string,
   ) {
-    if (await this.checkAndUpdateSmsToken(phone, smsToken)) return true;
+    if (
+      await this.checkAndUpdateSmsToken(phoneNumber, smsToken, createUserStepId)
+    )
+      return true;
 
     return false;
   }
