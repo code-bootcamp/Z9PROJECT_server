@@ -1,5 +1,5 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { SNSTYPE_ENUM, USERTYPE_ENUM } from '../entities/user.entity';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { SNS_TYPE_ENUM, USER_TYPE_ENUM } from '../entities/user.entity';
 
 @InputType()
 export class CreateUserInput {
@@ -13,24 +13,34 @@ export class CreateUserInput {
   name: string;
 
   @Field(() => String)
-  phone: string;
+  phoneNumber: string;
 
-  @Field(() => String, { nullable: true })
-  address: string;
+  @Field(() => String)
+  address?: string;
 
-  @Field(() => String, { nullable: true })
-  addressDetail: string;
+  @Field(() => String)
+  addressDetail?: string;
 
-  @Field(() => String, { nullable: true })
-  snsLink: string;
+  @Field(() => String)
+  snsLink?: string;
 
-  @Field(() => SNSTYPE_ENUM, { nullable: true })
-  snsType: SNSTYPE_ENUM;
+  @Field(() => SNS_TYPE_ENUM)
+  snsType?: SNS_TYPE_ENUM;
 
   // 추후 다른 api나 dto로 따로 빼는거 고려
-  @Field(() => Boolean, { nullable: true })
-  isValidCreator: boolean;
+  @Field(() => Boolean, { defaultValue: false })
+  isValidCreator?: boolean;
 
-  @Field(() => USERTYPE_ENUM, { nullable: true })
-  userType: USERTYPE_ENUM;
+  /** YouTube Id or Instagram Id */
+  @Field(() => String, { nullable: true })
+  influencerId?: string;
+
+  @Field(() => Int, { defaultValue: 0, nullable: true })
+  followerNumber?: number;
+
+  @Field(() => [String], { nullable: true })
+  imgUrls?: string[];
+
+  @Field(() => USER_TYPE_ENUM, { defaultValue: USER_TYPE_ENUM.COMMON_USER })
+  userType: USER_TYPE_ENUM;
 }

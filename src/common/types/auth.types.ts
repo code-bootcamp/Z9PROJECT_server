@@ -1,4 +1,7 @@
+export const SMS_TOKEN_KEY_PREFIX = 'smsToken:';
+
 export interface ISmsToken {
   isAuth: boolean;
-  token: string;
+  smsToken?: string;
+  createUserStepId?: string;
 }
