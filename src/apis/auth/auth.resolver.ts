@@ -33,7 +33,11 @@ export class AuthResolver {
     if (!isSamePassword)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
-    this.authService.setRefreshToken({ user, res: context.res });
+    this.authService.setRefreshToken({
+      user,
+      req: context.req,
+      res: context.res,
+    });
 
     return this.authService.getAccessToken({ user });
   }

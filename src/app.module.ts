@@ -13,6 +13,8 @@ import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { HttpException } from '@nestjs/common/exceptions';
 
+const originList = process.env.ORIGIN_LIST.split(',');
+
 @Module({
   imports: [
     ProductModule,
@@ -26,17 +28,17 @@ import { HttpException } from '@nestjs/common/exceptions';
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
       cors: {
-        origin: function (origin, callback) {
-          if (
-            !origin ||
-            process.env.FRONTEND_URLS.split(',').indexOf(origin) !== -1
-          ) {
-            callback(null, true);
-          } else {
-            callback(new HttpException(`Not allowed by CORS`, 400));
-          }
-        },
-        Credential: true,
+        origin: originList,
+        credentials: true,
+        exposedHeaders: ['Set-Cookie', 'Cookie'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: [
+          'Access-Control-Allow-Origin',
+          'Authorization',
+          'X-Requested-With',
+          'Content-Type',
+          'Accept',
+        ],
       },
     }),
     TypeOrmModule.forRoot({
@@ -52,7 +54,7 @@ import { HttpException } from '@nestjs/common/exceptions';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://10.41.48.3:6379',
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
       isGlobal: true,
     }),
   ],

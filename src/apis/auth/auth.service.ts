@@ -13,18 +13,31 @@ export class AuthService {
     private readonly cacheManager: Cache,
   ) {}
 
-  setRefreshToken({ user, res }) {
+  setRefreshToken({ user, req, res }) {
     const refreshToken = this.jwtService.sign(
       { email: user.loginId, sub: user.id },
       { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: '2w' },
     );
-
-    // 개발환경용
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
-
-    // 배포환경용 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=??.zero9.com; SameSite=None; Secure; httpOnly;`)
-    // res.setHeader('Access-Control-Allow-Origin', 'https://zero9.shop')
+    const originList = process.env.ORIGIN_LIST.split(',');
+    const origin = req.headers.origin;
+    if (originList.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, HEAD, POST, OPTIONS, PUT',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=${
+        3600 * 24 * 14
+      };`,
+    );
   }
 
   getAccessToken({ user }) {
@@ -67,8 +80,24 @@ export class AuthService {
       ttl: expireTTL,
     });
 
-    // 개발환경용
-    res.setHeader('Set-Cookie', `refreshToken=; path=/;`);
+    const originList = process.env.ORIGIN_LIST.split(',');
+    const origin = req.headers.origin;
+    if (originList.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, HEAD, POST, OPTIONS, PUT',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=0;`,
+    );
 
     return '로그아웃에 성공했습니다.';
   }
