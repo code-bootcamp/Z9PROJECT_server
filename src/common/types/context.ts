@@ -1,11 +1,11 @@
 export interface IUser {
   user?: {
     userId: string;
-    loginId: string;
+    email: string;
     id: string;
   };
   id: string;
-  loginId: string;
+  email: string;
 }
 
 export interface IContext {
