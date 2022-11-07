@@ -11,10 +11,15 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { ImageService } from '../images/image.service';
+import { ImageUploadData } from 'src/common/types/image.types';
 
 @Resolver()
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly imageService: ImageService,
+  ) {}
 
   @Query(() => User)
   async fetchInfluencer(@Args('userId') userId: string) {
@@ -57,10 +62,30 @@ export class UsersResolver {
     @Args('createUserStepId') createUserStepId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
-    return this.usersService.create(createUserStepId, {
+    await this.usersService.checkUserBeforeCreate(createUserStepId, {
       ...createCommonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
     });
+
+    const { userProfileImg, ...commonUserInput } = createCommonUserInput;
+    const user = await this.usersService.createUserInFinalStep({
+      ...commonUserInput,
+      userType: USER_TYPE_ENUM.COMMON_USER,
+    });
+
+    if (userProfileImg) {
+      const data: ImageUploadData = {
+        image: createCommonUserInput.userProfileImg,
+        isMain: true,
+        isContents: false,
+        // contentsOrder: contentsOrder ? contentsOrder : null,
+        user: user,
+      };
+      const result = await this.imageService.uploadOne({ data });
+      console.log('!! == 이미지 결과 == : ', result);
+    }
+
+    return user;
   }
 
   @Mutation(() => User)
@@ -68,10 +93,49 @@ export class UsersResolver {
     @Args('createUserStepId') createUserStepId: string,
     @Args('createInfluencerInput') createInfluencerInput: CreateInfluencerInput,
   ) {
-    return this.usersService.create(createUserStepId, {
+    await this.usersService.checkUserBeforeCreate(createUserStepId, {
       ...createInfluencerInput,
       userType: USER_TYPE_ENUM.INFLUENCER,
     });
+    const { userProfileImg, influencerAuthImg, ...influencerInput } =
+      createInfluencerInput;
+    const user = await this.usersService.createUserInFinalStep({
+      ...influencerInput,
+      userType: USER_TYPE_ENUM.INFLUENCER,
+    });
+
+    if (userProfileImg) {
+      const data: ImageUploadData = {
+        image: createInfluencerInput.userProfileImg,
+        isMain: true,
+        isContents: false,
+        // contentsOrder: contentsOrder ? contentsOrder : null,
+        user: user,
+      };
+      const result = await this.imageService.uploadOne({ data });
+      console.log('!! == userProfileImg 이미지 결과 == : ', result);
+    }
+
+    if (influencerAuthImg) {
+      const data: ImageUploadData = {
+        image: createInfluencerInput.influencerAuthImg,
+        isMain: false,
+        isContents: false,
+        // contentsOrder: contentsOrder ? contentsOrder : null,
+        user: user,
+      };
+      const result = await this.imageService.uploadOne({ data });
+      console.log('!! == influencerAuthImg 이미지 결과 == : ', result);
+    }
+
+    return user;
+  }
+
+  @Query(() => Boolean)
+  async isNickNameDuplicated(@Args('nickName') nickName: string) {
+    if (await this.usersService.findOneByNickName(nickName)) return true;
+
+    return false;
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -87,14 +151,26 @@ export class UsersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Boolean)
+  async checkSamePasswordBeforeChangePwd(
+    @Args('prevPassword') prevPassword: string,
+    @Context() ctx: IContext,
+  ) {
+    return await this.usersService.isSameLoginPassword(
+      ctx.req.user.id,
+      prevPassword,
+    );
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUserPwd(
     @Args('userId') userId: string,
     @Args('loginPassword') loginPassword: string,
     @Context() ctx: IContext,
   ) {
-    if (userId !== ctx.req.user.userId)
-      new UnauthorizedException(
+    if (userId !== ctx.req.user.id)
+      throw new UnauthorizedException(
         '로그인한 회원의 정보는 본인만 수정 가능합니다.',
       );
     return this.updateUser(userId, { loginPassword });
@@ -106,8 +182,13 @@ export class UsersResolver {
     @Args('userId') userId: string, //
     @Context() ctx: IContext,
   ) {
-    if (userId !== ctx.req.user.userId)
-      new UnauthorizedException('로그인한 회원정보 삭제는 본인만 가능합니다.');
+    console.log('userId: ', userId);
+    console.log('ctx.req.user:', ctx.req.user);
+    if (userId !== ctx.req.user.id) {
+      throw new UnauthorizedException(
+        '로그인한 회원정보 삭제는 본인만 가능합니다.',
+      );
+    }
 
     return this.usersService.delete(userId);
   }

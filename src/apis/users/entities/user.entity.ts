@@ -34,14 +34,14 @@ export class User {
 
   @Column()
   @Field(() => String)
-  loginId: string;
+  email: string;
 
   @Column()
   loginPassword: string;
 
   @Column()
-  @Field(() => String, { nullable: true })
-  name: string;
+  @Field(() => String)
+  nickName: string;
 
   @Column()
   @Field(() => String, { nullable: true })
@@ -55,9 +55,14 @@ export class User {
   @Field(() => String, { nullable: true })
   addressDetail: string;
 
-  @Column({ type: 'varchar', length: 200, nullable: true })
+  /** YouTube ChannelName or Instagram Name */
+  @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  snsLink: string;
+  instaNameOrYTubeChannel: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  name: string;
 
   @Column({ type: 'enum', enum: SNS_TYPE_ENUM, nullable: true })
   @Field(() => SNS_TYPE_ENUM, { nullable: true })
@@ -65,16 +70,31 @@ export class User {
 
   @Column({ default: false })
   @Field(() => Boolean, { nullable: true })
-  isValidCreator: boolean;
-
-  /** YouTube Id or Instagram Id */
-  @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
-  influencerId: string;
+  isAuthedInfluencer: boolean;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
   followerNumber: number;
+
+  @Column({ nullable: true })
+  @Field(() => String)
+  mainContentName: string;
+
+  @Column({ type: 'text', nullable: true })
+  @Field(() => String, { nullable: true })
+  aboutInfluencer: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  bankName: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  bankAccountNumber: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  accountOwnerName: string;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
