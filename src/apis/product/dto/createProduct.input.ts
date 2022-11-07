@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { Min } from 'class-validator';
 import { PRODUCT_END_TYPE } from '../entities/product.entity';
 
 @InputType()
@@ -6,17 +7,37 @@ export class CreateProductInput {
   @Field(() => String, { nullable: false })
   name: string;
 
+  @Min(0)
   @Field(() => Number, { nullable: false })
   originPrice: number;
 
+  @Min(0)
   @Field(() => Number, { nullable: true })
-  discountRate: number;
+  discountPrice: number;
+
+  @Field(() => String, { nullable: false, defaultValue: '택배(무료배송)' })
+  delivery: string;
 
   @Field(() => String, { nullable: true })
-  delivery: string;
+  option1: string;
+
+  @Field(() => String, { nullable: true })
+  option2: string;
+
+  @Field(() => String, { nullable: true })
+  option3: string;
+
+  @Field(() => String, { nullable: true })
+  option4: string;
+
+  @Field(() => String, { nullable: true })
+  option5: string;
 
   @Field(() => PRODUCT_END_TYPE, { nullable: false })
   endType: string;
+
+  @Field(() => String, { nullable: true })
+  youtubeLink: string;
 
   @Field(() => Date, { nullable: false })
   validFrom: Date;
@@ -26,4 +47,16 @@ export class CreateProductInput {
 
   @Field(() => String, { nullable: true })
   content: string;
+
+  @Field(() => String, { nullable: false })
+  shopName: string;
+
+  @Field(() => String, { nullable: false })
+  CEO: string;
+
+  @Field(() => String, { nullable: false })
+  businessRegistraionNumber: string;
+
+  @Field(() => String, { nullable: false })
+  mailOrderBusinessNumber: string;
 }
