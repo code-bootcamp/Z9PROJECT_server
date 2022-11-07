@@ -5,15 +5,42 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import 'dotenv/config';
 import { ProductModule } from './apis/product/product.module';
+import { ImageModule } from './apis/images/image.module';
+import { ProductLikeModule } from './apis/productLike/productLike.module';
+import { AppController } from './app.controller';
+import { UsersModule } from './apis/users/users.module';
+import { AuthModule } from './apis/auth/auth.module';
+import * as redisStore from 'cache-manager-redis-store';
+import { RedisClientOptions } from 'redis';
+import { HttpException } from '@nestjs/common/exceptions';
+
+const originList = process.env.ORIGIN_LIST.split(',');
 
 @Module({
   imports: [
     ProductModule,
+    ProductLikeModule,
+    ImageModule,
+    AuthModule,
+    UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      cors: {
+        origin: originList,
+        credentials: true,
+        exposedHeaders: ['Set-Cookie', 'Cookie'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: [
+          'Access-Control-Allow-Origin',
+          'Authorization',
+          'X-Requested-With',
+          'Content-Type',
+          'Accept',
+        ],
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql',
@@ -25,6 +52,11 @@ import { ProductModule } from './apis/product/product.module';
       entities: [__dirname + '/apis/**/*.entity.*'],
       logging: true,
       synchronize: true,
+    }),
+    CacheModule.register<RedisClientOptions>({
+      store: redisStore,
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+      isGlobal: true,
     }),
   ],
 })

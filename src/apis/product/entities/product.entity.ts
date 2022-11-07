@@ -23,7 +23,7 @@ registerEnumType(PRODUCT_END_TYPE, {
 @ObjectType()
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  @Field()
+  @Field(() => String)
   id: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })

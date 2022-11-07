@@ -32,9 +32,9 @@ export class Image {
   @Field(() => Boolean, { defaultValue: false })
   isContents: boolean;
 
-  // @Column({ type: 'int' })
-  // @Field(() => Int, { nullable: true })
-  // contentsOrder: number;
+  @Column({ type: 'int' })
+  @Field(() => Int, { nullable: true })
+  contentsOrder: number;
 
   @CreateDateColumn()
   @Field(() => Date)
