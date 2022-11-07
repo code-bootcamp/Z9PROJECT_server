@@ -1,4 +1,5 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Min } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -29,17 +30,24 @@ export class Product {
   @Field(() => String, { nullable: false })
   name: string;
 
+  @Min(0)
   @Column({ type: 'int', nullable: false })
   @Field(() => Number, { nullable: false })
   originPrice: number;
 
+  @Min(0)
   @Column({ type: 'float', nullable: true, default: 0 })
   @Field(() => Number, { nullable: true })
   discountRate: number;
 
+  @Min(0)
   @Column({ type: 'int', nullable: true })
   @Field(() => Number, { nullable: true })
   discountPrice: number;
+
+  @Column({ default: false })
+  @Field(() => Boolean)
+  isSoldout: boolean;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   @Field(() => String, { nullable: false })
@@ -60,6 +68,46 @@ export class Product {
   @Column({ type: 'text', nullable: true })
   @Field(() => String, { nullable: true })
   content: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Field(() => String, { nullable: true })
+  option1: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Field(() => String, { nullable: true })
+  option2: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Field(() => String, { nullable: true })
+  option3: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Field(() => String, { nullable: true })
+  option4: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Field(() => String, { nullable: true })
+  option5: string;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  @Field(() => String, { nullable: true })
+  youtubeLink: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Field(() => String, { nullable: false })
+  shopName: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Field(() => String, { nullable: false })
+  CEO: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Field(() => String, { nullable: false })
+  businessRegistraionNumber: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Field(() => String, { nullable: false })
+  mailOrderBusinessNumber: string;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })

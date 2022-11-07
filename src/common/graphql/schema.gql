@@ -1,0 +1,92 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Product {
+  id: String!
+  name: String!
+  originPrice: Float!
+  discountRate: Float
+  discountPrice: Float
+  isSoldout: Boolean!
+  delivery: String!
+  endType: PRODUCT_END_TYPE!
+  validFrom: DateTime!
+  validUntil: DateTime!
+  content: String
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  youtubeLink: String
+  shopName: String!
+  CEO: String!
+  businessRegistraionNumber: String!
+  mailOrderBusinessNumber: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+enum PRODUCT_END_TYPE {
+  TIME_ONLY
+  TOTAL_QTY
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  fetchProduct(productId: String!): Product!
+  fetchProducts: [Product!]!
+}
+
+type Mutation {
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+}
+
+input CreateProductInput {
+  name: String!
+  originPrice: Float!
+  discountPrice: Float
+  delivery: String = "택배(무료배송)"
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  endType: PRODUCT_END_TYPE!
+  youtubeLink: String
+  validFrom: DateTime!
+  validUntil: DateTime!
+  content: String
+  shopName: String!
+  CEO: String!
+  businessRegistraionNumber: String!
+  mailOrderBusinessNumber: String!
+}
+
+input UpdateProductInput {
+  name: String
+  originPrice: Float
+  discountPrice: Float
+  delivery: String = "택배(무료배송)"
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  endType: PRODUCT_END_TYPE
+  youtubeLink: String
+  validFrom: DateTime
+  validUntil: DateTime
+  content: String
+  shopName: String
+  CEO: String
+  businessRegistraionNumber: String
+  mailOrderBusinessNumber: String
+}
