@@ -59,6 +59,6 @@ const originList = process.env.ORIGIN_LIST.split(',');
     }),
   ],
   controllers: [AppController],
-  // providers: [],
+  providers: [],
 })
 export class AppModule {}

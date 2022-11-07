@@ -1,23 +1,28 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-export enum SNSTYPE_ENUM {
-  YOUTUBE = 'youtube',
-  INSTAGRAM = 'instagram',
+export enum SNS_TYPE_ENUM {
+  YOUTUBE = 'YOUTUBE',
+  INSTAGRAM = 'INSTAGRAM',
 }
 
-export enum USERTYPE_ENUM {
-  COMMON_USER = 'commonUser',
-  CREATOR = 'creator',
+export enum USER_TYPE_ENUM {
+  COMMON_USER = 'COMMON_USER',
+  INFLUENCER = 'INFLUENCER',
 }
 
 // enum타입을 graphql에 등록
-registerEnumType(SNSTYPE_ENUM, {
-  name: 'SNSTYPE_ENUM',
+registerEnumType(SNS_TYPE_ENUM, {
+  name: 'SNS_TYPE_ENUM',
 });
 
-registerEnumType(USERTYPE_ENUM, {
-  name: 'USERTYPE_ENUM',
+registerEnumType(USER_TYPE_ENUM, {
+  name: 'USER_TYPE_ENUM',
 });
 
 @Entity()
@@ -40,7 +45,7 @@ export class User {
 
   @Column()
   @Field(() => String, { nullable: true })
-  phone: string;
+  phoneNumber: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   @Field(() => String, { nullable: true })
@@ -54,19 +59,36 @@ export class User {
   @Field(() => String, { nullable: true })
   snsLink: string;
 
-  @Column({ type: 'enum', enum: SNSTYPE_ENUM, nullable: true })
-  @Field(() => SNSTYPE_ENUM, { nullable: true })
+  @Column({ type: 'enum', enum: SNS_TYPE_ENUM, nullable: true })
+  @Field(() => SNS_TYPE_ENUM, { nullable: true })
   snsType: string;
 
   @Column({ default: false })
   @Field(() => Boolean, { nullable: true })
   isValidCreator: boolean;
 
+  /** YouTube Id or Instagram Id */
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  influencerId: string;
+
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
+  followerNumber: number;
+
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
+  point: number;
+
   @Column({
     type: 'enum',
-    enum: USERTYPE_ENUM,
-    default: USERTYPE_ENUM.COMMON_USER,
+    enum: USER_TYPE_ENUM,
+    default: USER_TYPE_ENUM.COMMON_USER,
   })
-  @Field(() => USERTYPE_ENUM, { nullable: true })
-  userType: USERTYPE_ENUM;
+  @Field(() => USER_TYPE_ENUM, { nullable: true })
+  userType: USER_TYPE_ENUM;
+
+  @CreateDateColumn()
+  @Field(() => Date, { nullable: true })
+  createdAt: Date;
 }
