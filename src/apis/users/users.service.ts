@@ -12,7 +12,7 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
-// import { Image } from '../images/entities/image.entity';
+import { Image } from '../images/entities/image.entity';
 
 @Injectable()
 export class UsersService {
@@ -35,8 +35,17 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id: userId } });
   }
 
-  async findOneByLoginId(loginId) {
-    return this.usersRepository.findOne({ where: { loginId } });
+  async findOneByEmail(email) {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findOneByNickName(nickName) {
+    return this.usersRepository.findOne({ where: { nickName } });
+  }
+
+  async isSameLoginPassword(userId, password) {
+    const user = await this.findOneByUserId(userId);
+    return await bcrypt.compare(password, user.loginPassword);
   }
 
   private async checkSmsAuth(phoneNumber: string, createUserStepId: string) {
@@ -56,9 +65,12 @@ export class UsersService {
     return true;
   }
 
-  async create(createUserStepId: string, createUserInput: CreateUserInput) {
+  async checkUserBeforeCreate(
+    createUserStepId: string,
+    createUserInput: CreateUserInput,
+  ) {
     const user = await this.usersRepository.findOne({
-      where: { loginId: createUserInput.loginId },
+      where: { email: createUserInput.email },
     });
     if (user) throw new ConflictException('이미 등록된 아이디입니다.');
 
@@ -71,18 +83,23 @@ export class UsersService {
         '핸드폰 번호가 인증되지 않았거나 존재하지 않습니다',
       );
     }
+  }
 
-    const imgResult = [];
-    const { imgUrls, ...userInput } = createUserInput;
+  async createUserInFinalStep(createUserInput: CreateUserInput) {
+    createUserInput.loginPassword = await this.encryptPassword(
+      createUserInput.loginPassword,
+    );
+    return await this.usersRepository.save(createUserInput);
+  }
+
+  async create(createUserStepId: string, createUserInput: CreateUserInput) {
+    await this.checkUserBeforeCreate(createUserStepId, createUserInput);
+
     createUserInput.loginPassword = await this.encryptPassword(
       createUserInput.loginPassword,
     );
 
-    if (imgUrls) {
-      // saveImg Urls
-    }
-
-    return this.usersRepository.save(userInput);
+    return await this.createUserInFinalStep(createUserInput);
   }
 
   async update({ userId, updateUserInput }) {

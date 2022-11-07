@@ -31,11 +31,11 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(
-    @Args('loginId') loginId: string, //
+    @Args('email') email: string, //
     @Args('loginPassword') loginPassword: string,
     @Context() context: IContext,
   ) {
-    const user = await this.usersService.findOneByLoginId(loginId);
+    const user = await this.usersService.findOneByEmail(email);
     if (!user)
       throw new UnprocessableEntityException('ID가 일치하는 유저가 없습니다.');
 
