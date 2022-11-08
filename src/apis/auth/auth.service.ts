@@ -26,7 +26,7 @@ export class AuthService {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader(
       'Access-Control-Allow-Methods',
-      'GET, HEAD, POST, OPTIONS, PUT',
+      'GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE',
     );
     res.setHeader(
       'Access-Control-Allow-Headers',
@@ -88,7 +88,7 @@ export class AuthService {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader(
       'Access-Control-Allow-Methods',
-      'GET, HEAD, POST, OPTIONS, PUT',
+      'GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE',
     );
     res.setHeader(
       'Access-Control-Allow-Headers',
