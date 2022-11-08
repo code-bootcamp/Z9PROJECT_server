@@ -29,7 +29,14 @@ const originList = process.env.ORIGIN_LIST.split(',');
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
       cors: {
-        origin: originList,
+        origin: [
+          'http://localhost:3000',
+          'https://localhost:3000',
+          'http://localhost:4000',
+          'https://localhost:4000',
+          'https://zero9.shop',
+          'https://zero9.brian-hong.tech',
+        ],
         credentials: true,
         exposedHeaders: ['Set-Cookie', 'Cookie'],
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
