@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ImageService } from '../images/image.service';
 import { ImageUploadData } from 'src/common/types/image.types';
+import { UploadImageInput } from '../images/dto/uploadImage.input';
 
 @Resolver()
 export class UsersResolver {
@@ -68,20 +69,21 @@ export class UsersResolver {
     });
 
     const { userProfileImg, ...commonUserInput } = createCommonUserInput;
-    const user = await this.usersService.createUserInFinalStep({
+    const user: User = await this.usersService.createUserInFinalStep({
       ...commonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
     });
 
     if (userProfileImg) {
-      const data: ImageUploadData = {
-        image: createCommonUserInput.userProfileImg,
-        isMain: true,
+      const data: UploadImageInput = {
+        image: userProfileImg,
+        isMain: false,
         isContents: false,
-        // contentsOrder: contentsOrder ? contentsOrder : null,
-        user: user,
+        isAuth: false,
+        contentsOrder: null,
+        userId: user.id,
       };
-      const result = await this.imageService.uploadOne({ data });
+      const result = await this.imageService.uploadOne({ data, user });
       console.log('!! == 이미지 결과 == : ', result);
     }
 
@@ -105,26 +107,28 @@ export class UsersResolver {
     });
 
     if (userProfileImg) {
-      const data: ImageUploadData = {
+      const data: UploadImageInput = {
         image: createInfluencerInput.userProfileImg,
-        isMain: true,
+        isMain: false,
         isContents: false,
-        // contentsOrder: contentsOrder ? contentsOrder : null,
-        user: user,
+        isAuth: false,
+        contentsOrder: null,
+        userId: user.id,
       };
-      const result = await this.imageService.uploadOne({ data });
+      const result = await this.imageService.uploadOne({ data, user });
       console.log('!! == userProfileImg 이미지 결과 == : ', result);
     }
 
     if (influencerAuthImg) {
-      const data: ImageUploadData = {
+      const data: UploadImageInput = {
         image: createInfluencerInput.influencerAuthImg,
         isMain: false,
         isContents: false,
-        // contentsOrder: contentsOrder ? contentsOrder : null,
-        user: user,
+        isAuth: true,
+        contentsOrder: null,
+        userId: user.id,
       };
-      const result = await this.imageService.uploadOne({ data });
+      const result = await this.imageService.uploadOne({ data, user });
       console.log('!! == influencerAuthImg 이미지 결과 == : ', result);
     }
 
