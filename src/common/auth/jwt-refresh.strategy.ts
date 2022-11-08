@@ -20,12 +20,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     });
   }
 
-  async validate(req, payload) {
-    const token = req.headers.authorization.replace('Bearer ', '');
-    const isToken = await this.cacheManager.get(`accessToken:${token}`);
-
-    if (isToken) throw new UnauthorizedException('레디스 블랙리스트');
-
+  async validate(payload) {
     const authResult: IUser = {
       email: payload.email,
       id: payload.sub,
