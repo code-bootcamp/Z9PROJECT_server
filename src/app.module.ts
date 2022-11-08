@@ -39,7 +39,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
         ],
         credentials: true,
         exposedHeaders: ['Set-Cookie', 'Cookie'],
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
         allowedHeaders: [
           'Access-Control-Allow-Origin',
           'Authorization',

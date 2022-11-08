@@ -94,6 +94,7 @@ export class UsersResolver {
     @Args('createUserStepId') createUserStepId: string,
     @Args('createInfluencerInput') createInfluencerInput: CreateInfluencerInput,
   ) {
+    console.log('createInfluencerInput : ', createInfluencerInput);
     await this.usersService.checkUserBeforeCreate(createUserStepId, {
       ...createInfluencerInput,
       userType: USER_TYPE_ENUM.INFLUENCER,
@@ -130,7 +131,7 @@ export class UsersResolver {
       const result = await this.imageService.uploadOne({ data, user });
       console.log('!! == influencerAuthImg 이미지 결과 == : ', result);
     }
-
+    console.log(user);
     return user;
   }
 
