@@ -32,6 +32,10 @@ export class Image {
   @Field(() => Boolean, { defaultValue: false })
   isContents: boolean;
 
+  @Column({ type: 'tinyint', default: 0 })
+  @Field(() => Boolean, { defaultValue: false })
+  isAuth: boolean;
+
   @Column({ type: 'int' })
   @Field(() => Int, { nullable: true })
   contentsOrder: number;
