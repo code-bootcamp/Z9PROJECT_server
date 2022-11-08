@@ -39,14 +39,76 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type User {
+  id: String!
+  loginId: String!
+  name: String
+  phoneNumber: String
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUM
+  isValidCreator: Boolean
+  influencerId: String
+  followerNumber: Int
+  point: Int
+  userType: USER_TYPE_ENUM
+  createdAt: DateTime
+}
+
+enum SNS_TYPE_ENUM {
+  YOUTUBE
+  INSTAGRAM
+}
+
+enum USER_TYPE_ENUM {
+  COMMON_USER
+  INFLUENCER
+}
+
+type Image {
+  id: String!
+  imageUrl: String!
+  fileName: String!
+  isMain: Boolean!
+  isContents: Boolean!
+  contentsOrder: Int
+  createdAt: DateTime!
+  deletedAt: DateTime
+}
+
+type SmsPostReturn {
+  smsAuthTime: Int!
+  message: String!
+}
+
 type Query {
   fetchProduct(productId: String!): Product!
   fetchProducts: [Product!]!
+  fetchInfluencer(userId: String!): User!
+  fetchInfluenceres(usersId: [String!]!): [User!]!
+  fetchLoginUser: User!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  likeProduct: Boolean!
+  unlikeProduct: Boolean!
+  likeProductComment: Boolean!
+  unlikeProductComment: Boolean!
+  uploadImage(image: Upload!, isMain: Boolean!, isContents: Boolean!, contentsOrder: Float): Image!
+  uploadImages(images: [Upload!]!, isMain: [Boolean!]!, isContents: [Boolean!]!, contentsOrder: [Float!]): [Image!]!
+  login(loginId: String!, loginPassword: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+  postSmsToken(phoneNumber: String!): SmsPostReturn!
+  patchSmsToken(phoneNumber: String!, smsToken: String!, createUserStepId: String!): Boolean!
+  createCommonUser(createUserStepId: String!, createCommonUserInput: CreateCommonUserInput!): User!
+  createInfluencer(createUserStepId: String!, createInfluencerInput: CreateInfluencerInput!): User!
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+  updateUserPwd(userId: String!, loginPassword: String!): User!
+  deleteLoginUser(userId: String!): Boolean!
 }
 
 input CreateProductInput {
@@ -89,4 +151,46 @@ input UpdateProductInput {
   CEO: String
   businessRegistraionNumber: String
   mailOrderBusinessNumber: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input CreateCommonUserInput {
+  loginId: String!
+  loginPassword: String!
+  name: String!
+  phoneNumber: String!
+  address: String!
+  addressDetail: String!
+  imgUrls: [String!]
+}
+
+input CreateInfluencerInput {
+  loginId: String!
+  loginPassword: String!
+  name: String!
+  phoneNumber: String!
+  snsLink: String!
+  snsType: SNS_TYPE_ENUM!
+  isValidCreator: Boolean = false
+  influencerId: String
+  followerNumber: Int = 0
+  imgUrls: [String!]
+}
+
+input UpdateUserInput {
+  loginId: String
+  loginPassword: String
+  name: String
+  phoneNumber: String
+  address: String
+  addressDetail: String
+  snsLink: String
+  snsType: SNS_TYPE_ENUM
+  isValidCreator: Boolean = false
+  influencerId: String
+  followerNumber: Int = 0
+  imgUrls: [String!]
+  userType: USER_TYPE_ENUM = COMMON_USER
 }
