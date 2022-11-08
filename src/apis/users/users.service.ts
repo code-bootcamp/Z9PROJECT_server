@@ -39,25 +39,21 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  async findOneByNickName(nickName) {
-    return this.usersRepository.findOne({ where: { nickName } });
+  async findOneByNickName(nickname) {
+    return this.usersRepository.findOne({ where: { nickname } });
   }
 
   async isSameLoginPassword(userId, password) {
     const user = await this.findOneByUserId(userId);
-    return await bcrypt.compare(password, user.loginPassword);
+    return await bcrypt.compare(password, user.password);
   }
 
-  private async checkSmsAuth(phoneNumber: string, createUserStepId: string) {
+  private async checkSmsAuth(phoneNumber: string, signupId: string) {
     const smsToken: ISmsToken = await this.cacheManager.get(
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
     );
 
-    if (
-      !smsToken ||
-      !smsToken.isAuth ||
-      smsToken.createUserStepId !== createUserStepId
-    )
+    if (!smsToken || !smsToken.isAuth || smsToken.signupId !== signupId)
       return false;
 
     await this.cacheManager.del(SMS_TOKEN_KEY_PREFIX + phoneNumber);
@@ -66,7 +62,7 @@ export class UsersService {
   }
 
   async checkUserBeforeCreate(
-    createUserStepId: string,
+    signupId: string,
     createUserInput: CreateUserInput,
   ) {
     const user = await this.usersRepository.findOne({
@@ -76,7 +72,7 @@ export class UsersService {
 
     const isValidSmsAuth = await this.checkSmsAuth(
       createUserInput.phoneNumber,
-      createUserStepId,
+      signupId,
     );
     if (!isValidSmsAuth) {
       throw new UnprocessableEntityException(
@@ -86,17 +82,17 @@ export class UsersService {
   }
 
   async createUserInFinalStep(createUserInput: CreateUserInput) {
-    createUserInput.loginPassword = await this.encryptPassword(
-      createUserInput.loginPassword,
+    createUserInput.password = await this.encryptPassword(
+      createUserInput.password,
     );
     return await this.usersRepository.save(createUserInput);
   }
 
-  async create(createUserStepId: string, createUserInput: CreateUserInput) {
-    await this.checkUserBeforeCreate(createUserStepId, createUserInput);
+  async create(signupId: string, createUserInput: CreateUserInput) {
+    await this.checkUserBeforeCreate(signupId, createUserInput);
 
-    createUserInput.loginPassword = await this.encryptPassword(
-      createUserInput.loginPassword,
+    createUserInput.password = await this.encryptPassword(
+      createUserInput.password,
     );
 
     return await this.createUserInFinalStep(createUserInput);
@@ -107,9 +103,9 @@ export class UsersService {
       where: { id: userId },
     });
 
-    if (updateUserInput.loginPassword) {
-      updateUserInput.loginPassword = await this.encryptPassword(
-        updateUserInput.loginPassword,
+    if (updateUserInput.password) {
+      updateUserInput.password = await this.encryptPassword(
+        updateUserInput.password,
       );
     }
 
