@@ -20,10 +20,13 @@ export class ProductResolver {
   }
 
   @Mutation(() => Product)
-  createProduct(
+  async createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
   ) {
-    return this.productService.create({ createProductInput });
+    await this.productService.checkBussinessNumber({ createProductInput });
+    return this.productService.create({
+      createProductInput,
+    });
   }
 
   @Mutation(() => Product)
