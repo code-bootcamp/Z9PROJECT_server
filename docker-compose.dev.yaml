@@ -19,6 +19,8 @@ services:
     image: redis:alpine
     container_name: zero9-redis
     restart: always
+    ports:
+      - 6479:6379
     volumes:
       - zero9-redis:/data
     networks:
