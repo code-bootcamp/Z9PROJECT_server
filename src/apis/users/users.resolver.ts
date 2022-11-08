@@ -21,7 +21,7 @@ export class UsersResolver {
     private readonly imageService: ImageService,
   ) {}
 
-  @Query(() => User)
+  @Query(() => User, { description: 'fetching single influencer by userId' })
   async fetchInfluencer(@Args('userId') userId: string) {
     const influencer = await this.usersService.findOneByUserId(userId);
     if (!influencer || influencer.userType !== USER_TYPE_ENUM.INFLUENCER) {
@@ -33,7 +33,7 @@ export class UsersResolver {
     return influencer;
   }
 
-  @Query(() => [User])
+  @Query(() => [User], { description: 'fetching multiple influenceres' })
   async fetchInfluenceres(
     @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
   ) {
@@ -52,13 +52,13 @@ export class UsersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => User)
-  fetchLoginUser(@Context() context: IContext) {
+  @Query(() => User, { description: 'fetching user details logined' })
+  fetchUser(@Context() context: IContext) {
     return this.usersService.findOneByUserId(context.req.user.id);
   }
 
-  @Mutation(() => User)
-  async createCommonUser(
+  @Mutation(() => User, { description: 'user signup' })
+  async createUser(
     @Args('createUserStepId') createUserStepId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
@@ -88,7 +88,7 @@ export class UsersResolver {
     return user;
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'influencer signup' })
   async createInfluencer(
     @Args('createUserStepId') createUserStepId: string,
     @Args('createInfluencerInput') createInfluencerInput: CreateInfluencerInput,
@@ -131,15 +131,17 @@ export class UsersResolver {
     return user;
   }
 
-  @Query(() => Boolean)
-  async isNickNameDuplicated(@Args('nickName') nickName: string) {
+  @Query(() => Boolean, {
+    description: 'check if user nickname is already exist',
+  })
+  async checkNickname(@Args('nickName') nickName: string) {
     if (await this.usersService.findOneByNickName(nickName)) return true;
 
     return false;
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'update user detail' })
   async updateUser(
     @Args('userId') userId: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
@@ -151,8 +153,11 @@ export class UsersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => Boolean)
-  async checkSamePasswordBeforeChangePwd(
+  @Query(() => Boolean, {
+    description:
+      'validate password if it is the same password currently using ',
+  })
+  async validatePassword(
     @Args('prevPassword') prevPassword: string,
     @Context() ctx: IContext,
   ) {
@@ -163,8 +168,8 @@ export class UsersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => User)
-  async updateUserPwd(
+  @Mutation(() => User, { description: 'update user password' })
+  async updatePassword(
     @Args('userId') userId: string,
     @Args('loginPassword') loginPassword: string,
     @Context() ctx: IContext,
@@ -177,8 +182,8 @@ export class UsersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean)
-  deleteLoginUser(
+  @Mutation(() => Boolean, { description: 'delete user' })
+  deleteUser(
     @Args('userId') userId: string, //
     @Context() ctx: IContext,
   ) {
