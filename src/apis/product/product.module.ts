@@ -5,7 +5,11 @@ import { ProductResolver } from './product.resolver';
 import { ProductService } from './product.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Product, //
+    ]),
+  ],
   providers: [ProductResolver, ProductService],
 })
 export class ProductModule {}
