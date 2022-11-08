@@ -5,12 +5,17 @@ import { CreateUserInput } from './createUser.input';
 export class CreateCommonUserInput extends OmitType(
   CreateUserInput,
   [
-    'snsLink',
-    'snsType',
-    'isValidCreator',
-    'userType',
-    'influencerId',
+    'snsName',
+    'snsChannel',
+    'isAuthedCreator',
     'followerNumber',
+    'creatorAuthImg',
+    'mainContents',
+    'introduce',
+    'bank',
+    'account',
+    'accountName',
+    'userType',
   ],
   InputType,
 ) {}

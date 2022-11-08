@@ -13,7 +13,14 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'static'));
 
   app.enableCors({
-    origin: originList,
+    origin: [
+      'http://localhost:3000',
+      'https://localhost:3000',
+      'http://localhost:4000',
+      'https://localhost:4000',
+      'https://zero9.shop',
+      'https://zero9.brian-hong.tech',
+    ],
     credentials: true,
   });
 

@@ -10,6 +10,7 @@ services:
       - ./src:/zero9/src
     ports:
       - 3000:3000
+      - 5000:3000
     env_file:
       - ./.env.docker
     environment:
@@ -18,7 +19,6 @@ services:
       - zero9-db
 
   zero9-db:
-    platform: linux/x86_64
     image: mysql:latest
     environment:
       MYSQL_DATABASE: 'zero9'

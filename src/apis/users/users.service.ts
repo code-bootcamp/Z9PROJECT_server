@@ -12,7 +12,7 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
-// import { Image } from '../images/entities/image.entity';
+import { Image } from '../images/entities/image.entity';
 
 @Injectable()
 export class UsersService {
@@ -35,20 +35,25 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id: userId } });
   }
 
-  async findOneByLoginId(loginId) {
-    return this.usersRepository.findOne({ where: { loginId } });
+  async findOneByEmail(email) {
+    return this.usersRepository.findOne({ where: { email } });
   }
 
-  private async checkSmsAuth(phoneNumber: string, createUserStepId: string) {
+  async findOneByNickName(nickname) {
+    return this.usersRepository.findOne({ where: { nickname } });
+  }
+
+  async isSameLoginPassword(userId, password) {
+    const user = await this.findOneByUserId(userId);
+    return await bcrypt.compare(password, user.password);
+  }
+
+  private async checkSmsAuth(phoneNumber: string, signupId: string) {
     const smsToken: ISmsToken = await this.cacheManager.get(
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
     );
 
-    if (
-      !smsToken ||
-      !smsToken.isAuth ||
-      smsToken.createUserStepId !== createUserStepId
-    )
+    if (!smsToken || !smsToken.isAuth || smsToken.signupId !== signupId)
       return false;
 
     await this.cacheManager.del(SMS_TOKEN_KEY_PREFIX + phoneNumber);
@@ -56,33 +61,41 @@ export class UsersService {
     return true;
   }
 
-  async create(createUserStepId: string, createUserInput: CreateUserInput) {
+  async checkUserBeforeCreate(
+    signupId: string,
+    createUserInput: CreateUserInput,
+  ) {
     const user = await this.usersRepository.findOne({
-      where: { loginId: createUserInput.loginId },
+      where: { email: createUserInput.email },
     });
     if (user) throw new ConflictException('이미 등록된 아이디입니다.');
 
     const isValidSmsAuth = await this.checkSmsAuth(
       createUserInput.phoneNumber,
-      createUserStepId,
+      signupId,
     );
     if (!isValidSmsAuth) {
       throw new UnprocessableEntityException(
         '핸드폰 번호가 인증되지 않았거나 존재하지 않습니다',
       );
     }
+  }
 
-    const imgResult = [];
-    const { imgUrls, ...userInput } = createUserInput;
-    createUserInput.loginPassword = await this.encryptPassword(
-      createUserInput.loginPassword,
+  async createUserInFinalStep(createUserInput: CreateUserInput) {
+    createUserInput.password = await this.encryptPassword(
+      createUserInput.password,
+    );
+    return await this.usersRepository.save(createUserInput);
+  }
+
+  async create(signupId: string, createUserInput: CreateUserInput) {
+    await this.checkUserBeforeCreate(signupId, createUserInput);
+
+    createUserInput.password = await this.encryptPassword(
+      createUserInput.password,
     );
 
-    if (imgUrls) {
-      // saveImg Urls
-    }
-
-    return this.usersRepository.save(userInput);
+    return await this.createUserInFinalStep(createUserInput);
   }
 
   async update({ userId, updateUserInput }) {
@@ -90,9 +103,9 @@ export class UsersService {
       where: { id: userId },
     });
 
-    if (updateUserInput.loginPassword) {
-      updateUserInput.loginPassword = await this.encryptPassword(
-        updateUserInput.loginPassword,
+    if (updateUserInput.password) {
+      updateUserInput.password = await this.encryptPassword(
+        updateUserInput.password,
       );
     }
 

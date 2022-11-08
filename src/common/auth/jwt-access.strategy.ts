@@ -22,7 +22,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
 
     if (isToken) throw new UnauthorizedException('레디스 블랙리스트');
     const authResult: IUser = {
-      loginId: payload.loginId,
+      email: payload.email,
       id: payload.sub,
     };
 

@@ -31,18 +31,15 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(
-    @Args('loginId') loginId: string, //
-    @Args('loginPassword') loginPassword: string,
+    @Args('email') email: string, //
+    @Args('password') password: string,
     @Context() context: IContext,
   ) {
-    const user = await this.usersService.findOneByLoginId(loginId);
+    const user = await this.usersService.findOneByEmail(email);
     if (!user)
       throw new UnprocessableEntityException('ID가 일치하는 유저가 없습니다.');
 
-    const isSamePassword = await bcrypt.compare(
-      loginPassword,
-      user.loginPassword,
-    );
+    const isSamePassword = await bcrypt.compare(password, user.password);
     if (!isSamePassword)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
@@ -93,11 +90,7 @@ export class AuthResolver {
     };
   }
 
-  private checkAndUpdateSmsToken = async (
-    phoneNumber,
-    smsToken,
-    createUserStepId,
-  ) => {
+  private checkAndUpdateSmsToken = async (phoneNumber, smsToken, signupId) => {
     const smsTokenResult: ISmsToken = await this.cacheManager.get(
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
     );
@@ -115,7 +108,7 @@ export class AuthResolver {
         SMS_TOKEN_KEY_PREFIX + phoneNumber,
         {
           isAuth: true,
-          createUserStepId,
+          signupId,
         },
         { ttl: 3600 * 24 },
       );
@@ -128,11 +121,9 @@ export class AuthResolver {
   async patchSmsToken(
     @Args('phoneNumber') phoneNumber: string,
     @Args('smsToken') smsToken: string,
-    @Args('createUserStepId') createUserStepId: string,
+    @Args('signupId') signupId: string,
   ) {
-    if (
-      await this.checkAndUpdateSmsToken(phoneNumber, smsToken, createUserStepId)
-    )
+    if (await this.checkAndUpdateSmsToken(phoneNumber, smsToken, signupId))
       return true;
 
     return false;

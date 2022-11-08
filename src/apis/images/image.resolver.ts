@@ -1,55 +1,50 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import { ImageUploadData } from 'src/common/types/image.types';
-import { User } from '../users/entities/user.entity';
 import { ImageService } from './image.service';
 import { Image } from './entities/image.entity';
+import { UploadImageInput } from './dto/uploadImage.input';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import { UploadImagesInput } from './dto/uploadImages.input';
 
 @Resolver()
 export class ImageResolver {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(
+    private readonly imageService: ImageService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  // TODO: This Mutation will need authguard
   @Mutation(() => Image)
   async uploadImage(
-    @Args({ name: 'image', type: () => GraphQLUpload }) image: FileUpload,
-    @Args({ name: 'isMain', type: () => Boolean }) isMain: boolean,
-    @Args({ name: 'isContents', type: () => Boolean }) isContents: boolean,
-    @Args({ name: 'contentsOrder', type: () => Number, nullable: true })
-    contentsOrder: number,
-    // TODO: Adding context to get user id
+    @Args('uploadImageInput') uploadImageInput: UploadImageInput,
   ) {
-    // TODO: find user by userid
-    const data: ImageUploadData = {
-      image,
-      isMain,
-      isContents,
-      contentsOrder: contentsOrder ? contentsOrder : null,
-      // 임시로 null 처리 (테스트용)
-      user: null,
+    const data: UploadImageInput = {
+      ...uploadImageInput,
     };
-    return await this.imageService.uploadOne({ data });
+    const user: User = await this.usersService.findOneByUserId(
+      uploadImageInput.userId,
+    );
+    return await this.imageService.uploadOne({ data, user });
   }
 
   @Mutation(() => [Image])
   async uploadImages(
-    @Args({ name: 'images', type: () => [GraphQLUpload] }) images: FileUpload[],
-    @Args({ name: 'isMain', type: () => [Boolean] }) isMain: boolean[],
-    @Args({ name: 'isContents', type: () => [Boolean] }) isContents: boolean[],
-    @Args({ name: 'contentsOrder', type: () => [Number], nullable: true })
-    contentsOrder: [number],
-    // TODO: Adding context to get user id
+    @Args('uploadImagesInput') uploadImagesInput: UploadImagesInput,
   ) {
-    const data: ImageUploadData[] = images.map((image, index) => {
+    const data = uploadImagesInput.image.map((image, index) => {
       return {
         image,
-        isMain: isMain[index],
-        isContents: isContents[index],
-        contentsOrder: contentsOrder ? contentsOrder[index] : null,
-        // 임시로 null 처리 (테스트용)
-        user: null,
+        isMain: uploadImagesInput.isMain[index],
+        isContents: uploadImagesInput.isContents[index],
+        contentsOrder: uploadImagesInput.contentsOrder[index],
+        isAuth: uploadImagesInput.isAuth[index],
+        userId: uploadImagesInput.userId[index],
       };
     });
-    return await this.imageService.uploadMany({ data });
+    const user = await Promise.all(
+      uploadImagesInput.userId.map(
+        async (userId) => await this.usersService.findOneByUserId(userId),
+      ),
+    );
+    return await this.imageService.uploadMany({ data, user });
   }
 }
