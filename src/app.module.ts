@@ -62,7 +62,10 @@ const originList = process.env.ORIGIN_LIST.split(',');
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+      url:
+        process.env.DEPLOY_ENV === 'LOCAL'
+          ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+          : `redis://brian-hong.tech:6379`,
       isGlobal: true,
     }),
   ],
