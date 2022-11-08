@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ImageService } from '../images/image.service';
-import { ImageUploadData } from 'src/common/types/image.types';
 import { UploadImageInput } from '../images/dto/uploadImage.input';
 
 @Resolver()

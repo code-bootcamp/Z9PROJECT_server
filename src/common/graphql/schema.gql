@@ -39,14 +39,104 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type User {
+  id: String!
+  email: String!
+  nickName: String!
+  phoneNumber: String
+  address: String
+  addressDetail: String
+  instaNameOrYTubeChannel: String
+  name: String
+  snsType: SNS_TYPE_ENUM
+  isAuthedInfluencer: Boolean
+  followerNumber: Int
+  mainContentName: String!
+  aboutInfluencer: String
+  bankName: String
+  bankAccountNumber: String
+  accountOwnerName: String
+  point: Int
+  userType: USER_TYPE_ENUM
+  createdAt: DateTime
+}
+
+enum SNS_TYPE_ENUM {
+  YOUTUBE
+  INSTAGRAM
+}
+
+enum USER_TYPE_ENUM {
+  COMMON_USER
+  INFLUENCER
+}
+
+type Image {
+  id: String!
+  imageUrl: String!
+  fileName: String!
+  isMain: Boolean!
+  isContents: Boolean!
+  isAuth: Boolean!
+  contentsOrder: Int
+  createdAt: DateTime!
+  deletedAt: DateTime
+}
+
+type SmsPostReturn {
+  smsAuthTime: Int!
+  message: String!
+}
+
 type Query {
   fetchProduct(productId: String!): Product!
   fetchProducts: [Product!]!
+
+  """fetching single influencer by userId"""
+  fetchInfluencer(userId: String!): User!
+
+  """fetching multiple influenceres"""
+  fetchInfluenceres(usersId: [String!]!): [User!]!
+
+  """fetching user details logined"""
+  fetchUser: User!
+
+  """check if user nickname is already exist"""
+  checkNickname(nickName: String!): Boolean!
+
+  """validate password if it is the same password currently using """
+  validatePassword(prevPassword: String!): Boolean!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  likeProduct: Boolean!
+  unlikeProduct: Boolean!
+  likeProductComment: Boolean!
+  unlikeProductComment: Boolean!
+  uploadImage(uploadImageInput: UploadImageInput!): Image!
+  uploadImages(uploadImagesInput: UploadImagesInput!): [Image!]!
+  login(email: String!, loginPassword: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+  postSmsToken(phoneNumber: String!): SmsPostReturn!
+  patchSmsToken(phoneNumber: String!, smsToken: String!, createUserStepId: String!): Boolean!
+
+  """user signup"""
+  createUser(createUserStepId: String!, createCommonUserInput: CreateCommonUserInput!): User!
+
+  """influencer signup"""
+  createInfluencer(createUserStepId: String!, createInfluencerInput: CreateInfluencerInput!): User!
+
+  """update user detail"""
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+
+  """update user password"""
+  updatePassword(userId: String!, loginPassword: String!): User!
+
+  """delete user"""
+  deleteUser(userId: String!): Boolean!
 }
 
 input CreateProductInput {
@@ -89,4 +179,79 @@ input UpdateProductInput {
   CEO: String
   businessRegistraionNumber: String
   mailOrderBusinessNumber: String
+}
+
+input UploadImageInput {
+  image: Upload!
+  isMain: Boolean!
+  isContents: Boolean!
+  contentsOrder: Float
+  isAuth: Boolean!
+  userId: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadImagesInput {
+  image: [Upload!]!
+  isMain: [Boolean!]!
+  isContents: [Boolean!]!
+  contentsOrder: [Float!]
+  isAuth: [Boolean!]!
+  userId: [String!]!
+}
+
+input CreateCommonUserInput {
+  email: String!
+  loginPassword: String!
+  nickName: String!
+  phoneNumber: String!
+  address: String!
+  addressDetail: String!
+  userProfileImg: Upload
+  point: Int
+}
+
+input CreateInfluencerInput {
+  email: String!
+  loginPassword: String!
+  nickName: String!
+  phoneNumber: String!
+  instaNameOrYTubeChannel: String
+  name: String
+  snsType: SNS_TYPE_ENUM!
+  isAuthedInfluencer: Boolean = false
+  followerNumber: Int = 0
+  userProfileImg: Upload
+  influencerAuthImg: Upload
+  mainContentName: String
+  aboutInfluencer: String
+  bankName: String
+  bankAccountNumber: String
+  accountOwnerName: String
+  point: Int
+}
+
+input UpdateUserInput {
+  email: String
+  loginPassword: String
+  nickName: String
+  phoneNumber: String
+  address: String
+  addressDetail: String
+  instaNameOrYTubeChannel: String
+  name: String
+  snsType: SNS_TYPE_ENUM
+  isAuthedInfluencer: Boolean = false
+  followerNumber: Int = 0
+  userProfileImg: Upload
+  influencerAuthImg: Upload
+  mainContentName: String
+  aboutInfluencer: String
+  bankName: String
+  bankAccountNumber: String
+  accountOwnerName: String
+  point: Int
+  userType: USER_TYPE_ENUM = COMMON_USER
 }

@@ -4,6 +4,7 @@ import { Image } from './entities/image.entity';
 import { UploadImageInput } from './dto/uploadImage.input';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { UploadImagesInput } from './dto/uploadImages.input';
 
 @Resolver()
 export class ImageResolver {
@@ -27,17 +28,22 @@ export class ImageResolver {
 
   @Mutation(() => [Image])
   async uploadImages(
-    @Args('uploadImagesInput') uploadImagesInput: UploadImageInput[],
+    @Args('uploadImagesInput') uploadImagesInput: UploadImagesInput,
   ) {
-    const data: UploadImageInput[] = uploadImagesInput.map((image) => {
+    const data = uploadImagesInput.image.map((image, index) => {
       return {
-        ...image,
+        image,
+        isMain: uploadImagesInput.isMain[index],
+        isContents: uploadImagesInput.isContents[index],
+        contentsOrder: uploadImagesInput.contentsOrder[index],
+        isAuth: uploadImagesInput.isAuth[index],
+        userId: uploadImagesInput.userId[index],
       };
     });
-    const user: User[] = await Promise.all(
-      uploadImagesInput.map(async (image) => {
-        return await this.usersService.findOneByUserId(image.userId);
-      }),
+    const user = await Promise.all(
+      uploadImagesInput.userId.map(
+        async (userId) => await this.usersService.findOneByUserId(userId),
+      ),
     );
     return await this.imageService.uploadMany({ data, user });
   }
