@@ -1,7 +1,7 @@
 import { User, USER_TYPE_ENUM } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CreateCommonUserInput } from './dto/createCommonUser.input';
-import { CreateInfluencerInput } from './dto/createInfluencer.input';
+import { CreateCreatorInput } from './dto/createCreator.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ImageService } from '../images/image.service';
-import { ImageUploadData } from 'src/common/types/image.types';
 import { UploadImageInput } from '../images/dto/uploadImage.input';
 
 @Resolver()
@@ -25,7 +24,7 @@ export class UsersResolver {
   @Query(() => User, { description: 'fetching single influencer by userId' })
   async fetchInfluencer(@Args('userId') userId: string) {
     const influencer = await this.usersService.findOneByUserId(userId);
-    if (!influencer || influencer.userType !== USER_TYPE_ENUM.INFLUENCER) {
+    if (!influencer || influencer.userType !== USER_TYPE_ENUM.CREATOR) {
       throw new UnprocessableEntityException(
         'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
       );
@@ -41,7 +40,7 @@ export class UsersResolver {
     let influencer = null;
     const influenceres = usersId.map(async (userId) => {
       influencer = await this.usersService.findOneByUserId(userId);
-      if (!influencer || influencer.userType !== USER_TYPE_ENUM.INFLUENCER) {
+      if (!influencer || influencer.userType !== USER_TYPE_ENUM.CREATOR) {
         throw new UnprocessableEntityException(
           'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
         );
@@ -60,10 +59,10 @@ export class UsersResolver {
 
   @Mutation(() => User, { description: 'user signup' })
   async createUser(
-    @Args('createUserStepId') createUserStepId: string,
+    @Args('signupId') signupId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
-    await this.usersService.checkUserBeforeCreate(createUserStepId, {
+    await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCommonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
     });
@@ -91,24 +90,28 @@ export class UsersResolver {
   }
 
   @Mutation(() => User, { description: 'influencer signup' })
-  async createInfluencer(
-    @Args('createUserStepId') createUserStepId: string,
-    @Args('createInfluencerInput') createInfluencerInput: CreateInfluencerInput,
+  async createCreator(
+    @Args('signupId') signupId: string,
+    @Args('createCreatorInput') createCreatorInput: CreateCreatorInput,
   ) {
-    await this.usersService.checkUserBeforeCreate(createUserStepId, {
-      ...createInfluencerInput,
-      userType: USER_TYPE_ENUM.INFLUENCER,
+    console.log('createCreatorInput : ', createCreatorInput);
+    await this.usersService.checkUserBeforeCreate(signupId, {
+      ...createCreatorInput,
+      userType: USER_TYPE_ENUM.CREATOR,
     });
-    const { userProfileImg, influencerAuthImg, ...influencerInput } =
-      createInfluencerInput;
+    const {
+      userProfileImg,
+      creatorAuthImg: creatorAuthImg,
+      ...influencerInput
+    } = createCreatorInput;
     const user = await this.usersService.createUserInFinalStep({
       ...influencerInput,
-      userType: USER_TYPE_ENUM.INFLUENCER,
+      userType: USER_TYPE_ENUM.CREATOR,
     });
 
     if (userProfileImg) {
       const data: UploadImageInput = {
-        image: createInfluencerInput.userProfileImg,
+        image: createCreatorInput.userProfileImg,
         isMain: false,
         isContents: false,
         isAuth: false,
@@ -119,9 +122,9 @@ export class UsersResolver {
       console.log('!! == userProfileImg 이미지 결과 == : ', result);
     }
 
-    if (influencerAuthImg) {
+    if (creatorAuthImg) {
       const data: UploadImageInput = {
-        image: createInfluencerInput.influencerAuthImg,
+        image: createCreatorInput.creatorAuthImg,
         isMain: false,
         isContents: false,
         isAuth: true,
@@ -129,17 +132,17 @@ export class UsersResolver {
         userId: user.id,
       };
       const result = await this.imageService.uploadOne({ data, user });
-      console.log('!! == influencerAuthImg 이미지 결과 == : ', result);
+      console.log('!! == creatorAuthImg 이미지 결과 == : ', result);
     }
-
+    console.log(user);
     return user;
   }
 
   @Query(() => Boolean, {
     description: 'check if user nickname is already exist',
   })
-  async checkNickname(@Args('nickName') nickName: string) {
-    if (await this.usersService.findOneByNickName(nickName)) return true;
+  async checkNickname(@Args('nickname') nickname: string) {
+    if (await this.usersService.findOneByNickName(nickname)) return true;
 
     return false;
   }
@@ -175,14 +178,14 @@ export class UsersResolver {
   @Mutation(() => User, { description: 'update user password' })
   async updatePassword(
     @Args('userId') userId: string,
-    @Args('loginPassword') loginPassword: string,
+    @Args('password') password: string,
     @Context() ctx: IContext,
   ) {
     if (userId !== ctx.req.user.id)
       throw new UnauthorizedException(
         '로그인한 회원의 정보는 본인만 수정 가능합니다.',
       );
-    return this.updateUser(userId, { loginPassword });
+    return this.updateUser(userId, { password });
   }
 
   @UseGuards(GqlAuthAccessGuard)

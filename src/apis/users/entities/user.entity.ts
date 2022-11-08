@@ -13,7 +13,7 @@ export enum SNS_TYPE_ENUM {
 
 export enum USER_TYPE_ENUM {
   COMMON_USER = 'COMMON_USER',
-  INFLUENCER = 'INFLUENCER',
+  CREATOR = 'CREATOR',
 }
 
 // enum타입을 graphql에 등록
@@ -29,23 +29,27 @@ registerEnumType(USER_TYPE_ENUM, {
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   id: string;
 
   @Column()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   email: string;
 
   @Column()
-  loginPassword: string;
+  password: string;
 
   @Column()
-  @Field(() => String)
-  nickName: string;
+  @Field(() => String, { nullable: true })
+  nickname: string;
 
   @Column()
   @Field(() => String, { nullable: true })
   phoneNumber: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  zipcode: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   @Field(() => String, { nullable: true })
@@ -58,19 +62,16 @@ export class User {
   /** YouTube ChannelName or Instagram Name */
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  instaNameOrYTubeChannel: string;
+  snsName: string;
 
-  @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
-  name: string;
-
+  // YOUTUBE or INSTAGRAM
   @Column({ type: 'enum', enum: SNS_TYPE_ENUM, nullable: true })
   @Field(() => SNS_TYPE_ENUM, { nullable: true })
-  snsType: string;
+  snsChannel: string;
 
   @Column({ default: false })
   @Field(() => Boolean, { nullable: true })
-  isAuthedInfluencer: boolean;
+  isAuthedCreator: boolean;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
@@ -78,23 +79,23 @@ export class User {
 
   @Column({ nullable: true })
   @Field(() => String)
-  mainContentName: string;
+  mainContents: string;
 
   @Column({ type: 'text', nullable: true })
   @Field(() => String, { nullable: true })
-  aboutInfluencer: string;
+  introduce: string;
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  bankName: string;
+  bank: string;
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  bankAccountNumber: string;
+  account: string;
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  accountOwnerName: string;
+  accountName: string;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })

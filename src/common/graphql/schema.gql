@@ -39,14 +39,104 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type User {
+  id: String
+  email: String
+  nickname: String
+  phoneNumber: String
+  zipcode: String
+  address: String
+  addressDetail: String
+  snsName: String
+  snsChannel: SNS_TYPE_ENUM
+  isAuthedCreator: Boolean
+  followerNumber: Int
+  mainContents: String!
+  introduce: String
+  bank: String
+  account: String
+  accountName: String
+  point: Int
+  userType: USER_TYPE_ENUM
+  createdAt: DateTime
+}
+
+enum SNS_TYPE_ENUM {
+  YOUTUBE
+  INSTAGRAM
+}
+
+enum USER_TYPE_ENUM {
+  COMMON_USER
+  CREATOR
+}
+
+type Image {
+  id: String!
+  imageUrl: String!
+  fileName: String!
+  isMain: Boolean!
+  isContents: Boolean!
+  isAuth: Boolean!
+  contentsOrder: Int
+  createdAt: DateTime!
+  deletedAt: DateTime
+}
+
+type SmsPostReturn {
+  smsAuthTime: Int!
+  message: String!
+}
+
 type Query {
   fetchProduct(productId: String!): Product!
   fetchProducts: [Product!]!
+
+  """fetching single influencer by userId"""
+  fetchInfluencer(userId: String!): User!
+
+  """fetching multiple influenceres"""
+  fetchInfluenceres(usersId: [String!]!): [User!]!
+
+  """fetching user details logined"""
+  fetchUser: User!
+
+  """check if user nickname is already exist"""
+  checkNickname(nickname: String!): Boolean!
+
+  """validate password if it is the same password currently using """
+  validatePassword(prevPassword: String!): Boolean!
 }
 
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  likeProduct: Boolean!
+  unlikeProduct: Boolean!
+  likeProductComment: Boolean!
+  unlikeProductComment: Boolean!
+  uploadImage(uploadImageInput: UploadImageInput!): Image!
+  uploadImages(uploadImagesInput: UploadImagesInput!): [Image!]!
+  login(email: String!, password: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+  postSmsToken(phoneNumber: String!): SmsPostReturn!
+  patchSmsToken(phoneNumber: String!, smsToken: String!, signupId: String!): Boolean!
+
+  """user signup"""
+  createUser(signupId: String!, createCommonUserInput: CreateCommonUserInput!): User!
+
+  """influencer signup"""
+  createCreator(signupId: String!, createCreatorInput: CreateCreatorInput!): User!
+
+  """update user detail"""
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+
+  """update user password"""
+  updatePassword(userId: String!, password: String!): User!
+
+  """delete user"""
+  deleteUser(userId: String!): Boolean!
 }
 
 input CreateProductInput {
@@ -89,4 +179,79 @@ input UpdateProductInput {
   CEO: String
   businessRegistraionNumber: String
   mailOrderBusinessNumber: String
+}
+
+input UploadImageInput {
+  image: Upload!
+  isMain: Boolean!
+  isContents: Boolean!
+  contentsOrder: Float
+  isAuth: Boolean!
+  userId: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadImagesInput {
+  image: [Upload!]!
+  isMain: [Boolean!]!
+  isContents: [Boolean!]!
+  contentsOrder: [Float!]
+  isAuth: [Boolean!]!
+  userId: [String!]!
+}
+
+input CreateCommonUserInput {
+  email: String!
+  password: String!
+  nickname: String!
+  phoneNumber: String!
+  zipcode: String
+  address: String
+  addressDetail: String
+  userProfileImg: Upload
+  point: Int
+}
+
+input CreateCreatorInput {
+  email: String!
+  password: String!
+  nickname: String!
+  phoneNumber: String!
+  snsName: String
+  snsChannel: SNS_TYPE_ENUM!
+  isAuthedCreator: Boolean = false
+  followerNumber: Int = 0
+  userProfileImg: Upload
+  creatorAuthImg: Upload
+  mainContents: String
+  introduce: String
+  bank: String
+  account: String
+  accountName: String
+  point: Int
+}
+
+input UpdateUserInput {
+  email: String
+  password: String
+  nickname: String
+  phoneNumber: String
+  zipcode: String
+  address: String
+  addressDetail: String
+  snsName: String
+  snsChannel: SNS_TYPE_ENUM
+  isAuthedCreator: Boolean = false
+  followerNumber: Int = 0
+  userProfileImg: Upload
+  creatorAuthImg: Upload
+  mainContents: String
+  introduce: String
+  bank: String
+  account: String
+  accountName: String
+  point: Int
+  userType: USER_TYPE_ENUM = COMMON_USER
 }

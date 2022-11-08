@@ -21,11 +21,11 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   }
 
   async validate(req, payload) {
-    const token = req.headers.authorization.replace('Bearer ', '');
-    const isToken = await this.cacheManager.get(`accessToken:${token}`);
+    const cookie = req.headers.cookie;
+    const refreshToken = cookie.replace('refreshToken=', '');
+    const isToken = await this.cacheManager.get(`refreshToken:${refreshToken}`);
 
     if (isToken) throw new UnauthorizedException('레디스 블랙리스트');
-
     const authResult: IUser = {
       email: payload.email,
       id: payload.sub,

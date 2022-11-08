@@ -29,10 +29,17 @@ const originList = process.env.ORIGIN_LIST.split(',');
       autoSchemaFile: 'src/common/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
       cors: {
-        origin: originList,
+        origin: [
+          'http://localhost:3000',
+          'https://localhost:3000',
+          'http://localhost:4000',
+          'https://localhost:4000',
+          'https://zero9.shop',
+          'https://zero9.brian-hong.tech',
+        ],
         credentials: true,
         exposedHeaders: ['Set-Cookie', 'Cookie'],
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
         allowedHeaders: [
           'Access-Control-Allow-Origin',
           'Authorization',
@@ -55,7 +62,10 @@ const originList = process.env.ORIGIN_LIST.split(',');
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+      url:
+        process.env.DEPLOY_ENV === 'LOCAL'
+          ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+          : `redis://brian-hong.tech:6379`,
       isGlobal: true,
     }),
   ],
