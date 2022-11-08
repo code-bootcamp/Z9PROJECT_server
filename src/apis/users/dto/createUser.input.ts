@@ -8,32 +8,32 @@ export class CreateUserInput {
   email: string;
 
   @Field(() => String)
-  loginPassword: string;
+  password: string;
 
   @Field(() => String)
-  nickName: string;
+  nickname: string;
 
   @Field(() => String)
   phoneNumber: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
+  zipcode?: string;
+
+  @Field(() => String, { nullable: true })
   address?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   addressDetail?: string;
 
   /** YouTube ChannelName or Instagram Name */
   @Field(() => String, { nullable: true })
-  instaNameOrYTubeChannel?: string;
-
-  @Field(() => String, { nullable: true })
-  name?: string;
+  snsName?: string;
 
   @Field(() => SNS_TYPE_ENUM)
-  snsType?: SNS_TYPE_ENUM;
+  snsChannel?: SNS_TYPE_ENUM;
 
   @Field(() => Boolean, { defaultValue: false })
-  isAuthedInfluencer?: boolean;
+  isAuthedCreator?: boolean;
 
   @Field(() => Int, { defaultValue: 0, nullable: true })
   followerNumber?: number;
@@ -42,22 +42,22 @@ export class CreateUserInput {
   userProfileImg?: FileUpload;
 
   @Field(() => GraphQLUpload, { nullable: true })
-  influencerAuthImg?: FileUpload;
+  creatorAuthImg?: FileUpload;
 
   @Field(() => String, { nullable: true })
-  mainContentName?: string;
+  mainContents?: string;
 
   @Field(() => String, { nullable: true })
-  aboutInfluencer?: string;
+  introduce?: string;
 
   @Field(() => String, { nullable: true })
-  bankName?: string;
+  bank?: string;
 
   @Field(() => String, { nullable: true })
-  bankAccountNumber?: string;
+  account?: string;
 
   @Field(() => String, { nullable: true })
-  accountOwnerName?: string;
+  accountName?: string;
 
   @Field(() => Int, { nullable: true })
   point?: number;
