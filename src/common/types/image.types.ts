@@ -6,5 +6,5 @@ export interface ImageUploadData {
   isMain: boolean;
   isContents: boolean;
   contentsOrder?: number;
-  user?: User;
+  userd?: string;
 }
