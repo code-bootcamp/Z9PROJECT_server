@@ -1,10 +1,11 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ImageModule } from './apis/images/image.module';
+import { ConfigModule } from '@nestjs/config';
+import 'dotenv/config';
 import { ProductModule } from './apis/product/product.module';
+import { ImageModule } from './apis/images/image.module';
 import { ProductLikeModule } from './apis/productLike/productLike.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
@@ -49,8 +50,8 @@ const originList = process.env.ORIGIN_LIST.split(',');
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       entities: [__dirname + '/apis/**/*.entity.*'],
-      synchronize: true,
       logging: true,
+      synchronize: true,
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
@@ -58,7 +59,5 @@ const originList = process.env.ORIGIN_LIST.split(',');
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}
