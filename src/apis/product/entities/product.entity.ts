@@ -69,6 +69,14 @@ export class Product {
   validUntil: Date;
 
   @Column({ type: 'text', nullable: true })
+  @Field(() => [String], { nullable: true })
+  images: string[];
+
+  @Column({ type: 'text', nullable: true })
+  @Field(() => [String], { nullable: true })
+  detailImages: string[];
+
+  @Column({ type: 'text', nullable: true })
   @Field(() => String, { nullable: true })
   content: string;
 

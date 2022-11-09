@@ -45,6 +45,12 @@ export class CreateProductInput {
   @Field(() => Date, { nullable: false })
   validUntil: Date;
 
+  @Field(() => [String], { nullable: true })
+  images: string[];
+
+  @Field(() => [String], { nullable: true })
+  detailImages: string[];
+
   @Field(() => String, { nullable: true })
   content: string;
 

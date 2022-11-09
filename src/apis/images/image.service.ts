@@ -1,4 +1,3 @@
-import { UploadImageInput } from './dto/uploadImage.input';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Minio from 'minio';
@@ -6,7 +5,7 @@ import { getToday } from 'src/common/utils/utils';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Image } from './entities/image.entity';
-import { User } from '../users/entities/user.entity';
+import { FileUpload } from 'graphql-upload';
 
 @Injectable()
 export class ImageService {
@@ -15,7 +14,7 @@ export class ImageService {
     private readonly imageRepository: Repository<Image>,
   ) {}
 
-  async uploadOne({ data, user }: { data: UploadImageInput; user: User }) {
+  async uploadOne({ data }: { data: FileUpload }) {
     // Setup Minio Client
     const minioClient = new Minio.Client({
       endPoint: process.env.OBJ_STORAGE_ENDPOINT,
@@ -26,12 +25,12 @@ export class ImageService {
 
     // Upload Image to Minio
     const result: string = await new Promise((res, rej) => {
-      const origin_fname = data.image.filename;
+      const origin_fname = data.filename;
       const fname = `${getToday()}/origin/${uuid()}-${origin_fname}`;
       minioClient.putObject(
         process.env.OBJ_STORAGE_BUCKET,
         fname,
-        data.image.createReadStream(),
+        data.createReadStream(),
         (err, etag) => {
           if (err) {
             rej(err);
@@ -44,17 +43,13 @@ export class ImageService {
 
     const databaseInput: Partial<Image> = {
       imageUrl: result,
-      fileName: data.image.filename,
-      isMain: data.isMain,
-      isContents: data.isContents,
-      contentsOrder: data.contentsOrder,
-      user,
+      fileName: data.filename,
     };
-    const image = await this.createImage({ image: databaseInput });
+    const image: Image = await this.createImage({ image: databaseInput });
     return image;
   }
 
-  async uploadMany({ data, user }: { data: UploadImageInput[]; user: User[] }) {
+  async uploadMany({ data }: { data: FileUpload[] }) {
     const minioClient = new Minio.Client({
       endPoint: process.env.OBJ_STORAGE_ENDPOINT,
       useSSL: true,
@@ -64,12 +59,12 @@ export class ImageService {
     const result: string[] = await Promise.all(
       data.map(async (image) => {
         return await new Promise((res, rej) => {
-          const origin_fname = image.image.filename;
+          const origin_fname = image.filename;
           const fname = `${getToday()}/origin/${uuid()}-${origin_fname}`;
           minioClient.putObject(
             process.env.OBJ_STORAGE_BUCKET,
             fname,
-            image.image.createReadStream(),
+            image.createReadStream(),
             (err, etag) => {
               if (err) {
                 rej(err);
@@ -84,20 +79,16 @@ export class ImageService {
     const databaseInput: Partial<Image>[] = result.map((image, index) => {
       return {
         imageUrl: image,
-        fileName: data[index].image.filename,
-        isMain: data[index].isMain,
-        isContents: data[index].isContents,
-        contentsOrder: data[index].contentsOrder,
-        user: user[index],
+        fileName: data[index].filename,
       };
     });
-    const images = databaseInput.map(
+    const images: Promise<Image>[] = databaseInput.map(
       async (image) => await this.createImage({ image }),
     );
     return images;
   }
 
-  async createImage({ image }) {
+  async createImage({ image }: { image: Partial<Image> }) {
     return await this.imageRepository.save(image);
   }
 }

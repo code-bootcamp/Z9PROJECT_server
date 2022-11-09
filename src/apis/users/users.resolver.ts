@@ -11,16 +11,11 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { ImageService } from '../images/image.service';
-import { UploadImageInput } from '../images/dto/uploadImage.input';
 import { SmsAuth } from '../auth/sms.service';
 
 @Resolver()
 export class UsersResolver {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly imageService: ImageService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Query(() => User, { description: 'fetching single creator by userId' })
   async fetchCreator(@Args('userId') userId: string) {
@@ -63,6 +58,7 @@ export class UsersResolver {
     @Args('signupId') signupId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
+    console.log(createCommonUserInput);
     createCommonUserInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCommonUserInput.phoneNumber,
     );
@@ -72,25 +68,11 @@ export class UsersResolver {
       userType: USER_TYPE_ENUM.COMMON_USER,
     });
 
-    const { userProfileImg, ...commonUserInput } = createCommonUserInput;
     const user: User = await this.usersService.createUserInFinalStep({
-      ...commonUserInput,
+      ...createCommonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
     });
-
-    if (userProfileImg) {
-      const data: UploadImageInput = {
-        image: userProfileImg,
-        isMain: false,
-        isContents: false,
-        isAuth: false,
-        contentsOrder: null,
-        userId: user.id,
-      };
-      const result = await this.imageService.uploadOne({ data, user });
-      console.log('!! == 이미지 결과 == : ', result);
-    }
-
+    console.log(user);
     return user;
   }
 
@@ -99,47 +81,20 @@ export class UsersResolver {
     @Args('signupId') signupId: string,
     @Args('createCreatorInput') createCreatorInput: CreateCreatorInput,
   ) {
-    console.log('createCreatorInput : ', createCreatorInput);
+    console.log(createCreatorInput);
     createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCreatorInput.phoneNumber,
     );
+    
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
     });
-    const { userProfileImg, creatorAuthImg, ...creatorInput } =
-      createCreatorInput;
 
-    const user = await this.usersService.createUserInFinalStep({
-      ...creatorInput,
+    const user: User = await this.usersService.createUserInFinalStep({
+      ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
     });
-
-    if (userProfileImg) {
-      const data: UploadImageInput = {
-        image: createCreatorInput.userProfileImg,
-        isMain: false,
-        isContents: false,
-        isAuth: false,
-        contentsOrder: null,
-        userId: user.id,
-      };
-      const result = await this.imageService.uploadOne({ data, user });
-      console.log('!! == userProfileImg 이미지 결과 == : ', result);
-    }
-
-    if (creatorAuthImg) {
-      const data: UploadImageInput = {
-        image: createCreatorInput.creatorAuthImg,
-        isMain: false,
-        isContents: false,
-        isAuth: true,
-        contentsOrder: null,
-        userId: user.id,
-      };
-      const result = await this.imageService.uploadOne({ data, user });
-      console.log('!! == creatorAuthImg 이미지 결과 == : ', result);
-    }
     console.log(user);
     return user;
   }
@@ -199,8 +154,6 @@ export class UsersResolver {
     @Args('userId') userId: string, //
     @Context() ctx: IContext,
   ) {
-    console.log('userId: ', userId);
-    console.log('ctx.req.user:', ctx.req.user);
     if (userId !== ctx.req.user.id) {
       throw new UnauthorizedException(
         '로그인한 회원정보 삭제는 본인만 가능합니다.',
