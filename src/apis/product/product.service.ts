@@ -58,8 +58,7 @@ export class ProductService {
 
   async checkBussinessNumber({ createProductInput }) {
     const { businessRegistraionNumber } = createProductInput;
-    const url =
-      'https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=DdCbjkPtYMVKK%2FsNdsdp5gho%2B3RjJh9B2pX4AA6MWOLmcPfD0joGS%2F3gq6JTMAALslMS0PWSIAnTL0Ej9QiJTg%3D%3D';
+    const url = `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.SERVICEKEY}`;
     const isValidation = await axios
       .post(url, {
         b_no: [businessRegistraionNumber],
