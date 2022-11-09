@@ -32,5 +32,5 @@ volumes:
   zero9-redis:
 
 networks:
-  zero9-server:
+  zero9-network:
     driver: bridge
