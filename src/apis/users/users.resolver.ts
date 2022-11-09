@@ -85,7 +85,7 @@ export class UsersResolver {
     createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCreatorInput.phoneNumber,
     );
-
+    
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,

@@ -50,7 +50,10 @@ export class Product {
   isSoldout: boolean;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: 'delivery method is one method.',
+  })
   delivery: string;
 
   @Column({ type: 'enum', enum: PRODUCT_END_TYPE, nullable: false })
@@ -107,15 +110,21 @@ export class Product {
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   @Field(() => String, { nullable: false })
-  CEO: string;
+  ceo: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
-  @Field(() => String, { nullable: false })
-  businessRegistraionNumber: string;
+  @Field(() => String, {
+    nullable: false,
+    description: 'brn is business_registraion_number',
+  })
+  brn: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
-  @Field(() => String, { nullable: false })
-  mailOrderBusinessNumber: string;
+  @Field(() => String, {
+    nullable: false,
+    description: 'mobn is mail_order_business_number',
+  })
+  mobn: string;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })

@@ -10,16 +10,16 @@ export class ProductResolver {
     private readonly productService: ProductService, //
   ) {}
 
-  @Query(() => Product)
+  @Query(() => Product, { description: 'fetching single product by productId' })
   fetchProduct(@Args('productId') productId: string) {
     return this.productService.findOne({ productId });
   }
-  @Query(() => [Product])
+  @Query(() => [Product], { description: 'fetching mutiple product' })
   fetchProducts() {
     return this.productService.findAll();
   }
 
-  @Mutation(() => Product)
+  @Mutation(() => Product, { description: 'product signup' })
   async createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
   ) {
@@ -29,7 +29,7 @@ export class ProductResolver {
     });
   }
 
-  @Mutation(() => Product)
+  @Mutation(() => Product, { description: 'update product detail' })
   async updateProduct(
     @Args('productId') productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
