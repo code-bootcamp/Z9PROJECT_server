@@ -66,6 +66,7 @@ export class UsersResolver {
     createCommonUserInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCommonUserInput.phoneNumber,
     );
+
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCommonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
