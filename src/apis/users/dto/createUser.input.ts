@@ -25,7 +25,7 @@ export class CreateUserInput {
   @Field(() => String)
   address: string;
 
-  @Field(() => stringify)
+  @Field(() => String)
   addressDetail: string;
 
   @Field(() => String, { nullable: true })
