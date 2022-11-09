@@ -26,7 +26,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     const isToken = await this.cacheManager.get(`refreshToken:${refreshToken}`);
 
     if (isToken) throw new UnauthorizedException('레디스 블랙리스트');
-
     const authResult: IUser = {
       email: payload.email,
       id: payload.sub,

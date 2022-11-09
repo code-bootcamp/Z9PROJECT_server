@@ -148,7 +148,6 @@ export class UsersResolver {
   })
   async checkNickname(@Args('nickname') nickname: string) {
     if (await this.usersService.findOneByNickName(nickname)) return true;
-
     return false;
   }
 
