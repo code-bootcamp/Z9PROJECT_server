@@ -1,6 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import coolsms from 'coolsms-node-sdk';
-import { check } from 'prettier';
 
 export class SmsAuth {
   public static getCorrectPhoneNumber(phoneNumber: string) {
