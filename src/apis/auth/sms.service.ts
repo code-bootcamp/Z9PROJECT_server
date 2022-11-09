@@ -1,12 +1,18 @@
+import { UnprocessableEntityException } from '@nestjs/common';
 import coolsms from 'coolsms-node-sdk';
+import { check } from 'prettier';
 
 export class SmsAuth {
-  public static checkPhoneDigit(phoneNumber) {
-    if (phoneNumber.length !== 10 && phoneNumber.length !== 11) {
-      console.log('에러 발생!!! 핸드폰 번호를 제대로 입력해 주세요');
-      return false;
+  public static getCorrectPhoneNumber(phoneNumber: string) {
+    const regex = /(^\d{3}-\d{3,4}-\d{4}$)|(^\d{10,11}$)/;
+    if (!regex.test(phoneNumber)) {
+      console.log('휴대폰 형식을 제대로 입력해 주세요.', phoneNumber);
+      throw new UnprocessableEntityException(
+        '폰번호 형식을 제대로 입력해 주세요.',
+      );
     }
-    return true;
+
+    return phoneNumber.split('-').join('');
   }
 
   public static getSmsToken(digit = 6) {
