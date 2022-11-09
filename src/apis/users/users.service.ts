@@ -1,3 +1,4 @@
+import { CreateCommonUserInput } from './dto/createCommonUser.input';
 import {
   ConflictException,
   Injectable,
@@ -12,6 +13,7 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
+import { CreateCreatorInput } from './dto/createCreator.input';
 
 @Injectable()
 export class UsersService {
@@ -71,7 +73,10 @@ export class UsersService {
 
   async checkUserBeforeCreate(
     signupId: string,
-    createUserInput: CreateUserInput,
+    createUserInput:
+      | CreateUserInput
+      | CreateCommonUserInput
+      | CreateCreatorInput,
   ) {
     const user = await this.usersRepository.findOne({
       where: { email: createUserInput.email },
@@ -89,14 +94,25 @@ export class UsersService {
     }
   }
 
-  async createUserInFinalStep(createUserInput: CreateUserInput) {
+  async createUserInFinalStep(
+    createUserInput:
+      | CreateUserInput
+      | CreateCommonUserInput
+      | CreateCreatorInput,
+  ) {
     createUserInput.password = await this.encryptPassword(
       createUserInput.password,
     );
     return await this.usersRepository.save(createUserInput);
   }
 
-  async create(signupId: string, createUserInput: CreateUserInput) {
+  async create(
+    signupId: string,
+    createUserInput:
+      | CreateUserInput
+      | CreateCommonUserInput
+      | CreateCreatorInput,
+  ) {
     await this.checkUserBeforeCreate(signupId, createUserInput);
 
     createUserInput.password = await this.encryptPassword(
