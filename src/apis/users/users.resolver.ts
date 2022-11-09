@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ImageService } from '../images/image.service';
 import { UploadImageInput } from '../images/dto/uploadImage.input';
+import { SmsAuth } from '../auth/sms.service';
 
 @Resolver()
 export class UsersResolver {
@@ -21,34 +22,34 @@ export class UsersResolver {
     private readonly imageService: ImageService,
   ) {}
 
-  @Query(() => User, { description: 'fetching single influencer by userId' })
-  async fetchInfluencer(@Args('userId') userId: string) {
-    const influencer = await this.usersService.findOneByUserId(userId);
-    if (!influencer || influencer.userType !== USER_TYPE_ENUM.CREATOR) {
+  @Query(() => User, { description: 'fetching single creator by userId' })
+  async fetchCreator(@Args('userId') userId: string) {
+    const creator = await this.usersService.findOneByUserId(userId);
+    if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
       throw new UnprocessableEntityException(
         'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
       );
     }
 
-    return influencer;
+    return creator;
   }
 
-  @Query(() => [User], { description: 'fetching multiple influenceres' })
-  async fetchInfluenceres(
+  @Query(() => [User], { description: 'fetching multiple creators' })
+  async fetchCreators(
     @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
   ) {
-    let influencer = null;
-    const influenceres = usersId.map(async (userId) => {
-      influencer = await this.usersService.findOneByUserId(userId);
-      if (!influencer || influencer.userType !== USER_TYPE_ENUM.CREATOR) {
+    let creator = null;
+    const creators = usersId.map(async (userId) => {
+      creator = await this.usersService.findOneByUserId(userId);
+      if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
         throw new UnprocessableEntityException(
           'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
         );
       }
-      return influencer;
+      return creator;
     });
 
-    return influenceres;
+    return creators;
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -62,6 +63,9 @@ export class UsersResolver {
     @Args('signupId') signupId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
+    createCommonUserInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
+      createCommonUserInput.phoneNumber,
+    );
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCommonUserInput,
       userType: USER_TYPE_ENUM.COMMON_USER,
@@ -89,23 +93,24 @@ export class UsersResolver {
     return user;
   }
 
-  @Mutation(() => User, { description: 'influencer signup' })
+  @Mutation(() => User, { description: 'creator signup' })
   async createCreator(
     @Args('signupId') signupId: string,
     @Args('createCreatorInput') createCreatorInput: CreateCreatorInput,
   ) {
     console.log('createCreatorInput : ', createCreatorInput);
+    createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
+      createCreatorInput.phoneNumber,
+    );
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
     });
-    const {
-      userProfileImg,
-      creatorAuthImg: creatorAuthImg,
-      ...influencerInput
-    } = createCreatorInput;
+    const { userProfileImg, creatorAuthImg, ...creatorInput } =
+      createCreatorInput;
+
     const user = await this.usersService.createUserInFinalStep({
-      ...influencerInput,
+      ...creatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
     });
 
@@ -138,8 +143,8 @@ export class UsersResolver {
     return user;
   }
 
-  @Query(() => Boolean, {
-    description: 'check if user nickname is already exist',
+  @Mutation(() => Boolean, {
+    description: 'return true if user nickname is already exist',
   })
   async checkNickname(@Args('nickname') nickname: string) {
     if (await this.usersService.findOneByNickName(nickname)) return true;

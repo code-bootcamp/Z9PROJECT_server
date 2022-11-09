@@ -78,7 +78,7 @@ export class User {
   followerNumber: number;
 
   @Column({ nullable: true })
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   mainContents: string;
 
   @Column({ type: 'text', nullable: true })

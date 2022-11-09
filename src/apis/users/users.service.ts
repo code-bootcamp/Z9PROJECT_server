@@ -12,16 +12,12 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
-import { Image } from '../images/entities/image.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-
-    // @InjectRepository(Image)
-    // private readonly imageRepository: Repository<Image>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -53,7 +49,19 @@ export class UsersService {
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
     );
 
-    if (!smsToken || !smsToken.isAuth || smsToken.signupId !== signupId)
+    console.log(
+      '회원가입 단계의 레디스 키:',
+      SMS_TOKEN_KEY_PREFIX + phoneNumber,
+    );
+    console.log('smsToken:', smsToken, 'smsToken.isAuth:', smsToken?.isAuth);
+    console.log(
+      'smsToken.signupId:',
+      smsToken?.signupId,
+      'signupId:',
+      signupId,
+    );
+
+    if (!smsToken || !smsToken?.isAuth || smsToken?.signupId !== signupId)
       return false;
 
     await this.cacheManager.del(SMS_TOKEN_KEY_PREFIX + phoneNumber);

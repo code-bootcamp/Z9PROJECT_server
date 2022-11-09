@@ -2,6 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import axios from 'axios';
 
 @Injectable()
 export class ProductService {
@@ -53,5 +54,23 @@ export class ProductService {
     });
     if (product.isSoldout)
       throw new UnprocessableEntityException('이미 판매 완료된 상품입니다.');
+  }
+
+  async checkBussinessNumber({ createProductInput }) {
+    const { businessRegistraionNumber } = createProductInput;
+    const url =
+      'https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=DdCbjkPtYMVKK%2FsNdsdp5gho%2B3RjJh9B2pX4AA6MWOLmcPfD0joGS%2F3gq6JTMAALslMS0PWSIAnTL0Ej9QiJTg%3D%3D';
+    const isValidation = await axios
+      .post(url, {
+        b_no: [businessRegistraionNumber],
+      })
+      .catch((e) => console.error(e));
+    if (
+      isValidation['data'].data[0].tax_type ===
+      '국세청에 등록되지 않은 사업자등록번호입니다.'
+    )
+      throw new UnprocessableEntityException(
+        '국세청에 등록되지 않은 사업자등록번호입니다.',
+      );
   }
 }
