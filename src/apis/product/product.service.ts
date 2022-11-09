@@ -20,36 +20,35 @@ export class ProductService {
   }
 
   async create({ createProductInput }) {
-    const discountRate = Math.ceil(
+    const discountRate: number = Math.ceil(
       ((createProductInput.originPrice - createProductInput.discountPrice) /
         createProductInput.originPrice) *
         100,
     );
     createProductInput.discountRate = discountRate;
-    const result = await this.productRepository.save({
+    const result: Product = await this.productRepository.save({
       ...createProductInput,
     });
     return result;
   }
 
   async update({ productId, updateProductInput }) {
-    const updateProduct = await this.productRepository.findOne({
+    const updateProduct: Product = await this.productRepository.findOne({
       where: { id: productId },
     });
 
     const { discountRate, ...rest } = updateProductInput;
 
-    const newProduct = {
+    const newProduct: Product = {
       ...updateProduct,
       id: productId,
       ...rest,
     };
-
     return await this.productRepository.save(newProduct);
   }
 
   async checkSoldout({ productId }) {
-    const product = await this.productRepository.findOne({
+    const product: Product = await this.productRepository.findOne({
       where: { id: productId },
     });
     if (product.isSoldout)

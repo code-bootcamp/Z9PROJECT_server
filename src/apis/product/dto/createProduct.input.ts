@@ -52,11 +52,17 @@ export class CreateProductInput {
   shopName: string;
 
   @Field(() => String, { nullable: false })
-  CEO: string;
+  ceo: string;
 
-  @Field(() => String, { nullable: false })
-  businessRegistraionNumber: string;
+  @Field(() => String, {
+    nullable: false,
+    description: 'brn is business_registration_number',
+  })
+  brn: string;
 
-  @Field(() => String, { nullable: false })
-  mailOrderBusinessNumber: string;
+  @Field(() => String, {
+    nullable: false,
+    description: 'mobn is mail_order_business_number',
+  })
+  mobn: string;
 }
