@@ -80,7 +80,7 @@ export class ImageService {
     const databaseInput: Partial<Image>[] = result.map((image, index) => {
       return {
         imageUrl: image,
-        fileName: data[index].filename,
+        fileName: queue[index].filename,
       };
     });
     const images: Promise<Image>[] = databaseInput.map(
