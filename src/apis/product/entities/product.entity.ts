@@ -40,6 +40,11 @@ export class Product {
   originPrice: number;
 
   @Min(0)
+  @Column({ type: 'int', nullable: false })
+  @Field(() => Number, { nullable: false })
+  quantity: number;
+
+  @Min(0)
   @Column({ type: 'float', nullable: true, default: 0 })
   @Field(() => Number, { nullable: true })
   discountRate: number;
@@ -135,6 +140,20 @@ export class Product {
 
   @ManyToOne(() => User)
   user: User;
+
+  @Column({ type: 'int', nullable: false })
+  @Field(() => Number, {
+    nullable: false,
+    description: 'skin is seleted by user',
+  })
+  skin: number;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'color is seleted by user',
+  })
+  color: string;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })

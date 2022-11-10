@@ -2,49 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Product {
-  id: String!
-  name: String!
-  originPrice: Float!
-  discountRate: Float
-  discountPrice: Float
-  isSoldout: Boolean!
-
-  """delivery method is one method."""
-  delivery: String!
-  endType: PRODUCT_END_TYPE!
-  validFrom: DateTime!
-  validUntil: DateTime!
-  content: String
-  option1: String
-  option2: String
-  option3: String
-  option4: String
-  option5: String
-  youtubeLink: String
-  shopName: String!
-  ceo: String!
-
-  """brn is business_registraion_number"""
-  brn: String!
-
-  """mobn is mail_order_business_number"""
-  mobn: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-enum PRODUCT_END_TYPE {
-  TIME_ONLY
-  TOTAL_QTY
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type User {
   id: String
   email: String
@@ -77,6 +34,57 @@ enum USER_TYPE_ENUM {
   CREATOR
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: String!
+  name: String!
+  originPrice: Float!
+  quantity: Float!
+  discountRate: Float
+  discountPrice: Float
+  isSoldout: Boolean!
+
+  """delivery method is one method."""
+  delivery: String!
+  endType: PRODUCT_END_TYPE!
+  validFrom: DateTime!
+  validUntil: DateTime!
+  content: String
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  youtubeLink: String
+  shopName: String!
+  ceo: String!
+
+  """brn is business_registraion_number"""
+  brn: String!
+
+  """mobn is mail_order_business_number"""
+  mobn: String!
+
+  """skin is seleted by user"""
+  skin: Float!
+
+  """color is seleted by user"""
+  color: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: User!
+}
+
+enum PRODUCT_END_TYPE {
+  TIME_ONLY
+  TOTAL_QTY
+}
+
 type Image {
   id: String!
   imageUrl: String!
@@ -92,6 +100,20 @@ type Image {
 type SmsPostReturn {
   smsAuthTime: Int!
   message: String!
+}
+
+type Question {
+  id: String!
+  question: String
+  createdAt: DateTime
+  status: QUESTION_STATUS_TYPE_ENUM!
+  product: Product!
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
 }
 
 type Query {
@@ -149,11 +171,15 @@ type Mutation {
 
   """delete user"""
   deleteUser(userId: String!): Boolean!
+
+  """question signup"""
+  createQuestion(questionInput: QuestionInput!, productId: String!): Question!
 }
 
 input CreateProductInput {
   name: String!
   originPrice: Float!
+  quantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -174,11 +200,19 @@ input CreateProductInput {
 
   """mobn is mail_order_business_number"""
   mobn: String!
+
+  """skin is seleted by user"""
+  skin: Float!
+
+  """color is seleted by user"""
+  color: String
+  userid: String!
 }
 
 input UpdateProductInput {
   name: String
   originPrice: Float
+  quantity: Float
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -199,6 +233,13 @@ input UpdateProductInput {
 
   """mobn is mail_order_business_number"""
   mobn: String
+
+  """skin is seleted by user"""
+  skin: Float
+
+  """color is seleted by user"""
+  color: String
+  userid: String
 }
 
 input UploadImageInput {
@@ -231,6 +272,9 @@ input CreateCommonUserInput {
   address: String
   addressDetail: String
   userProfileImg: Upload
+  bank: String
+  account: String
+  accountName: String
   point: Int
 }
 
@@ -277,4 +321,12 @@ input UpdateUserInput {
   accountName: String
   point: Int
   userType: USER_TYPE_ENUM = COMMON_USER
+}
+
+input QuestionInput {
+  """"""
+  question: String
+
+  """question status are PROGESS & SOLVED."""
+  status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
