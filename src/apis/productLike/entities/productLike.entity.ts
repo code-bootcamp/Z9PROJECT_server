@@ -10,14 +10,10 @@ export class ProductLike {
   @Field(() => String, { nullable: false })
   id: string;
 
-  // TODO: Add relations
   @ManyToOne(() => User)
-  @Field(() => User, { nullable: false })
   user: User;
 
-  // TODO: Add relations
   @ManyToOne(() => Product)
-  @Field(() => Product, { nullable: false })
   product: Product;
 
   @Column()
