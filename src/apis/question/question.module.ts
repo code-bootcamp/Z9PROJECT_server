@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
+import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 import { ProductDetailService } from '../productDetail/productDetail.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -15,6 +16,7 @@ import { QuestionService } from './question.service';
       Question, //
       Product,
       User,
+      ProductDetail,
     ]),
   ],
   providers: [
