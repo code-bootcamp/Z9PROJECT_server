@@ -19,6 +19,10 @@ export class ProductDetail {
   @OneToOne(() => Product, (product) => product.productDetail)
   product: Product;
 
+  @Column({ type: 'varchar', length: 200, nullable: false })
+  @Field(() => String, { nullable: false })
+  type: string;
+
   @Column({ type: 'text', nullable: true, default: null })
   @Field(() => String, { nullable: true, defaultValue: null })
   option1: string;
