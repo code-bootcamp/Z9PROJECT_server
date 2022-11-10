@@ -3,23 +3,36 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import axios from 'axios';
+import { ProductDetailService } from '../productDetail/productDetail.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    private readonly productDetailService: ProductDetailService,
   ) {}
 
   async findOne({ productId }) {
-    return await this.productRepository.findOne({ where: { id: productId } });
+    const result = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.id = :productId', { productId })
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getOne();
+  }
+
+  async countProductByUserId({ userId }) {
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user = :userId', { userId })
+      .getCount();
   }
 
   async findAll() {
     return await this.productRepository.find();
   }
 
-  async create({ createProductInput }) {
+  async create({ createProductInput, createProductDetailInput }) {
     const discountRate: number = Math.ceil(
       ((createProductInput.originPrice - createProductInput.discountPrice) /
         createProductInput.originPrice) *
@@ -29,13 +42,18 @@ export class ProductService {
     const result: Product = await this.productRepository.save({
       ...createProductInput,
     });
+    await this.productDetailService.createDetail({
+      productId: result.id,
+      ...createProductDetailInput,
+    });
     return result;
   }
 
-  async update({ productId, updateProductInput }) {
-    const updateProduct: Product = await this.productRepository.findOne({
-      where: { id: productId },
-    });
+  async update({ productId, updateProductInput, updateProductDetailInput }) {
+    const updateProduct: Product = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.id = :productId', { productId })
+      .getOne();
 
     const { discountRate, ...rest } = updateProductInput;
 
@@ -44,15 +62,32 @@ export class ProductService {
       id: productId,
       ...rest,
     };
+
+    await this.productDetailService.updateDetail({
+      productId,
+      ...updateProductDetailInput,
+    });
     return await this.productRepository.save(newProduct);
   }
 
-  async checkSoldout({ productId }) {
+  async checkSoldout({ productId }): Promise<Product> {
     const product: Product = await this.productRepository.findOne({
       where: { id: productId },
     });
     if (product.isSoldout)
       throw new UnprocessableEntityException('이미 판매 완료된 상품입니다.');
+
+    return product;
+  }
+
+  async delete({ productId }) {
+    await this.productRepository.softDelete({ id: productId }).catch(() => {
+      throw new UnprocessableEntityException('삭제 실패');
+    });
+    await this.productDetailService.deleteDetail({ productId }).catch(() => {
+      throw new UnprocessableEntityException('삭제 실패');
+    });
+    return true;
   }
 
   async checkBussinessNumber({ createProductInput }) {
