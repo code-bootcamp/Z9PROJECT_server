@@ -80,6 +80,7 @@ export class CreateProductInput {
     description: 'skin is seleted by user',
   })
   skin: number;
+
   @Field(() => String, {
     nullable: true,
     description: 'color is seleted by user',

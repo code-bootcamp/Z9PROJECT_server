@@ -45,17 +45,17 @@ export class Product {
   quantity: number;
 
   @Min(0)
-  @Column({ type: 'float', nullable: true, default: 0 })
+  @Column({ type: 'float', default: 0 })
   @Field(() => Number, { nullable: true })
   discountRate: number;
 
   @Min(0)
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'int', default: 0 })
   @Field(() => Number, { nullable: true })
   discountPrice: number;
 
-  @Column({ default: false })
-  @Field(() => Boolean)
+  @Column({ type: 'tinyint', default: false })
+  @Field(() => Boolean, { nullable: false })
   isSoldout: boolean;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
@@ -65,7 +65,7 @@ export class Product {
   })
   delivery: string;
 
-  @Column({ type: 'enum', enum: PRODUCT_END_TYPE, nullable: false })
+  @Column({ type: 'enum', enum: PRODUCT_END_TYPE })
   @Field(() => PRODUCT_END_TYPE, { nullable: false })
   endType: string;
 
@@ -89,27 +89,27 @@ export class Product {
   @Field(() => String, { nullable: true })
   content: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Column({ type: 'varchar', length: 150, default: null })
   @Field(() => String, { nullable: true })
   option1: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Column({ type: 'varchar', length: 150, default: null })
   @Field(() => String, { nullable: true })
   option2: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Column({ type: 'varchar', length: 150, default: null })
   @Field(() => String, { nullable: true })
   option3: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Column({ type: 'varchar', length: 150, default: null })
   @Field(() => String, { nullable: true })
   option4: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
+  @Column({ type: 'varchar', length: 150, default: null })
   @Field(() => String, { nullable: true })
   option5: string;
 
-  @Column({ type: 'varchar', length: 200, nullable: true })
+  @Column({ type: 'varchar', length: 200, default: null })
   @Field(() => String, { nullable: true })
   youtubeLink: string;
 
@@ -136,9 +136,11 @@ export class Product {
   mobn: string;
 
   @OneToOne(() => ProductDetail, (productDetail) => productDetail.product)
+  @Field(() => ProductDetail, { nullable: true })
   productDetail: ProductDetail;
 
   @ManyToOne(() => User)
+  @Field(() => User, { nullable: true })
   user: User;
 
   @Column({ type: 'int', nullable: false })
