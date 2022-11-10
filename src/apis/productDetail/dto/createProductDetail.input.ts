@@ -2,6 +2,9 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class CreateProductDetailInput {
+  @Field(() => String, { nullable: false })
+  type: string;
+
   @Field(() => String, { nullable: true, defaultValue: null })
   option1: string;
 
