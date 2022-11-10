@@ -15,7 +15,7 @@ export class ProductResolver {
   fetchProduct(@Args('productId') productId: string) {
     return this.productService.findOne({ productId });
   }
-  
+
   @Query(() => [Product], { description: 'fetching mutiple product' })
   fetchProducts() {
     return this.productService.findAll();
