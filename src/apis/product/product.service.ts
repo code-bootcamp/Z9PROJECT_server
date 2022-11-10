@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import axios from 'axios';
 import { ProductDetailService } from '../productDetail/productDetail.service';
+import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 
 @Injectable()
 export class ProductService {
@@ -46,17 +47,18 @@ export class ProductService {
 
     const { discountRate, ...product } = createProductInput;
 
-    const result: Product = await this.productRepository.save({
+    const savedProduct: Product = await this.productRepository.save({
       ...product,
       discoutRate: calcDiscountRate,
     });
 
-    await this.productDetailService.createDetail({
-      productId: result.id,
-      ...createProductDetailInput,
-    });
+    const savedDetail: ProductDetail =
+      await this.productDetailService.createDetail({
+        productId: savedProduct.id,
+        ...createProductDetailInput,
+      });
 
-    return result;
+    return { ...savedProduct, productDetail: savedDetail };
   }
 
   async update({ productId, updateProductInput, updateProductDetailInput }) {
