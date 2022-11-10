@@ -87,5 +87,5 @@ export class CreateProductInput {
   color: string;
 
   @Field(() => String)
-  userid: string;
+  userId: string;
 }

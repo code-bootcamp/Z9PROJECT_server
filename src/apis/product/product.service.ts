@@ -33,23 +33,28 @@ export class ProductService {
   }
 
   async create({ createProductInput, createProductDetailInput }) {
-    const discountRate: number = Math.ceil(
-      ((createProductInput.originPrice - createProductInput.discountPrice) /
-        createProductInput.originPrice) *
-        100,
-    );
-    const { productId, ...product } = createProductInput;
+    const calcDiscountRate: number =
+      createProductInput.discountPrice !== null
+        ? Math.ceil(
+            ((createProductInput.originPrice -
+              createProductInput.discountPrice) /
+              createProductInput.originPrice) *
+              100,
+          )
+        : 0;
 
-    createProductInput.discountRate = discountRate;
+    const { discountRate, ...product } = createProductInput;
+
     const result: Product = await this.productRepository.save({
       ...product,
-      productId,
-      discountRate,
+      discoutRate: calcDiscountRate,
     });
+
     await this.productDetailService.createDetail({
       productId: result.id,
       ...createProductDetailInput,
     });
+
     return result;
   }
 
@@ -59,11 +64,22 @@ export class ProductService {
       .where('product.id = :productId', { productId })
       .getOne();
 
+    const calcDiscountRate: number =
+      updateProductInput.discountPrice !== null
+        ? Math.ceil(
+            ((updateProductInput.originPrice -
+              updateProductInput.discountPrice) /
+              updateProductInput.originPrice) *
+              100,
+          )
+        : 0;
+
     const { discountRate, ...rest } = updateProductInput;
 
     const newProduct: Product = {
       ...updateProduct,
       id: productId,
+      discountRate: calcDiscountRate,
       ...rest,
     };
 
@@ -71,6 +87,7 @@ export class ProductService {
       productId,
       ...updateProductDetailInput,
     });
+
     return await this.productRepository.save(newProduct);
   }
 
@@ -102,6 +119,7 @@ export class ProductService {
         b_no: [brn],
       })
       .catch((e) => console.error(e));
+
     if (
       isValidation['data'].data[0].tax_type ===
       '국세청에 등록되지 않은 사업자등록번호입니다.'
