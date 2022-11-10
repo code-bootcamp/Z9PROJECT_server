@@ -62,6 +62,7 @@ export class ProductService {
       id: productId,
       ...rest,
     };
+
     await this.productDetailService.updateDetail({
       productId,
       ...updateProductDetailInput,
