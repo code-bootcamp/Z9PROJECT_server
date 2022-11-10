@@ -50,6 +50,7 @@ export class ImageService {
   }
 
   async uploadMany({ data }: { data: FileUpload[] }) {
+    const queue = await Promise.all(data);
     const minioClient = new Minio.Client({
       endPoint: process.env.OBJ_STORAGE_ENDPOINT,
       useSSL: true,
@@ -57,7 +58,7 @@ export class ImageService {
       secretKey: process.env.OBJ_STORAGE_ACCESS_KEY_SECRET,
     });
     const result: string[] = await Promise.all(
-      data.map(async (image) => {
+      queue.map(async (image) => {
         return await new Promise((res, rej) => {
           const origin_fname = image.filename;
           const fname = `${getToday()}/origin/${uuid()}-${origin_fname}`;
