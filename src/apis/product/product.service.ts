@@ -19,6 +19,7 @@ export class ProductService {
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getOne();
+    return result;
   }
 
   async countProductByUserId({ userId }) {
