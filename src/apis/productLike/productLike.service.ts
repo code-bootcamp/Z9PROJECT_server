@@ -1,6 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductLikeInput } from 'src/common/types/productLike.types';
 import { Repository } from 'typeorm';
 import { ProductLike } from './entities/productLike.entity';
 
@@ -12,26 +15,45 @@ export class ProductLikeService {
   ) {}
 
   async likeProduct({ productId, userId }) {
-    // TODO: find if there is a record with productId and userId
-    const productLike = await this.productLikeRepository.findOne({
-      where: { product: productId, user: userId },
-    });
-    // TODO: if there is a record, check if it is deleted
-    // TODO: if it is deleted, update the record and set deletedAt to null
-    // TODO: if there is not a record, create a new record
-    if (productLike) {
-      if (productLike.deletedAt) {
-        productLike.deletedAt = null;
-        await this.productLikeRepository.save(productLike);
+    const checkLike = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.userId = :userId', { userId })
+      .getOne();
+
+    if (checkLike) {
+      // 이미 좋아요 상태인지 확인 (deteledAt 값이 null인지 확인)
+      if (checkLike.deletedAt) {
+        // 좋아요 상태가 아닌 경우 좋아요로 변경
+        await this.productLikeRepository
+          .update({ id: checkLike.id }, { deletedAt: null })
+          .catch(() => {
+            throw new UnprocessableEntityException('좋아요 실패');
+          });
         return true;
       } else {
-        return new ConflictException("You've already liked this product");
+        // 좋아요 상태인 경우 좋아요 취소로 변경
+        const result = await this.productLikeRepository
+          .softDelete({ id: checkLike.id })
+          .catch(() => {
+            throw new UnprocessableEntityException('좋아요 취소 실패');
+          });
+        if (result.affected) {
+          return false;
+        } else {
+          throw new NotFoundException('좋아요 취소 실패');
+        }
       }
     } else {
-      await this.productLikeRepository.save({
-        product: productId,
-        userId: userId,
-      });
+      // 새롭게 좋아요를 누른 경우
+      await this.productLikeRepository
+        .save({
+          product: { id: productId },
+          user: { id: userId },
+        })
+        .catch(() => {
+          throw new UnprocessableEntityException('좋아요 실패');
+        });
       return true;
     }
   }
