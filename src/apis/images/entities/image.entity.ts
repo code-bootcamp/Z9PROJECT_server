@@ -1,11 +1,9 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { User } from 'src/apis/users/entities/user.entity';
+import { Field, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,24 +19,7 @@ export class Image {
   imageUrl: string;
 
   @Column({ type: 'varchar', length: 255 })
-  @Field(() => String)
   fileName: string;
-
-  @Column({ type: 'tinyint', default: 0 })
-  @Field(() => Boolean, { defaultValue: false })
-  isMain: boolean;
-
-  @Column({ type: 'tinyint', default: 0 })
-  @Field(() => Boolean, { defaultValue: false })
-  isContents: boolean;
-
-  @Column({ type: 'tinyint', default: 0 })
-  @Field(() => Boolean, { defaultValue: false })
-  isAuth: boolean;
-
-  @Column({ type: 'int' })
-  @Field(() => Int, { nullable: true })
-  contentsOrder: number;
 
   @CreateDateColumn()
   @Field(() => Date)
@@ -47,7 +28,4 @@ export class Image {
   @DeleteDateColumn()
   @Field(() => Date, { nullable: true })
   deletedAt: Date;
-
-  @ManyToOne(() => User)
-  user: User;
 }

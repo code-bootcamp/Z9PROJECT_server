@@ -65,7 +65,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
       url:
         process.env.DEPLOY_ENV === 'LOCAL'
           ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-          : `redis://brian-hong.tech:6379`,
+          : `redis://brian-hong.tech:6479`,
       isGlobal: true,
     }),
   ],

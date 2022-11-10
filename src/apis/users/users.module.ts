@@ -11,14 +11,12 @@ import { ImageService } from '../images/image.service';
   imports: [
     TypeOrmModule.forFeature([
       User, //
-      Image,
     ]),
   ],
   providers: [
     JwtAccessStrategy, //
     UsersResolver,
     UsersService,
-    ImageService,
   ],
 })
 export class UsersModule {}

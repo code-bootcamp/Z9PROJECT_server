@@ -1,50 +1,23 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { ImageService } from './image.service';
 import { Image } from './entities/image.entity';
-import { UploadImageInput } from './dto/uploadImage.input';
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
-import { UploadImagesInput } from './dto/uploadImages.input';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 @Resolver()
 export class ImageResolver {
-  constructor(
-    private readonly imageService: ImageService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly imageService: ImageService) {}
 
   @Mutation(() => Image)
   async uploadImage(
-    @Args('uploadImageInput') uploadImageInput: UploadImageInput,
+    @Args({ name: 'image', type: () => GraphQLUpload }) image: FileUpload,
   ) {
-    const data: UploadImageInput = {
-      ...uploadImageInput,
-    };
-    const user: User = await this.usersService.findOneByUserId(
-      uploadImageInput.userId,
-    );
-    return await this.imageService.uploadOne({ data, user });
+    return await this.imageService.uploadOne({ data: image });
   }
 
   @Mutation(() => [Image])
   async uploadImages(
-    @Args('uploadImagesInput') uploadImagesInput: UploadImagesInput,
+    @Args({ name: 'images', type: () => [GraphQLUpload] }) images: FileUpload[],
   ) {
-    const data = uploadImagesInput.image.map((image, index) => {
-      return {
-        image,
-        isMain: uploadImagesInput.isMain[index],
-        isContents: uploadImagesInput.isContents[index],
-        contentsOrder: uploadImagesInput.contentsOrder[index],
-        isAuth: uploadImagesInput.isAuth[index],
-        userId: uploadImagesInput.userId[index],
-      };
-    });
-    const user = await Promise.all(
-      uploadImagesInput.userId.map(
-        async (userId) => await this.usersService.findOneByUserId(userId),
-      ),
-    );
-    return await this.imageService.uploadMany({ data, user });
+    return await this.imageService.uploadMany({ data: images });
   }
 }
