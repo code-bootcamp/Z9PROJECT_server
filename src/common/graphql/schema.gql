@@ -57,7 +57,7 @@ type User {
   snsChannel: SNS_TYPE_ENUM
   isAuthedCreator: Boolean
   followerNumber: Int
-  mainContents: String!
+  mainContents: String
   introduce: String
   bank: String
   account: String
@@ -101,17 +101,14 @@ type Query {
   """fetching mutiple product"""
   fetchProducts: [Product!]!
 
-  """fetching single influencer by userId"""
-  fetchInfluencer(userId: String!): User!
+  """fetching single creator by userId"""
+  fetchCreator(userId: String!): User!
 
-  """fetching multiple influenceres"""
-  fetchInfluenceres(usersId: [String!]!): [User!]!
+  """fetching multiple creators"""
+  fetchCreators(usersId: [String!]!): [User!]!
 
   """fetching user details logined"""
   fetchUser: User!
-
-  """check if user nickname is already exist"""
-  checkNickname(nickname: String!): Boolean!
 
   """validate password if it is the same password currently using """
   validatePassword(prevPassword: String!): Boolean!
@@ -138,8 +135,11 @@ type Mutation {
   """user signup"""
   createUser(signupId: String!, createCommonUserInput: CreateCommonUserInput!): User!
 
-  """influencer signup"""
+  """creator signup"""
   createCreator(signupId: String!, createCreatorInput: CreateCreatorInput!): User!
+
+  """return true if user nickname is already exist"""
+  checkNickname(nickname: String!): Boolean!
 
   """update user detail"""
   updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
@@ -239,6 +239,9 @@ input CreateCreatorInput {
   password: String!
   nickname: String!
   phoneNumber: String!
+  zipcode: String
+  address: String
+  addressDetail: String
   snsName: String
   snsChannel: SNS_TYPE_ENUM!
   isAuthedCreator: Boolean = false

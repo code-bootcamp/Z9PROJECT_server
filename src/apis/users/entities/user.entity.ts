@@ -2,8 +2,10 @@ import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum SNS_TYPE_ENUM {
@@ -29,7 +31,7 @@ registerEnumType(USER_TYPE_ENUM, {
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   id: string;
 
   @Column()
@@ -38,6 +40,14 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: USER_TYPE_ENUM,
+    default: USER_TYPE_ENUM.COMMON_USER,
+  })
+  @Field(() => USER_TYPE_ENUM, { nullable: true })
+  userType: USER_TYPE_ENUM;
 
   @Column()
   @Field(() => String, { nullable: true })
@@ -59,6 +69,24 @@ export class User {
   @Field(() => String, { nullable: true })
   addressDetail: string;
 
+  @Column({ nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Need Img URL to be saved',
+  })
+  profileImg: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Need Img URL to be saved',
+  })
+  creatorAuthImg: string;
+
+  @Column({ nullable: false, default: false })
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  isAuthedCreator: boolean;
+
   /** YouTube ChannelName or Instagram Name */
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
@@ -69,47 +97,43 @@ export class User {
   @Field(() => SNS_TYPE_ENUM, { nullable: true })
   snsChannel: string;
 
-  @Column({ default: false })
-  @Field(() => Boolean, { nullable: true })
-  isAuthedCreator: boolean;
-
   @Column({ default: 0 })
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, defaultValue: 0 })
   followerNumber: number;
 
   @Column({ nullable: true })
-  @Field(() => String)
+  @Field(() => String, { nullable: true, defaultValue: '' })
   mainContents: string;
 
   @Column({ type: 'text', nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, defaultValue: '' })
   introduce: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, defaultValue: '' })
   bank: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, defaultValue: '' })
   account: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, defaultValue: '' })
   accountName: string;
 
   @Column({ default: 0 })
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, defaultValue: 0 })
   point: number;
-
-  @Column({
-    type: 'enum',
-    enum: USER_TYPE_ENUM,
-    default: USER_TYPE_ENUM.COMMON_USER,
-  })
-  @Field(() => USER_TYPE_ENUM, { nullable: true })
-  userType: USER_TYPE_ENUM;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })
   createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => Date, { nullable: true })
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date, { nullable: true })
+  deletedAt: Date;
 }

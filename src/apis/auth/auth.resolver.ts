@@ -68,8 +68,7 @@ export class AuthResolver {
 
   @Mutation(() => SmsPostReturn)
   async postSmsToken(@Args('phoneNumber') phoneNumber: string) {
-    if (!SmsAuth.checkPhoneDigit(phoneNumber))
-      throw new UnprocessableEntityException('휴대폰 번호를 확인해주세요.');
+    phoneNumber = SmsAuth.getCorrectPhoneNumber(phoneNumber);
 
     const smsToken = SmsAuth.getSmsToken();
     if (!smsToken)
@@ -123,6 +122,7 @@ export class AuthResolver {
     @Args('smsToken') smsToken: string,
     @Args('signupId') signupId: string,
   ) {
+    phoneNumber = SmsAuth.getCorrectPhoneNumber(phoneNumber);
     if (await this.checkAndUpdateSmsToken(phoneNumber, smsToken, signupId))
       return true;
 

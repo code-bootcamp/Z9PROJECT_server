@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Image, User])],
-  providers: [ImageResolver, ImageService, UsersService],
+  imports: [TypeOrmModule.forFeature([Image])],
+  providers: [ImageResolver, ImageService],
 })
 export class ImageModule {}

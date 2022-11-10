@@ -1,10 +1,14 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Min } from 'class-validator';
+import { ProductDetail } from 'src/apis/productDetail/entities/productDetail.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -69,6 +73,14 @@ export class Product {
   validUntil: Date;
 
   @Column({ type: 'text', nullable: true })
+  @Field(() => [String], { nullable: true })
+  images: string[];
+
+  @Column({ type: 'text', nullable: true })
+  @Field(() => [String], { nullable: true })
+  detailImages: string[];
+
+  @Column({ type: 'text', nullable: true })
   @Field(() => String, { nullable: true })
   content: string;
 
@@ -117,6 +129,12 @@ export class Product {
     description: 'mobn is mail_order_business_number',
   })
   mobn: string;
+
+  @OneToOne(() => ProductDetail, (productDetail) => productDetail.product)
+  productDetail: ProductDetail;
+
+  @ManyToOne(() => User)
+  user: User;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })
