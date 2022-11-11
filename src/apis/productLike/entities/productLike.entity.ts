@@ -1,7 +1,15 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -16,15 +24,15 @@ export class ProductLike {
   @ManyToOne(() => Product)
   product: Product;
 
-  @Column()
+  @CreateDateColumn()
   @Field(() => Date, { nullable: true, description: 'Date of creation' })
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   @Field(() => Date, { nullable: true, description: 'Date of last update' })
   updatedAt: Date;
 
-  @Column()
+  @DeleteDateColumn()
   @Field(() => Date, {
     nullable: true,
     description:
