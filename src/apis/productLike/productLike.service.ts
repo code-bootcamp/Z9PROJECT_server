@@ -68,12 +68,14 @@ export class ProductLikeService {
     const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.userId = :userId', { userId })
+      .leftJoinAndSelect('productLike.product', 'product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getMany();
     console.log('productIds', productIds);
     const products: Product[] = await Promise.all(
       productIds.map(async (productId): Promise<Product> => {
         return await this.productService.findOne({
-          productId: productId.product,
+          productId: productId.product.id,
         });
       }),
     );
