@@ -1,4 +1,14 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import {
+  Args,
+  CONTEXT,
+  Context,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
+import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
+import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
 import { CreateProductInput } from './dto/createProduct.input';
 import { UpdateProductInput } from './dto/updateProduct.input';
@@ -49,14 +59,17 @@ export class ProductResolver {
     return this.productService.countProductByUserId({ userId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product, { description: 'product signup' })
   async createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
     @Args('createProductDetailInput')
     createProductDetailInput: CreateProductDetailInput,
+    @Context() ctx: IContext,
   ) {
     await this.productService.checkBussinessNumber({ createProductInput });
     return this.productService.create({
+      userId: ctx.req.user.id,
       createProductInput,
       createProductDetailInput,
     });
