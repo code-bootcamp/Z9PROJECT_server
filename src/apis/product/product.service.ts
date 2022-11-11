@@ -170,7 +170,7 @@ export class ProductService {
     console.log(product);
     const savedProduct: Product = await this.productRepository.save({
       ...product,
-      images: images,
+      images: JSON.stringify(images),
       discountRate: calcDiscountRate,
     });
 
@@ -206,7 +206,7 @@ export class ProductService {
 
     const newProduct: Product = await this.productRepository.save({
       ...originProduct,
-      images: images,
+      images: JSON.stringify(images),
       discountRate: calcDiscountRate,
       ...product,
     });
