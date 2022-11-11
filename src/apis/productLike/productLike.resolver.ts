@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, CONTEXT, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { ProductLike } from './entities/productLike.entity';
@@ -22,7 +22,7 @@ export class ProductLikeResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => [ProductLike])
+  @Query(() => [ProductLike])
   async fetchAllLikes(@Context() ctx: IContext) {
     return this.productLikeService.findAllLikes({ userId: ctx.req.user.id });
   }
