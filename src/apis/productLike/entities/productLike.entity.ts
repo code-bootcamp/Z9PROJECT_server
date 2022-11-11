@@ -19,9 +19,11 @@ export class ProductLike {
   id: string;
 
   @ManyToOne(() => User)
+  @Field(() => User, { nullable: true })
   user: User;
 
   @ManyToOne(() => Product)
+  @Field(() => Product, { nullable: true })
   product: Product;
 
   @CreateDateColumn()
