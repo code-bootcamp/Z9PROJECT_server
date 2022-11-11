@@ -1,23 +1,15 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-
-export enum QUESTION_STATUS_TYPE_ENUM {
-  PROGRESS = 'PROGRESS',
-  SOLVED = 'SOLVED',
-}
-registerEnumType(QUESTION_STATUS_TYPE_ENUM, {
-  name: 'QUESTION_STATUS_TYPE_ENUM',
-});
 
 @Entity()
 @ObjectType()
@@ -34,19 +26,19 @@ export class Question {
   @Field(() => Date, { nullable: true })
   createdAt: Date;
 
-  @Column({
-    type: 'enum',
-    enum: QUESTION_STATUS_TYPE_ENUM,
-    nullable: true,
-  })
-  @Field(() => QUESTION_STATUS_TYPE_ENUM, {
-    nullable: false,
-    defaultValue: QUESTION_STATUS_TYPE_ENUM.PROGRESS,
-  })
-  status: QUESTION_STATUS_TYPE_ENUM;
+  @UpdateDateColumn()
+  @Field(() => Date, { nullable: true })
+  upatedAt: Date;
 
-  @JoinColumn()
-  @OneToOne(() => Product)
+  @DeleteDateColumn()
+  @Field(() => Date, { nullable: true })
+  deletedAt: Date;
+
+  @Column({ type: 'int', default: false })
+  @Field(() => Boolean)
+  isDeleted: boolean;
+
+  @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
 
