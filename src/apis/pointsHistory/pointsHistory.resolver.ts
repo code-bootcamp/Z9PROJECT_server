@@ -91,7 +91,6 @@ export class PointsHistoryResolver {
   })
   async withdrawPoint(
     @Args({ name: 'amount', type: () => Int }) amount: number,
-    @Args('impUid') impUid: string,
     @Context() context: IContext,
   ) {
     const user = context.req.user;

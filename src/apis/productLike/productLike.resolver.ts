@@ -33,6 +33,7 @@ export class ProductLikeResolver {
     return this.productLikeService.countLikes({ productId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => Boolean)
   async fetchIsLiked(
     @Args('productId') productId: string,
