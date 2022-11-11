@@ -82,7 +82,7 @@ export class ProductLikeService {
       .createQueryBuilder('productLike')
       .select('productLike.productId')
       .where('productLike.userId = :userId', { userId })
-      .andWhere('productLike.deletedAt IS NULL')
+      .andWhere('productLike.deletedAt IS NOT NULL')
       .getMany();
 
     const products: Product[] = await Promise.all(
@@ -98,7 +98,7 @@ export class ProductLikeService {
     const count = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
-      .andWhere('productLike.deletedAt IS NULL')
+      .andWhere('productLike.deletedAt IS NOT NULL')
       .getCount();
     return count;
   }
