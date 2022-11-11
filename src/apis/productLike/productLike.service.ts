@@ -1,3 +1,4 @@
+import { ProductService } from './../product/product.service';
 import {
   Injectable,
   NotFoundException,
@@ -6,12 +7,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductLike } from './entities/productLike.entity';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class ProductLikeService {
   constructor(
     @InjectRepository(ProductLike)
     private readonly productLikeRepository: Repository<ProductLike>,
+    private readonly productService: ProductService,
   ) {}
 
   async likeProduct({ productId, userId }) {
@@ -59,14 +62,18 @@ export class ProductLikeService {
   }
 
   async findAllLikes({ userId }) {
-    const likes: ProductLike[] = await this.productLikeRepository
+    const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
+      .select('productLike.productId')
       .where('productLike.userId = :userId', { userId })
       .andWhere('productLike.deletedAt IS NULL')
-      .leftJoinAndSelect('productLike.product', 'product')
-      .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getMany();
-    return likes;
+
+    const products: Promise<Product>[] = productIds.map(
+      async (productId): Promise<Product> => {
+        return await this.productService.findOne({ productId });
+      },
+    );
   }
 
   async countLikes({ productId }): Promise<number> {
