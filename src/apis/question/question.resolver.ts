@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QuestionService } from './question.service';
+import { IContext } from 'src/common/types/context';
 import { CreateQuestionInput } from './dto/createQuestion.input';
 import { Question } from './entities/question.entity';
 import { UseGuards } from '@nestjs/common';

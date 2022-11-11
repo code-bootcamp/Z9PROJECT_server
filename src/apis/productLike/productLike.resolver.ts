@@ -13,7 +13,7 @@ export class ProductLikeResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   async likeProduct(
-    @Args('productId') productId: number,
+    @Args('productId') productId: string,
     @Context() ctx: IContext,
   ) {
     return this.productLikeService.likeProduct({
