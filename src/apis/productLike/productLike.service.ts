@@ -69,11 +69,13 @@ export class ProductLikeService {
       .andWhere('productLike.deletedAt IS NULL')
       .getMany();
 
-    const products: Promise<Product>[] = productIds.map(
-      async (productId): Promise<Product> => {
+    const products: Product[] = await Promise.all(
+      productIds.map(async (productId): Promise<Product> => {
         return await this.productService.findOne({ productId });
-      },
+      }),
     );
+
+    return products;
   }
 
   async countLikes({ productId }): Promise<number> {
