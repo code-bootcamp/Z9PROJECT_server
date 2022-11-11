@@ -23,13 +23,12 @@ export class ProductLikeService {
       .where('productLike.productId = :productId', { productId })
       .andWhere('productLike.userId = :userId', { userId })
       .getOne();
-
     if (checkLike) {
       // 이미 좋아요 상태인지 확인 (deteledAt 값이 null인지 확인)
       if (checkLike.deletedAt) {
         // 좋아요 상태가 아닌 경우 좋아요로 변경
         await this.productLikeRepository
-          .update({ id: checkLike.id }, { deletedAt: null })
+          .restore({ id: checkLike.id })
           .catch(() => {
             throw new UnprocessableEntityException('좋아요 실패');
           });
