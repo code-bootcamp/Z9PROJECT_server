@@ -1,9 +1,36 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { UsersService } from './../users/users.service';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import axios from 'axios';
 import { ProductDetailService } from '../productDetail/productDetail.service';
+import { ProductDetail } from '../productDetail/entities/productDetail.entity';
+import { registerEnumType } from '@nestjs/graphql';
+
+export enum PRODUCT_SEARCH_TYPE {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINISHED = 'FINISHED',
+  ALL = 'ALL',
+}
+
+export enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT = 'INCLUDE_SOLDED_OUT',
+  EXCLUDE_SOLDED_OUT = 'EXCLUDE_SOLDED_OUT',
+}
+
+registerEnumType(PRODUCT_SEARCH_TYPE, {
+  name: 'PRODUCT_SEARCH_TYPE',
+});
+
+registerEnumType(PRODUCT_INCLUDE_OPTION, {
+  name: 'PRODUCT_INCLUDE_OPTION',
+});
 
 @Injectable()
 export class ProductService {
@@ -11,6 +38,7 @@ export class ProductService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly productDetailService: ProductDetailService,
+    private readonly usersService: UsersService,
   ) {}
 
   async findOne({ productId }) {
@@ -19,6 +47,7 @@ export class ProductService {
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getOne();
+    return result;
   }
 
   async countProductByUserId({ userId }) {
@@ -26,6 +55,98 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.user = :userId', { userId })
       .getCount();
+  }
+
+  async findProductByStatus({
+    type,
+    option,
+  }: {
+    type: PRODUCT_SEARCH_TYPE;
+    option: PRODUCT_INCLUDE_OPTION;
+  }) {
+    if (type === PRODUCT_SEARCH_TYPE.ALL) {
+      if (option === PRODUCT_INCLUDE_OPTION.INCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else if (option === PRODUCT_INCLUDE_OPTION.EXCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.isSoldout = :isSoldout', { isSoldout: false })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else {
+        throw new UnprocessableEntityException('Invalid option');
+      }
+    } else if (type === PRODUCT_SEARCH_TYPE.PENDING) {
+      if (option === PRODUCT_INCLUDE_OPTION.INCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validFrom > :now', { now: new Date() })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else if (option === PRODUCT_INCLUDE_OPTION.EXCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validFrom > :now', { now: new Date() })
+          .andWhere('product.isSoldout = :isSoldout', { isSoldout: false })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else {
+        throw new UnprocessableEntityException('Invalid option');
+      }
+    } else if (type === PRODUCT_SEARCH_TYPE.IN_PROGRESS) {
+      if (option === PRODUCT_INCLUDE_OPTION.INCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validFrom <= :now', { now: new Date() })
+          .andWhere('product.validUntil >= :now', { now: new Date() })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else if (option === PRODUCT_INCLUDE_OPTION.EXCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validFrom <= :now', { now: new Date() })
+          .andWhere('product.validUntil >= :now', { now: new Date() })
+          .andWhere('product.isSoldout = :isSoldout', { isSoldout: false })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else {
+        throw new UnprocessableEntityException('Invalid option');
+      }
+    } else if (type === PRODUCT_SEARCH_TYPE.FINISHED) {
+      if (option === PRODUCT_INCLUDE_OPTION.INCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validUntil < :now', { now: new Date() })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else if (option === PRODUCT_INCLUDE_OPTION.EXCLUDE_SOLDED_OUT) {
+        return await this.productRepository
+          .createQueryBuilder('product')
+          .where('product.validUntil < :now', { now: new Date() })
+          .andWhere('product.isSoldout = :isSoldout', { isSoldout: false })
+          .leftJoinAndSelect('product.productDetail', 'productDetail')
+          .getMany();
+      } else {
+        throw new UnprocessableEntityException('Invalid option');
+      }
+    } else {
+      throw new UnprocessableEntityException('Invalid type');
+    }
+  }
+
+  async findProductByCreator({ name }) {
+    const user = await this.usersService.findOneByNickName(name);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user = :userId', { userId: user.id })
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
   }
 
   async findAll() {
@@ -45,17 +166,18 @@ export class ProductService {
 
     const { discountRate, ...product } = createProductInput;
 
-    const result: Product = await this.productRepository.save({
+    const savedProduct: Product = await this.productRepository.save({
       ...product,
       discoutRate: calcDiscountRate,
     });
 
-    await this.productDetailService.createDetail({
-      productId: result.id,
-      ...createProductDetailInput,
-    });
+    const savedDetail: ProductDetail =
+      await this.productDetailService.createDetail({
+        productId: savedProduct.id,
+        ...createProductDetailInput,
+      });
 
-    return result;
+    return { ...savedProduct, productDetail: savedDetail };
   }
 
   async update({ productId, updateProductInput, updateProductDetailInput }) {
