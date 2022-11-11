@@ -77,7 +77,7 @@ export class Product {
   @Field(() => Date, { nullable: false })
   validUntil: Date;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'simple-array', nullable: true })
   @Field(() => [String], { nullable: true })
   images: string[];
 
