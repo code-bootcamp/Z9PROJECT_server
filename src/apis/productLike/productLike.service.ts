@@ -68,4 +68,13 @@ export class ProductLikeService {
       .getMany();
     return likes;
   }
+
+  async countLikes({ productId }): Promise<number> {
+    const count = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.deletedAt IS NULL')
+      .getCount();
+    return count;
+  }
 }
