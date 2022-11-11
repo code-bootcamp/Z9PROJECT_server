@@ -70,13 +70,13 @@ export class ProductLikeService {
       .select('productLike.productId')
       .where('productLike.userId = :userId', { userId })
       .getMany();
-
+    console.log('productIds', productIds);
     const products: Product[] = await Promise.all(
       productIds.map(async (productId): Promise<Product> => {
-        return await this.productService.findOne({ productId });
+        return await this.productService.findOne({ productId: productId.id });
       }),
     );
-
+    console.log('products', products);
     return products;
   }
 
