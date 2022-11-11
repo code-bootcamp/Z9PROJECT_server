@@ -7,7 +7,6 @@ import 'dotenv/config';
 import { ProductModule } from './apis/product/product.module';
 import { ImageModule } from './apis/images/image.module';
 import { ProductLikeModule } from './apis/productLike/productLike.module';
-import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import * as redisStore from 'cache-manager-redis-store';

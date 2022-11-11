@@ -19,6 +19,7 @@ export class ProductService {
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getOne();
+    return result;
   }
 
   async countProductByUserId({ userId }) {
@@ -38,9 +39,14 @@ export class ProductService {
         createProductInput.originPrice) *
         100,
     );
+    const { userId, productId, ...product } = createProductInput;
+
     createProductInput.discountRate = discountRate;
     const result: Product = await this.productRepository.save({
-      ...createProductInput,
+      ...product,
+      productId,
+      discountRate,
+      user: { id: userId },
     });
     await this.productDetailService.createDetail({
       productId: result.id,
@@ -91,11 +97,11 @@ export class ProductService {
   }
 
   async checkBussinessNumber({ createProductInput }) {
-    const { businessRegistraionNumber } = createProductInput;
+    const { brn } = createProductInput;
     const url = `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.SERVICEKEY}`;
     const isValidation = await axios
       .post(url, {
-        b_no: [businessRegistraionNumber],
+        b_no: [brn],
       })
       .catch((e) => console.error(e));
     if (

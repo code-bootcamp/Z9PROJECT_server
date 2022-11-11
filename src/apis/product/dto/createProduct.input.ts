@@ -71,4 +71,19 @@ export class CreateProductInput {
     description: 'mobn is mail_order_business_number',
   })
   mobn: string;
+
+  @Field(() => Number, {
+    nullable: false,
+    description: 'skin is seleted by user',
+  })
+  skin: number;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'color is seleted by user',
+  })
+  color: string;
+
+  @Field(() => String)
+  userId: string;
 }
