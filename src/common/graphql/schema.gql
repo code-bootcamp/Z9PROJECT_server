@@ -2,58 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Product {
-  id: String!
-  name: String!
-  originPrice: Float!
-  discountRate: Float
-  discountPrice: Float
-  isSoldout: Boolean!
-
-  """delivery method is one method."""
-  delivery: String!
-  endType: PRODUCT_END_TYPE!
-  validFrom: DateTime!
-  validUntil: DateTime!
-  images: [String!]
-  detailImages: [String!]
-  content: String
-  option1: String
-  option2: String
-  option3: String
-  option4: String
-  option5: String
-  youtubeLink: String
-  shopName: String!
-  ceo: String!
-
-  """brn is business_registraion_number"""
-  brn: String!
-
-  """mobn is mail_order_business_number"""
-  mobn: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-enum PRODUCT_END_TYPE {
-  TIME_ONLY
-  TOTAL_QTY
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Image {
-  id: String!
-  imageUrl: String!
-  createdAt: DateTime!
-  deletedAt: DateTime
-}
-
 type User {
   id: String!
   email: String
@@ -94,17 +42,118 @@ enum SNS_TYPE_ENUM {
   INSTAGRAM
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: String!
+  name: String!
+  originPrice: Float!
+  quantity: Float!
+  discountRate: Float
+  discountPrice: Float
+  isSoldout: Boolean!
+
+  """delivery method is one method."""
+  delivery: String!
+  endType: PRODUCT_END_TYPE!
+  validFrom: DateTime!
+  validUntil: DateTime!
+  images: [String!]
+  content: String
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  youtubeLink: String
+  shopName: String!
+  ceo: String!
+
+  """brn is business_registraion_number"""
+  brn: String!
+
+  """mobn is mail_order_business_number"""
+  mobn: String!
+  productDetail: ProductDetail
+  user: User
+
+  """skin is seleted by user"""
+  skin: Float!
+
+  """color is seleted by user"""
+  color: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+enum PRODUCT_END_TYPE {
+  TIME_ONLY
+  TOTAL_QTY
+}
+
+type ProductDetail {
+  id: String!
+  type: String!
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  option6: String
+  option7: String
+  option8: String
+  option9: String
+  option10: String
+  option11: String
+  option12: String
+  option13: String
+  option14: String
+}
+
+type Image {
+  id: String!
+  imageUrl: String!
+  createdAt: DateTime!
+  deletedAt: DateTime
+}
+
 type SmsPostReturn {
   smsAuthTime: Int!
   message: String!
+}
+
+type Question {
+  id: String!
+  question: String
+  createdAt: DateTime
+  upatedAt: DateTime
+  deletedAt: DateTime
+  isDeleted: Boolean!
+  product: Product!
+  user: User!
 }
 
 type Query {
   """fetching single product by productId"""
   fetchProduct(productId: String!): Product!
 
-  """fetching mutiple product"""
+  """fetching multiple product"""
   fetchProducts: [Product!]!
+
+  """fetching multiple product by creator nickname"""
+  fetchProductsByCreator(nickname: String!): [Product!]!
+
+  """fetching multiple product by status"""
+  fetchProductsByStatus(type: PRODUCT_SEARCH_TYPE!, option: PRODUCT_INCLUDE_OPTION!): [Product!]!
+
+  """count product by userId"""
+  countProductByUserId(userId: String!): Float!
+  fetchAllLikes: [Product!]!
+  fetchLikeCount(productId: String!): Int!
 
   """fetching single creator by userId"""
   fetchCreator(userId: String!): User!
@@ -117,14 +166,35 @@ type Query {
 
   """validate password if it is the same password currently using """
   validatePassword(prevPassword: String!): Boolean!
+
+  """fetching Question"""
+  fetchQuestion(questionId: String!): Question!
+
+  """ fetching Questions"""
+  fetchQuestions: [Question!]!
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
 }
 
 type Mutation {
   """product signup"""
-  createProduct(createProductInput: CreateProductInput!): Product!
+  createProduct(createProductInput: CreateProductInput!, createProductDetailInput: CreateProductDetailInput!): Product!
 
   """update product detail"""
-  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!, updateProductDetailInput: UpdateProductInput!): Product!
+
+  """delete product"""
+  deleteProduct(productId: String!): Boolean!
   likeProduct(productId: Float!): Boolean!
   uploadImage(image: Upload!): Image!
   uploadImages(images: [Upload!]!): [Image!]!
@@ -151,11 +221,17 @@ type Mutation {
 
   """delete user"""
   deleteUser(userId: String!): Boolean!
+
+  """question signup"""
+  createQuestion(createQuestionInput: CreateQuestionInput!): Question!
+  updateQuestion(questionId: String!, updateQuestionInput: UpdateQuestionInput!): Question!
+  deleteQuestion(questionId: String!): Boolean!
 }
 
 input CreateProductInput {
   name: String!
   originPrice: Float!
+  quantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -168,7 +244,6 @@ input CreateProductInput {
   validFrom: DateTime!
   validUntil: DateTime!
   images: [String!]
-  detailImages: [String!]
   content: String
   shopName: String!
   ceo: String!
@@ -178,11 +253,37 @@ input CreateProductInput {
 
   """mobn is mail_order_business_number"""
   mobn: String!
+
+  """skin is seleted by user"""
+  skin: Float!
+
+  """color is seleted by user"""
+  color: String
+  userId: String!
+}
+
+input CreateProductDetailInput {
+  type: String!
+  option1: String = null
+  option2: String = null
+  option3: String = null
+  option4: String = null
+  option5: String = null
+  option6: String = null
+  option7: String = null
+  option8: String = null
+  option9: String = null
+  option10: String = null
+  option11: String = null
+  option12: String = null
+  option13: String = null
+  option14: String = null
 }
 
 input UpdateProductInput {
   name: String
   originPrice: Float
+  quantity: Float
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -195,7 +296,6 @@ input UpdateProductInput {
   validFrom: DateTime
   validUntil: DateTime
   images: [String!]
-  detailImages: [String!]
   content: String
   shopName: String
   ceo: String
@@ -205,6 +305,13 @@ input UpdateProductInput {
 
   """mobn is mail_order_business_number"""
   mobn: String
+
+  """skin is seleted by user"""
+  skin: Float
+
+  """color is seleted by user"""
+  color: String
+  userId: String
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -219,6 +326,9 @@ input CreateCommonUserInput {
   address: String!
   addressDetail: String!
   profileImg: String
+  bank: String
+  account: String
+  accountName: String
   point: Int = 0
 }
 
@@ -265,4 +375,24 @@ input UpdateUserInput {
   account: String
   accountName: String
   point: Int = 0
+}
+
+input CreateQuestionInput {
+  """"""
+  question: String
+
+  """When question is removed by admin, isDeleted convert to ture"""
+  isDeleted: Boolean = false
+  userId: String!
+  productId: String!
+}
+
+input UpdateQuestionInput {
+  """"""
+  question: String
+
+  """When question is removed by admin, isDeleted convert to ture"""
+  isDeleted: Boolean = false
+  userId: String
+  productId: String
 }

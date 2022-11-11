@@ -7,12 +7,12 @@ import 'dotenv/config';
 import { ProductModule } from './apis/product/product.module';
 import { ImageModule } from './apis/images/image.module';
 import { ProductLikeModule } from './apis/productLike/productLike.module';
-import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { HttpException } from '@nestjs/common/exceptions';
+import { QuestionModule } from './apis/question/question.module';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
@@ -23,6 +23,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
     ImageModule,
     AuthModule,
     UsersModule,
+    QuestionModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
