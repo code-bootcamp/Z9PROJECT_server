@@ -16,13 +16,13 @@ export class QuestionService {
     private readonly userSerivce: UsersService,
   ) {}
 
-  async create({ questionInput, productId, email }) {
+  async create({ createQuestionInput, productId, email }) {
     const product = await this.productSerivce.findOne({ productId });
 
     const user = await this.userSerivce.findOneByEmail({ email });
 
     return this.questionRepository.save({
-      ...questionInput,
+      ...createQuestionInput,
       product,
       user,
     });
