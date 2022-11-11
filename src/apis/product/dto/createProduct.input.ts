@@ -51,8 +51,8 @@ export class CreateProductInput {
   @Field(() => [String], { nullable: true })
   images: string[];
 
-  @Field(() => [String], { nullable: true })
-  detailImages: string[];
+  // @Field(() => [String], { nullable: true })
+  // detailImages: string[];
 
   @Field(() => String, { nullable: true })
   content: string;
@@ -80,6 +80,7 @@ export class CreateProductInput {
     description: 'skin is seleted by user',
   })
   skin: number;
+
   @Field(() => String, {
     nullable: true,
     description: 'color is seleted by user',
