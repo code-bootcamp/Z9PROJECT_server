@@ -99,6 +99,17 @@ type SmsPostReturn {
   message: String!
 }
 
+type Question {
+  id: String!
+  question: String
+  createdAt: DateTime
+  upatedAt: DateTime
+  deletedAt: DateTime
+  isDeleted: Boolean!
+  product: Product!
+  user: User!
+}
+
 type Query {
   """fetching single product by productId"""
   fetchProduct(productId: String!): Product!
@@ -120,6 +131,12 @@ type Query {
 
   """validate password if it is the same password currently using """
   validatePassword(prevPassword: String!): Boolean!
+
+  """fetching Question"""
+  fetchQuestion(questionId: String!): Question!
+
+  """ fetching Questions"""
+  fetchQuestions: [Question!]!
 }
 
 type Mutation {
@@ -157,6 +174,11 @@ type Mutation {
 
   """delete user"""
   deleteUser(userId: String!): Boolean!
+
+  """question signup"""
+  createQuestion(createQuestionInput: CreateQuestionInput!): Question!
+  updateQuestion(questionId: String!, updateQuestionInput: UpdateQuestionInput!): Question!
+  deleteQuestion(questionId: String!): Boolean!
 }
 
 input CreateProductInput {
@@ -303,4 +325,24 @@ input UpdateUserInput {
   account: String
   accountName: String
   point: Int = 0
+}
+
+input CreateQuestionInput {
+  """"""
+  question: String
+
+  """When question is removed by admin, isDeleted convert to ture"""
+  isDeleted: Boolean = false
+  userId: String!
+  productId: String!
+}
+
+input UpdateQuestionInput {
+  """"""
+  question: String
+
+  """When question is removed by admin, isDeleted convert to ture"""
+  isDeleted: Boolean = false
+  userId: String
+  productId: String
 }
