@@ -33,6 +33,17 @@ export class ProductLikeResolver {
     return this.productLikeService.countLikes({ productId });
   }
 
+  @Query(() => Boolean)
+  async fetchIsLiked(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
+    return this.productLikeService.isLiked({
+      productId,
+      userId: ctx.req.user.id,
+    });
+  }
+
   // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)

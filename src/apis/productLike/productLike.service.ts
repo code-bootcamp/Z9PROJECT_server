@@ -60,6 +60,22 @@ export class ProductLikeService {
     }
   }
 
+  async isLiked({ productId, userId }): Promise<boolean> {
+    const checkLike = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.userId = :userId', { userId })
+      .getOne();
+    if (checkLike) {
+      if (checkLike.deletedAt) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async findAllLikes({ userId }) {
     const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
