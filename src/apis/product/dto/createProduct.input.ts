@@ -11,6 +11,9 @@ export class CreateProductInput {
   @Field(() => Number, { nullable: false })
   originPrice: number;
 
+  @Field(() => Number, { nullable: false })
+  quantity: number;
+
   @Min(0)
   @Field(() => Number, { nullable: true })
   discountPrice: number;
@@ -48,8 +51,8 @@ export class CreateProductInput {
   @Field(() => [String], { nullable: true })
   images: string[];
 
-  @Field(() => [String], { nullable: true })
-  detailImages: string[];
+  // @Field(() => [String], { nullable: true })
+  // detailImages: string[];
 
   @Field(() => String, { nullable: true })
   content: string;

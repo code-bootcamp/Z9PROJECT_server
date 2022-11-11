@@ -1,10 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { QuestionService } from './question.service';
-import { CreateQuestionInput } from './dto/createQuestion.input';
+import { QuestionInput } from './dto/question.input';
 import { Question } from './entities/question.entity';
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
-import { UpdateQuestionInput } from './dto/updateQuestion.input';
+import { IContext } from 'src/common/types/context';
 
 @Resolver()
 export class QuestionResolver {
@@ -12,46 +10,17 @@ export class QuestionResolver {
     private readonly questionService: QuestionService, //
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question, { description: 'question signup' })
-  async createQuestion(
-    @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //
+  createQuestion(
+    @Args('questionInput') questionInput: QuestionInput, //
+    @Args('productId') productId: string,
+    @Context() context: IContext,
   ) {
-    const result = await this.questionService.create({
-      createQuestionInput,
+    const user = context.req.user;
+    return this.questionService.create({
+      questionInput,
+      email: user.email,
+      productId,
     });
-    return result;
-  }
-
-  @Query(() => Question, {
-    description: 'fetching Question',
-    name: 'fetchQuestion',
-  })
-  async fetchQuestion(@Args('questionId') questionId: string) {
-    const result = await this.questionService.findOne({ questionId });
-    return result;
-  }
-
-  @Query(() => [Question], {
-    description: ' fetching Questions',
-    name: 'fetchQuestions',
-  })
-  async fetchQuestions() {
-    return await this.questionService.findAll();
-  }
-
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Question)
-  updateQuestion(
-    @Args('questionId') questionId: string,
-    @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
-  ) {
-    return this.questionService.update({ questionId, updateQuestionInput });
-  }
-
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean)
-  deleteQuestion(@Args('questionId') questionId: string) {
-    return this.questionService.remove({ questionId });
   }
 }
