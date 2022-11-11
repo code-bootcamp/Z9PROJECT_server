@@ -57,4 +57,15 @@ export class ProductLikeService {
       return true;
     }
   }
+
+  async findAllLikes({ userId }) {
+    const likes: ProductLike[] = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.userId = :userId', { userId })
+      .andWhere('productLike.deletedAt IS NULL')
+      .leftJoinAndSelect('productLike.product', 'product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
+    return likes;
+  }
 }
