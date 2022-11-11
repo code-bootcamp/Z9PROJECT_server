@@ -36,8 +36,10 @@ export class ProductResolver {
     description: 'fetching multiple product by status',
   })
   fetchProductsByStatus(
-    @Args('type') type: PRODUCT_SEARCH_TYPE,
-    @Args('option') option: PRODUCT_INCLUDE_OPTION,
+    @Args({ name: 'type', type: () => PRODUCT_SEARCH_TYPE })
+    type: PRODUCT_SEARCH_TYPE,
+    @Args({ name: 'option', type: () => PRODUCT_INCLUDE_OPTION })
+    option: PRODUCT_INCLUDE_OPTION,
   ) {
     return this.productService.findProductByStatus({ type, option });
   }
