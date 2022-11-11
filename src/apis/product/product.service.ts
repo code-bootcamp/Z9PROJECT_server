@@ -164,11 +164,14 @@ export class ProductService {
           )
         : 0;
 
-    const { discountRate, ...product } = createProductInput;
-
+    const { discountRate, images, ...product } = createProductInput;
+    console.log(calcDiscountRate);
+    console.log(images);
+    console.log(product);
     const savedProduct: Product = await this.productRepository.save({
       ...product,
-      discoutRate: calcDiscountRate,
+      images: images,
+      discountRate: calcDiscountRate,
     });
 
     const savedDetail: ProductDetail =
@@ -181,7 +184,7 @@ export class ProductService {
   }
 
   async update({ productId, updateProductInput, updateProductDetailInput }) {
-    const updateProduct: Product = await this.productRepository
+    const originProduct: Product = await this.productRepository
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
       .getOne();
@@ -196,21 +199,24 @@ export class ProductService {
           )
         : 0;
 
-    const { discountRate, ...rest } = updateProductInput;
+    if (updateProductInput.images == null) {
+      updateProductInput.images = originProduct.images;
+    }
+    const { discountRate, images, ...product } = updateProductInput;
 
-    const newProduct: Product = {
-      ...updateProduct,
-      id: productId,
+    const newProduct: Product = await this.productRepository.save({
+      ...originProduct,
+      images: images,
       discountRate: calcDiscountRate,
-      ...rest,
-    };
+      ...product,
+    });
 
-    await this.productDetailService.updateDetail({
+    const newProductDetail = await this.productDetailService.updateDetail({
       productId,
       ...updateProductDetailInput,
     });
 
-    return await this.productRepository.save(newProduct);
+    return { ...newProduct, productDetail: newProductDetail };
   }
 
   async checkSoldout({ productId }): Promise<Product> {
