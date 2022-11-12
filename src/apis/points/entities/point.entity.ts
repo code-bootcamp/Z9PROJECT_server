@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Order } from 'src/apis/orders/entities/order.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
@@ -25,6 +25,10 @@ export enum POINT_STATUS_ENUM {
   // 판매 취소 시 -
   CANCELED_SOLD = 'CANCELED_SOLD',
 }
+
+registerEnumType(POINT_STATUS_ENUM, {
+  name: 'POINT_STATUS_ENUM',
+});
 
 @Entity()
 @ObjectType()
