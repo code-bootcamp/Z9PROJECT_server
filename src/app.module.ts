@@ -13,6 +13,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { HttpException } from '@nestjs/common/exceptions';
 import { QuestionModule } from './apis/question/question.module';
+import { AnswerModule } from './apis/answer/answer.module';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
@@ -24,6 +25,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
     AuthModule,
     UsersModule,
     QuestionModule,
+    AnswerModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
