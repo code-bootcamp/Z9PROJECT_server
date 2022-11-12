@@ -49,10 +49,10 @@ export class ImageService {
       fileName: data.filename,
     };
     const image: Image = await this.createImage({ image: databaseInput });
-    
+
     //LOGGING
     console.log('========= image =========', image);
-    
+
     return image;
   }
 

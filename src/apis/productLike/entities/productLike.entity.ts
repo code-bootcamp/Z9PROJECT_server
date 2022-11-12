@@ -2,7 +2,6 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
-  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,

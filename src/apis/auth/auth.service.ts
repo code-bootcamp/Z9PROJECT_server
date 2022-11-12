@@ -60,7 +60,7 @@ export class AuthService {
         cookie = `snsLoginInfo=${user}; path=/;`;
       }
       res.setHeader('Set-Cookie', cookie);
-      
+
       //LOGGING
       console.log('setRefreshToken', refreshToken);
     }

@@ -1,12 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import {
-  Args,
-  CONTEXT,
-  Context,
-  Mutation,
-  Query,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';

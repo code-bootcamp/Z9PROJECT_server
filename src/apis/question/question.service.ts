@@ -25,7 +25,7 @@ export class QuestionService {
     const { userId, productId, ...question } = createQuestionInput;
 
     const user: User = await this.userSerivce.findOneByUserId(userId);
-    
+
     const product: Product = await this.productSerivce.findOne({ productId });
 
     const result: Question = await this.questionRepository.save({

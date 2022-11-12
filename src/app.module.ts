@@ -11,7 +11,6 @@ import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
-import { HttpException } from '@nestjs/common/exceptions';
 import { QuestionModule } from './apis/question/question.module';
 import { AnswerModule } from './apis/answer/answer.module';
 import { PaymentsModule } from './apis/payments/payments.module';

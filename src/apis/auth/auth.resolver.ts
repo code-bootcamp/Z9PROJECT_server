@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { Args, Context, Int, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';

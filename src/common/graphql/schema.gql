@@ -18,13 +18,21 @@ type User {
   """Need Img URL to be saved"""
   creatorAuthImg: String
   isAuthedCreator: Boolean
+
+  """YOUTUBE ChannelName or INSTA Name"""
   snsName: String
+
+  """YOUTUBE or INSTAGRAM"""
   snsChannel: SNS_TYPE_ENUM
   followerNumber: Int
   mainContents: String
   introduce: String
   bank: String
+
+  """Account Number"""
   account: String
+
+  """Account Owner Name (only Creator)"""
   accountName: String
   point: Int
   createdAt: DateTime
@@ -62,6 +70,7 @@ type Product {
   validFrom: DateTime!
   validUntil: DateTime!
   images: [String!]
+  detailImages: [String!]
   content: String
   option1: String
   option2: String
@@ -130,14 +139,11 @@ type Question {
   id: String!
   question: String
   createdAt: DateTime
-  status: QUESTION_STATUS_TYPE_ENUM!
+  upatedAt: DateTime
+  deletedAt: DateTime
+  isDeleted: Boolean!
   product: Product!
   user: User!
-}
-
-enum QUESTION_STATUS_TYPE_ENUM {
-  PROGRESS
-  SOLVED
 }
 
 type Answer {
@@ -147,6 +153,60 @@ type Answer {
   updatedAt: DateTime
   deletedAt: DateTime
   question: Question
+}
+
+type Order {
+  id: String!
+  price: Int!
+  quantity: Int!
+  status: ORDER_STATUS!
+  createdAt: DateTime
+  updatedAt: DateTime
+  user: User
+  product: Product
+}
+
+enum ORDER_STATUS {
+  PENDING
+  PAID
+  PENDING_REFUND
+  CANCELED
+}
+
+type Point {
+  id: String!
+  point: Float!
+  status: POINT_STATUS_ENUM!
+  createdAt: DateTime!
+  user: User
+  order: Order
+}
+
+enum POINT_STATUS_ENUM {
+  CHARGED
+  RESTORED
+  USED
+  CANCELED
+  REFUNDED
+  SOLD
+  CANCELED_SOLD
+}
+
+type Payment {
+  id: String!
+  impUid: String!
+  amount: Float!
+  status: PAYMENT_STATUS_ENUM!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  user: User
+  point: Point
+}
+
+enum PAYMENT_STATUS_ENUM {
+  CANCELED
+  CANCEL_REQUESTED
+  COMPLETE
 }
 
 type Query {
@@ -166,9 +226,7 @@ type Query {
   countProductByUserId(userId: String!): Float!
   fetchAllLikes: [Product!]!
   fetchLikeCount(productId: String!): Int!
-
-  """fetching single creator by userId"""
-  fetchCreator(userId: String!): User!
+  fetchIsLiked(productId: String!): Boolean!
 
   """fetching multiple creators"""
   fetchCreators(usersId: [String!]!): [User!]!
@@ -184,32 +242,13 @@ type Query {
 
   """ fetching Questions"""
   fetchQuestions: [Question!]!
-  fetchMyQuestions(userId: String!): [Question!]! @deprecated(reason: "fetching Questions by creators and commonUsers using userId ")
+
+  """fetching Questions by creators and commonUsers using userId"""
+  fetchMyQuestions(userId: String!): [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
-}
-
-enum PRODUCT_SEARCH_TYPE {
-  PENDING
-  IN_PROGRESS
-  FINISHED
-  ALL
-}
-
-enum PRODUCT_INCLUDE_OPTION {
-  INCLUDE_SOLDED_OUT
-  EXCLUDE_SOLDED_OUT
-}
-
-enum PRODUCT_SEARCH_TYPE {
-  PENDING
-  IN_PROGRESS
-  FINISHED
-  ALL
-}
-
-enum PRODUCT_INCLUDE_OPTION {
-  INCLUDE_SOLDED_OUT
-  EXCLUDE_SOLDED_OUT
+  fetchOrdersByUserId: [Order!]!
+  fetchOrder(orderId: String!): Order!
+  fetchOrdersByProductId(productId: String!): [Order!]!
 }
 
 enum PRODUCT_SEARCH_TYPE {
@@ -233,7 +272,7 @@ type Mutation {
 
   """delete product"""
   deleteProduct(productId: String!): Boolean!
-  likeProduct(productId: Float!): Boolean!
+  likeProduct(productId: String!): Boolean!
   uploadImage(image: Upload!): Image!
   uploadImages(images: [Upload!]!): [Image!]!
   login(email: String!, password: String!): String!
@@ -255,10 +294,10 @@ type Mutation {
   updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
 
   """update user password"""
-  updatePassword(userId: String!, password: String!): User!
+  updatePassword(password: String!): User!
 
   """delete user"""
-  deleteUser(userId: String!): Boolean!
+  deleteUser: Boolean!
 
   """question signup"""
   createQuestion(createQuestionInput: CreateQuestionInput!): Question!
@@ -269,6 +308,14 @@ type Mutation {
   createAnswer(questionId: String!, createAnswerInput: CreateAnswerInput!): Answer!
   updateAnswer(answerId: String!, updateAnswerInput: UpdateAnswerInput!): Answer!
   deleteAnswer(answerId: String!): Boolean!
+  createPayment(impUid: String!, amount: Float!): Payment!
+  refundPayment(impUid: String!, amount: Float!): Payment!
+  requestPointRefund(amount: Float!): Boolean!
+  fetchPointHistory: [Point!]!
+  fetchMyPoint: Float!
+  createOrder(productId: String!, price: Float!, quantity: Float!): Order!
+  cancelOrderRequest(orderId: String!): Order!
+  cancelOrderAccept(orderId: String!): Order!
 }
 
 input CreateProductInput {

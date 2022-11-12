@@ -45,22 +45,21 @@ export class QuestionResolver {
   async fetchQuestions() {
     //LOGING
     console.log('API Fetch Questions Requested');
-    
+
     return await this.questionService.findAll();
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Question], {
-    description:
-      'fetching Questions by creators and commonUsers using userId',
+    description: 'fetching Questions by creators and commonUsers using userId',
   })
   async fetchMyQuestions(
     @Args('userId') userId: string, //
   ) {
     //LOGGING
     console.log('API Fetch My Questions Requested');
-    
+
     return await this.questionService.findByMyQuestion({ userId });
   }
 

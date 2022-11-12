@@ -6,11 +6,7 @@ import { UpdateUserInput } from './dto/updateUser.input';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
-import {
-  UnauthorizedException,
-  UnprocessableEntityException,
-  UseGuards,
-} from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { SmsAuth } from '../auth/sms.service';
 
 @Resolver()

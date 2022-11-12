@@ -1,11 +1,9 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Product } from 'src/apis/product/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
