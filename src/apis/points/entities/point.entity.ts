@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Order } from 'src/apis/orders/entities/order.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
@@ -9,10 +10,20 @@ import {
 } from 'typeorm';
 
 export enum POINT_STATUS_ENUM {
-  CREDIT = 'CREDIT',
+  // 충전 시 +
+  CHARGED = 'CHARGED',
+  // 결제 취소 시 포인트 복구 +
+  RESTORED = 'RESTORED',
+  // 결제 시 -
   USED = 'USED',
+  // 환불 시 +
   CANCELED = 'CANCELED',
-  REFUND = 'REFUND',
+  // 환급 시 -
+  REFUNDED = 'REFUNDED',
+  // 판매 시 +
+  SOLD = 'SOLD',
+  // 판매 취소 시 -
+  CANCELED_SOLD = 'CANCELED_SOLD',
 }
 
 @Entity()
@@ -29,7 +40,7 @@ export class Point {
   @Column({
     type: 'enum',
     enum: POINT_STATUS_ENUM,
-    default: POINT_STATUS_ENUM.CREDIT,
+    default: POINT_STATUS_ENUM.CHARGED,
   })
   @Field(() => POINT_STATUS_ENUM)
   status: POINT_STATUS_ENUM;
@@ -41,4 +52,8 @@ export class Point {
   @ManyToOne(() => User)
   @Field(() => User, { nullable: true })
   user: User;
+
+  @ManyToOne(() => Order, { nullable: true })
+  @Field(() => Order, { nullable: true })
+  order: Order;
 }
