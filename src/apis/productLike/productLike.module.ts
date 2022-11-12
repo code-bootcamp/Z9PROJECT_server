@@ -10,7 +10,6 @@ import { ProductDetailService } from '../productDetail/productDetail.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 
-// TODO: Fix Imports
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProductLike, Product, ProductDetail, User]),
