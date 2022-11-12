@@ -130,11 +130,23 @@ type Question {
   id: String!
   question: String
   createdAt: DateTime
-  upatedAt: DateTime
-  deletedAt: DateTime
-  isDeleted: Boolean!
+  status: QUESTION_STATUS_TYPE_ENUM!
   product: Product!
   user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
+}
+
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
 }
 
 type Query {
@@ -172,6 +184,20 @@ type Query {
 
   """ fetching Questions"""
   fetchQuestions: [Question!]!
+  fetchMyQuestions(userId: String!): [Question!]! @deprecated(reason: "fetching Questions by creators and commonUsers using userId ")
+  fetchLoginUserAnswer(questionId: String!): [Answer!]!
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
 }
 
 enum PRODUCT_SEARCH_TYPE {
@@ -226,6 +252,11 @@ type Mutation {
   createQuestion(createQuestionInput: CreateQuestionInput!): Question!
   updateQuestion(questionId: String!, updateQuestionInput: UpdateQuestionInput!): Question!
   deleteQuestion(questionId: String!): Boolean!
+
+  """answer signup"""
+  createAnswer(questionId: String!, createAnswerInput: CreateAnswerInput!): Answer!
+  updateAnswer(answerId: String!, updateAnswerInput: UpdateAnswerInput!): Answer!
+  deleteAnswer(answerId: String!): Boolean!
 }
 
 input CreateProductInput {
@@ -395,4 +426,20 @@ input UpdateQuestionInput {
   isDeleted: Boolean = false
   userId: String
   productId: String
+}
+
+input CreateAnswerInput {
+  """"""
+  answer: String
+
+  """When answer is removed by admin, isDeleted convert to true"""
+  isDeleted: Boolean = false
+}
+
+input UpdateAnswerInput {
+  """"""
+  answer: String
+
+  """When answer is removed by admin, isDeleted convert to true"""
+  isDeleted: Boolean = false
 }

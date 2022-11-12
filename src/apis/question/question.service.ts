@@ -46,6 +46,13 @@ export class QuestionService {
     });
   }
 
+  async findByMyQuestion({ userId }) {
+    return this.questionRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'product'],
+    });
+  }
+
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     const newQuestsion: Question = {
       ...updateQuestionInput,
