@@ -45,14 +45,12 @@ export class ProductLikeResolver {
     });
   }
 
-  // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)
   // async likeProductComment() {
   //   return true;
   // }
 
-  // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)
   // async unlikeProductComment() {
