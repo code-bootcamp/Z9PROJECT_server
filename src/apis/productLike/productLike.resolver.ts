@@ -1,31 +1,71 @@
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
+import { IContext } from 'src/common/types/context';
+import { Product } from '../product/entities/product.entity';
+import { ProductLike } from './entities/productLike.entity';
 import { ProductLikeService } from './productLike.service';
 
 @Resolver()
 export class ProductLikeResolver {
   constructor(private readonly productLikeService: ProductLikeService) {}
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  async likeProduct() {
-    return true;
+  async likeProduct(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
+    //LOGGING
+    console.log('API Like Product Requested');
+
+    return this.productLikeService.likeProduct({
+      productId,
+      userId: ctx.req.user.id,
+    });
   }
 
-  @Mutation(() => Boolean)
-  async unlikeProduct() {
-    return true;
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Product])
+  async fetchAllLikes(@Context() ctx: IContext) {
+    //LOGGING
+    console.log('API Fetch All Likes Requested');
+
+    return this.productLikeService.findAllLikes({ userId: ctx.req.user.id });
   }
 
-  // TODO: For Future Use
+  @Query(() => Int)
+  async fetchLikeCount(@Args('productId') productId: string) {
+    //LOGGING
+    console.log('API Fetch Like Count Requested');
+
+    return this.productLikeService.countLikes({ productId });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Boolean)
+  async fetchIsLiked(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
+    //LOGGING
+    console.log('API Fetch Is Liked Requested');
+
+    return this.productLikeService.isLiked({
+      productId,
+      userId: ctx.req.user.id,
+    });
+  }
+
   // Pending Development
-  @Mutation(() => Boolean)
-  async likeProductComment() {
-    return true;
-  }
+  // @Mutation(() => Boolean)
+  // async likeProductComment() {
+  //   return true;
+  // }
 
-  // TODO: For Future Use
   // Pending Development
-  @Mutation(() => Boolean)
-  async unlikeProductComment() {
-    return true;
-  }
+  // @Mutation(() => Boolean)
+  // async unlikeProductComment() {
+  //   return true;
+  // }
 }

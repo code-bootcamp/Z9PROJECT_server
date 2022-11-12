@@ -1,4 +1,7 @@
 export const getToday = () => {
+  //LOGGING
+  console.log('getToday()');
+
   const today = new Date();
 
   const yyyy = today.getFullYear();

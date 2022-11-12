@@ -1,38 +1,100 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ProductService } from './../product/product.service';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductLikeInput } from 'src/common/types/productLike.types';
 import { Repository } from 'typeorm';
 import { ProductLike } from './entities/productLike.entity';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class ProductLikeService {
   constructor(
     @InjectRepository(ProductLike)
     private readonly productLikeRepository: Repository<ProductLike>,
+    private readonly productService: ProductService,
   ) {}
 
   async likeProduct({ productId, userId }) {
-    // TODO: find if there is a record with productId and userId
-    const productLike = await this.productLikeRepository.findOne({
-      where: { product: productId, user: userId },
-    });
-    // TODO: if there is a record, check if it is deleted
-    // TODO: if it is deleted, update the record and set deletedAt to null
-    // TODO: if there is not a record, create a new record
-    if (productLike) {
-      if (productLike.deletedAt) {
-        productLike.deletedAt = null;
-        await this.productLikeRepository.save(productLike);
-        return true;
-      } else {
-        return new ConflictException("You've already liked this product");
-      }
+    //LOGGING
+    console.log('ProductLikeService.likeProduct()');
+
+    const checkLike = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.userId = :userId', { userId })
+      .getOne();
+    if (checkLike) {
+      const result = await this.productLikeRepository
+        .delete({
+          id: checkLike.id,
+        })
+        .catch(() => {
+          throw new UnprocessableEntityException('좋아요 실패');
+        });
+      return false;
     } else {
-      await this.productLikeRepository.save({
-        product: productId,
-        userId: userId,
-      });
+      const result = await this.productLikeRepository
+        .save({
+          product: { id: productId },
+          user: { id: userId },
+        })
+        .catch(() => {
+          throw new UnprocessableEntityException('좋아요 실패');
+        });
       return true;
     }
+  }
+
+  async isLiked({ productId, userId }): Promise<boolean> {
+    //LOGGING
+    console.log('ProductLikeService.isLiked()');
+
+    const checkLike = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.userId = :userId', { userId })
+      .getOne();
+    if (checkLike) {
+      if (checkLike.deletedAt) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async findAllLikes({ userId }) {
+    //LOGGING
+    console.log('ProductLikeService.findAllLikes()');
+
+    const productIds = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.userId = :userId', { userId })
+      .leftJoinAndSelect('productLike.product', 'product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
+    const products: Product[] = await Promise.all(
+      productIds.map(async (productId): Promise<Product> => {
+        return await this.productService.findOne({
+          productId: productId.product.id,
+        });
+      }),
+    );
+    return products;
+  }
+
+  async countLikes({ productId }): Promise<number> {
+    //LOGGING
+    console.log('ProductLikeService.countLikes()');
+
+    const count = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .getCount();
+    return count;
   }
 }

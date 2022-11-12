@@ -1,7 +1,15 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -10,27 +18,25 @@ export class ProductLike {
   @Field(() => String, { nullable: false })
   id: string;
 
-  // TODO: Add relations
   @ManyToOne(() => User)
-  @Field(() => User, { nullable: false })
+  @Field(() => User, { nullable: true })
   user: User;
 
-  // TODO: Add relations
   @ManyToOne(() => Product)
-  @Field(() => Product, { nullable: false })
+  @Field(() => Product, { nullable: true })
   product: Product;
 
-  @Column()
-  @Field(() => Date, { nullable: false, description: 'Date of creation' })
+  @CreateDateColumn()
+  @Field(() => Date, { nullable: true, description: 'Date of creation' })
   createdAt: Date;
 
-  @Column()
-  @Field(() => Date, { nullable: false, description: 'Date of last update' })
+  @UpdateDateColumn()
+  @Field(() => Date, { nullable: true, description: 'Date of last update' })
   updatedAt: Date;
 
-  @Column()
+  @DeleteDateColumn()
   @Field(() => Date, {
-    nullable: false,
+    nullable: true,
     description:
       'If this has value, it means that once it was liked and unliked. To make it status like, change this value to null',
   })
