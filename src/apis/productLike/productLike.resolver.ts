@@ -33,6 +33,18 @@ export class ProductLikeResolver {
     return this.productLikeService.countLikes({ productId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Boolean)
+  async fetchIsLiked(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
+    return this.productLikeService.isLiked({
+      productId,
+      userId: ctx.req.user.id,
+    });
+  }
+
   // Pending Development
   // @Mutation(() => Boolean)
   // async likeProductComment() {

@@ -153,7 +153,7 @@ export class ProductService {
     return await this.productRepository.find();
   }
 
-  async create({ createProductInput, createProductDetailInput }) {
+  async create({ userId, createProductInput, createProductDetailInput }) {
     const calcDiscountRate: number =
       createProductInput.discountPrice !== null
         ? Math.ceil(
@@ -163,7 +163,7 @@ export class ProductService {
               100,
           )
         : 0;
-
+    const user = await this.usersService.findOneByUserId(userId);
     const { discountRate, images, ...product } = createProductInput;
     console.log(calcDiscountRate);
     console.log(images);
@@ -171,6 +171,7 @@ export class ProductService {
     const savedProduct: Product = await this.productRepository.save({
       ...product,
       images: images,
+      user,
       discountRate: calcDiscountRate,
     });
 
