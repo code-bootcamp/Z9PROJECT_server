@@ -22,9 +22,20 @@ export class AuthService {
       { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: '2w' },
     );
 
+    this.setCookie(req, res, refreshToken);
+  }
+
+  setCookie(req, res, refreshToken = null, user = null) {
+    //LOGGING
+    console.log('AuthService.setCookie()');
+
+    let cookie = '';
     if (process.env.DEPLOY_ENV === 'LOCAL') {
-      // 개발환경용
-      res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+      // 로컬개발환경용
+      if (refreshToken) cookie = `refreshToken=${refreshToken}; path=/;`;
+      else cookie = `snsLoginInfo=${user}; path=/;`;
+
+      res.setHeader('Set-Cookie', cookie);
     } else {
       const originList = process.env.ORIGIN_LIST.split(',');
       const origin = req.headers.origin;
@@ -40,12 +51,16 @@ export class AuthService {
         'Access-Control-Allow-Headers',
         'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers',
       );
-      res.setHeader(
-        'Set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=${
+
+      if (refreshToken) {
+        cookie = `refreshToken=${refreshToken}; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=${
           3600 * 24 * 14
-        };`,
-      );
+        };`;
+      } else {
+        cookie = `snsLoginInfo=${user}; path=/;`;
+      }
+      res.setHeader('Set-Cookie', cookie);
+      
       //LOGGING
       console.log('setRefreshToken', refreshToken);
     }

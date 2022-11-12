@@ -89,14 +89,18 @@ export class User {
   @Field(() => Boolean, { nullable: true, defaultValue: false })
   isAuthedCreator: boolean;
 
-  /** YouTube ChannelName or Instagram Name */
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'YOUTUBE ChannelName or INSTA Name',
+  })
   snsName: string;
 
-  // YOUTUBE or INSTAGRAM
   @Column({ type: 'enum', enum: SNS_TYPE_ENUM, nullable: true })
-  @Field(() => SNS_TYPE_ENUM, { nullable: true })
+  @Field(() => SNS_TYPE_ENUM, {
+    nullable: true,
+    description: 'YOUTUBE or INSTAGRAM',
+  })
   snsChannel: string;
 
   @Column({ default: 0 })
@@ -116,11 +120,19 @@ export class User {
   bank: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true, defaultValue: '' })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: '',
+    description: 'Account Number',
+  })
   account: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true, defaultValue: '' })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: '',
+    description: 'Account Owner Name (only Creator)',
+  })
   accountName: string;
 
   @Column({ default: 0 })
