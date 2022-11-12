@@ -122,6 +122,10 @@ export class UsersService {
     return await this.createUserInFinalStep(createUserInput);
   }
 
+  async createUserObj(email: string, nickname: string, profileImg: string) {
+    return await this.usersRepository.create({ email, nickname, profileImg });
+  }
+
   async update({ userId, updateUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
