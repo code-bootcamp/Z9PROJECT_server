@@ -15,7 +15,7 @@ export class AuthService {
 
   setRefreshToken({ user, req, res }) {
     //LOGGING
-    console.log('AuthService.setRefreshToken()');
+    console.log(new Date(), ' | AuthService.setRefreshToken()');
 
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
@@ -27,7 +27,7 @@ export class AuthService {
 
   setCookie(req, res, refreshToken = null, user = null) {
     //LOGGING
-    console.log('AuthService.setCookie()');
+    console.log(new Date(), ' | AuthService.setCookie()');
 
     let cookie = '';
     if (process.env.DEPLOY_ENV === 'LOCAL') {
@@ -62,13 +62,13 @@ export class AuthService {
       res.setHeader('Set-Cookie', cookie);
 
       //LOGGING
-      console.log('setRefreshToken', refreshToken);
+      console.log(new Date(), ' | setRefreshToken', refreshToken);
     }
   }
 
   getAccessToken({ user }) {
     //LOGGING
-    console.log('AuthService.getAccessToken()');
+    console.log(new Date(), ' | AuthService.getAccessToken()');
 
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
@@ -78,7 +78,7 @@ export class AuthService {
 
   verifyToken(accToken, refreshToken) {
     //LOGGING
-    console.log('AuthService.verifyToken()');
+    console.log(new Date(), ' | AuthService.verifyToken()');
 
     let decodedAccToken = null;
     let decodedRefreshToken = null;
@@ -100,7 +100,7 @@ export class AuthService {
 
   async logout({ req, res }) {
     //LOGGING
-    console.log('AuthService.logout()');
+    console.log(new Date(), ' | AuthService.logout()');
 
     const accToken = req.headers['authorization'].replace('Bearer ', '');
     const refreshToken = req.headers['cookie'].replace('refreshToken=', '');

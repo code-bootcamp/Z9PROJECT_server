@@ -16,7 +16,7 @@ export class PointsService {
 
   async createPoint({ amount, userId }) {
     //LOGGING
-    console.log('PointsService.createPoint()');
+    console.log(new Date(), ' | PointsService.createPoint()');
 
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
@@ -40,7 +40,7 @@ export class PointsService {
       await queryRunner.commitTransaction();
 
       //LOGGING
-      console.log('PointsService.createPoint() - point', point);
+      console.log(new Date(), ' | PointsService.createPoint() - point', point);
 
       return point;
     } catch (err) {
@@ -55,7 +55,7 @@ export class PointsService {
 
   async refundPoint({ amount, userId }) {
     //LOGGING
-    console.log('PointsService.refundPoint()');
+    console.log(new Date(), ' | PointsService.refundPoint()');
 
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
@@ -79,7 +79,7 @@ export class PointsService {
       await queryRunner.commitTransaction();
 
       //LOGGING
-      console.log('PointsService.refundPoint() - point', point);
+      console.log(new Date(), ' | PointsService.refundPoint() - point', point);
 
       return point;
     } catch (err) {
@@ -94,7 +94,7 @@ export class PointsService {
 
   async updateUserPoint({ userId }) {
     //LOGGING
-    console.log('PointsService.updateUserPoint()');
+    console.log(new Date(), ' | PointsService.updateUserPoint()');
 
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
@@ -119,7 +119,11 @@ export class PointsService {
       await queryRunner.commitTransaction();
 
       //LOGGING
-      console.log('PointsService.updateUserPoint() - user', user);
+      console.log(
+        new Date(),
+        ' | PointsService.updateUserPoint() - user',
+        user,
+      );
 
       return user;
     } catch (err) {
@@ -134,7 +138,7 @@ export class PointsService {
 
   async findAllHistoryByOrderId({ orderId }) {
     //LOGGING
-    console.log('PointsService.findAllHistoryByOrderId()');
+    console.log(new Date(), ' | PointsService.findAllHistoryByOrderId()');
 
     return this.pointsRepository
       .createQueryBuilder('point')
@@ -146,7 +150,7 @@ export class PointsService {
 
   async findAllHistoryByUserId({ userId }) {
     //LOGGING
-    console.log('PointsService.findAllHistoryByUserId()');
+    console.log(new Date(), ' | PointsService.findAllHistoryByUserId()');
 
     return this.pointsRepository
       .createQueryBuilder('point')
@@ -158,7 +162,7 @@ export class PointsService {
 
   async getPoint({ userId }) {
     //LOGGING
-    console.log('PointsService.getPoint()');
+    console.log(new Date(), ' | PointsService.getPoint()');
 
     return this.pointsRepository
       .createQueryBuilder('point')

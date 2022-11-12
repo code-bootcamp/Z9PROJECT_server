@@ -16,7 +16,7 @@ export class UsersResolver {
   // @Query(() => User, { description: 'fetching single creator by userId' })
   // async fetchCreator(@Args('userId') userId: string) {
   //   //LOGGING
-  //   console.log('API fetch creator requested');
+  //   console.log(new Date(), ' | API fetch creator requested');
 
   //   const creator = await this.usersService.findOneByUserId(userId);
   //   if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
@@ -33,7 +33,7 @@ export class UsersResolver {
     @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
   ) {
     //LOGGING
-    console.log('API fetch creators requested');
+    console.log(new Date(), ' | API fetch creators requested');
 
     return await this.usersService.findAllCreator();
   }
@@ -42,7 +42,7 @@ export class UsersResolver {
   @Query(() => User, { description: 'fetching user details logined' })
   async fetchUser(@Context() context: IContext) {
     //LOGGING
-    console.log('API fetch user requested');
+    console.log(new Date(), ' | API fetch user requested');
 
     return await this.usersService.findOneByUserId(context.req.user.id);
   }
@@ -53,7 +53,7 @@ export class UsersResolver {
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
     //LOGGING
-    console.log('API create user requested');
+    console.log(new Date(), ' | API create user requested');
 
     createCommonUserInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCommonUserInput.phoneNumber,
@@ -78,7 +78,7 @@ export class UsersResolver {
     @Args('createCreatorInput') createCreatorInput: CreateCreatorInput,
   ) {
     //LOGGING
-    console.log('API create creator requested');
+    console.log(new Date(), ' | API create creator requested');
 
     createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCreatorInput.phoneNumber,
@@ -102,7 +102,7 @@ export class UsersResolver {
   })
   async checkNickname(@Args('nickname') nickname: string) {
     //LOGGING
-    console.log('API check nickname requested');
+    console.log(new Date(), ' | API check nickname requested');
 
     if (await this.usersService.findOneByNickName(nickname)) return true;
     return false;
@@ -115,7 +115,7 @@ export class UsersResolver {
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
     //LOGGING
-    console.log('API update user requested');
+    console.log(new Date(), ' | API update user requested');
 
     return this.usersService.update({
       userId,
@@ -133,7 +133,7 @@ export class UsersResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API validate password requested');
+    console.log(new Date(), ' | API validate password requested');
 
     return await this.usersService.isSameLoginPassword(
       ctx.req.user.id,
@@ -148,7 +148,7 @@ export class UsersResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API update password requested');
+    console.log(new Date(), ' | API update password requested');
 
     return await this.updateUser(ctx.req.user.id, { password });
   }
@@ -157,7 +157,7 @@ export class UsersResolver {
   @Mutation(() => Boolean, { description: 'delete user' })
   async deleteUser(@Context() ctx: IContext) {
     //LOGGING
-    console.log('API delete user requested');
+    console.log(new Date(), ' | API delete user requested');
 
     return await this.usersService.delete(ctx.req.user.id);
   }

@@ -1,6 +1,6 @@
 export const getToday = () => {
   //LOGGING
-  console.log('getToday()');
+  console.log(new Date(), ' | getToday()');
 
   const today = new Date();
 

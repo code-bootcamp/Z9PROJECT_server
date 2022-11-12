@@ -16,7 +16,7 @@ export class ProductLikeResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Like Product Requested');
+    console.log(new Date(), ' | API Like Product Requested');
 
     return this.productLikeService.likeProduct({
       productId,
@@ -28,7 +28,7 @@ export class ProductLikeResolver {
   @Query(() => [Product])
   async fetchAllLikes(@Context() ctx: IContext) {
     //LOGGING
-    console.log('API Fetch All Likes Requested');
+    console.log(new Date(), ' | API Fetch All Likes Requested');
 
     return this.productLikeService.findAllLikes({ userId: ctx.req.user.id });
   }
@@ -36,7 +36,7 @@ export class ProductLikeResolver {
   @Query(() => Int)
   async fetchLikeCount(@Args('productId') productId: string) {
     //LOGGING
-    console.log('API Fetch Like Count Requested');
+    console.log(new Date(), ' | API Fetch Like Count Requested');
 
     return this.productLikeService.countLikes({ productId });
   }
@@ -48,7 +48,7 @@ export class ProductLikeResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Fetch Is Liked Requested');
+    console.log(new Date(), ' | API Fetch Is Liked Requested');
 
     return this.productLikeService.isLiked({
       productId,

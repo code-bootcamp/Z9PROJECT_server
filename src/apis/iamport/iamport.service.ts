@@ -5,7 +5,7 @@ import axios from 'axios';
 export class IamportService {
   private getAccessToken = async () => {
     //LOGGING
-    console.log('IamportService.getAccessToken()');
+    console.log(new Date(), ' | IamportService.getAccessToken()');
 
     return await axios.post('https://api.iamport.kr/users/getToken', {
       imp_key: process.env.IAMPORT_REST_API_KEY,
@@ -15,7 +15,7 @@ export class IamportService {
 
   async validatePayment({ impUid }) {
     //LOGGING
-    console.log('IamportService.validatePayment()');
+    console.log(new Date(), ' | IamportService.validatePayment()');
 
     // get access token from iamport
     const { data: accessTokenData } = await this.getAccessToken();
@@ -36,14 +36,14 @@ export class IamportService {
       throw new UnprocessableEntityException(paymentData.message);
     else {
       //LOGGING
-      console.log(`Payment Validated : ${impUid}`);
+      console.log(`${new Date()} | Payment Validated : ${impUid}`);
       return paymentData;
     }
   }
 
   async refundPayment({ impUid, amount }) {
     //LOGGING
-    console.log('IamportService.refundPayment()');
+    console.log(new Date(), ' | IamportService.refundPayment()');
 
     // get access token from iamport
     const { data: accessTokenData } = await this.getAccessToken();
@@ -70,7 +70,7 @@ export class IamportService {
     if (paymentData.code !== 0)
       throw new UnprocessableEntityException(paymentData.message);
     //LOGGING
-    console.log(`Payment Refunded : ${impUid}`);
+    console.log(`${new Date()} | Payment Refunded : ${impUid}`);
     return paymentData;
   }
 }

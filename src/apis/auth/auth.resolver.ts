@@ -36,7 +36,7 @@ export class AuthResolver {
     @Context() context: IContext,
   ) {
     //LOGGING
-    console.log('API Login Requested');
+    console.log(new Date(), ' | API Login Requested');
     const user = await this.usersService.findOneByEmail(email);
     if (!user)
       throw new UnprocessableEntityException('ID가 일치하는 유저가 없습니다.');
@@ -51,7 +51,7 @@ export class AuthResolver {
       res: context.res,
     });
     //LOGGING
-    console.log(`User Logined : ${user.id}`);
+    console.log(`${new Date()} | User Logined : ${user.id}`);
     return this.authService.getAccessToken({ user });
   }
 
@@ -61,7 +61,7 @@ export class AuthResolver {
     @Context() context: IContext, //
   ) {
     //LOGGING
-    console.log('API Restore Access Token Requested');
+    console.log(new Date(), ' | API Restore Access Token Requested');
 
     return this.authService.getAccessToken({ user: context.req.user });
   }
@@ -70,14 +70,14 @@ export class AuthResolver {
   @Mutation(() => String)
   async logout(@Context() context: IContext) {
     //LOGGING
-    console.log(`User Logout : ${context.req.user.id}`);
+    console.log(`${new Date()} | User Logout : ${context.req.user.id}`);
     return this.authService.logout({ req: context.req, res: context.res });
   }
 
   @Mutation(() => SmsPostReturn)
   async postSmsToken(@Args('phoneNumber') phoneNumber: string) {
     //LOGGING
-    console.log('API Post Sms Token Requested');
+    console.log(new Date(), ' | API Post Sms Token Requested');
 
     phoneNumber = SmsAuth.getCorrectPhoneNumber(phoneNumber);
 
@@ -134,7 +134,7 @@ export class AuthResolver {
     @Args('signupId') signupId: string,
   ) {
     //LOGGING
-    console.log('API Patch Sms Token Requested');
+    console.log(new Date(), ' | API Patch Sms Token Requested');
 
     phoneNumber = SmsAuth.getCorrectPhoneNumber(phoneNumber);
     if (await this.checkAndUpdateSmsToken(phoneNumber, smsToken, signupId))

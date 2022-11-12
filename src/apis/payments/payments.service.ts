@@ -20,7 +20,7 @@ export class PaymentsService {
 
   async createPayment({ impUid, amount, userId }) {
     //LOGGING
-    console.log('PaymentsService.createPayment()');
+    console.log(new Date(), ' | PaymentsService.createPayment()');
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -72,7 +72,11 @@ export class PaymentsService {
       await queryRunner.commitTransaction();
 
       //LOGGING
-      console.log('PaymentsService.createPayment() payment', payment);
+      console.log(
+        new Date(),
+        ' | PaymentsService.createPayment() payment',
+        payment,
+      );
 
       return payment;
     } catch (error) {
@@ -87,7 +91,7 @@ export class PaymentsService {
 
   async refundPayment({ impUid, amount, userId }) {
     //LOGGING
-    console.log('PaymentsService.refundPayment()');
+    console.log(new Date(), ' | PaymentsService.refundPayment()');
 
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
@@ -155,7 +159,11 @@ export class PaymentsService {
       await queryRunner.commitTransaction();
 
       //LOGGING
-      console.log('PaymentsService.refundPayment() payment', payment);
+      console.log(
+        new Date(),
+        ' | PaymentsService.refundPayment() payment',
+        payment,
+      );
 
       return payment;
     } catch (error) {

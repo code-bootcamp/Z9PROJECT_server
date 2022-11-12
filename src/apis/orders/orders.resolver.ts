@@ -17,7 +17,7 @@ export class OrdersResolver {
   @Query(() => [Order])
   async fetchOrdersByUserId(@Context() ctx: IContext) {
     //LOGGING
-    console.log('API Fetch Orders By User Id Requested');
+    console.log(new Date(), ' | API Fetch Orders By User Id Requested');
 
     return await this.ordersService.findAllByUserId({
       userId: ctx.req.user.id,
@@ -27,7 +27,7 @@ export class OrdersResolver {
   @Query(() => Order)
   async fetchOrder(@Args('orderId') orderId: string) {
     //LOGGING
-    console.log('API Fetch Order Requested');
+    console.log(new Date(), ' | API Fetch Order Requested');
 
     return await this.ordersService.findOneByOrderId({ orderId });
   }
@@ -35,7 +35,7 @@ export class OrdersResolver {
   @Query(() => [Order])
   async fetchOrdersByProductId(@Args('productId') productId: string) {
     //LOGGING
-    console.log('API Fetch Orders By Product Id Requested');
+    console.log(new Date(), ' | API Fetch Orders By Product Id Requested');
 
     return await this.ordersService.findAllByProductId({ productId });
   }
@@ -49,7 +49,7 @@ export class OrdersResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Create Order Requested');
+    console.log(new Date(), ' | API Create Order Requested');
 
     const order = await this.ordersService.createOrder({
       userId: ctx.req.user.id,
@@ -70,7 +70,7 @@ export class OrdersResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Cancel Order Requested');
+    console.log(new Date(), ' | API Cancel Order Requested');
 
     return await this.ordersService.reqCancelOrder({
       userId: ctx.req.user.id,
@@ -81,7 +81,7 @@ export class OrdersResolver {
   @Mutation(() => Order)
   async cancelOrderAccept(@Args('orderId') orderId: string) {
     //LOGGING
-    console.log('API Cancel Order Accepted');
+    console.log(new Date(), ' | API Cancel Order Accepted');
 
     const order = await this.ordersService.acceptCancelOrder({ orderId });
     await this.pointsService.updateUserPoint({

@@ -22,7 +22,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 
   async validate(req, payload) {
     //LOGGING
-    console.log('JwtRefreshStrategy.validate()');
+    console.log(new Date(), ' | JwtRefreshStrategy.validate()');
 
     const cookie = req.headers.cookie;
     const refreshToken = cookie.replace('refreshToken=', '');
