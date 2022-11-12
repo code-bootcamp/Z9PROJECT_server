@@ -25,7 +25,7 @@ export class QuestionService {
     const { userId, productId, ...question } = createQuestionInput;
 
     const user: User = await this.userSerivce.findOneByUserId(userId);
-
+    
     const product: Product = await this.productSerivce.findOne({ productId });
 
     const result: Question = await this.questionRepository.save({
@@ -51,6 +51,15 @@ export class QuestionService {
 
     return await this.questionRepository.findOne({
       where: { id: questionId },
+      relations: ['user', 'product'],
+    });
+  }
+
+  async findByMyQuestion({ userId }) {
+    //LOGGING
+    console.log('QuestionService.findByMyQuestion()');
+    return this.questionRepository.find({
+      where: { user: { id: userId } },
       relations: ['user', 'product'],
     });
   }
