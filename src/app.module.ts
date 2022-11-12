@@ -18,6 +18,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
 
 @Module({
   imports: [
+    PointModule,
     ProductModule,
     ProductLikeModule,
     ImageModule,

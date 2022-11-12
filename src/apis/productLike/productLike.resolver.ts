@@ -33,14 +33,12 @@ export class ProductLikeResolver {
     return this.productLikeService.countLikes({ productId });
   }
 
-  // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)
   // async likeProductComment() {
   //   return true;
   // }
 
-  // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)
   // async unlikeProductComment() {
