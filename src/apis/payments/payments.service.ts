@@ -52,7 +52,7 @@ export class PaymentsService {
       // CREATE POINT
       const pointData = this.pointsRepository.create({
         point: amount,
-        status: POINT_STATUS_ENUM.CREDIT,
+        status: POINT_STATUS_ENUM.CHARGED,
         user,
       });
       const point = await queryRunner.manager.save(Point, pointData);

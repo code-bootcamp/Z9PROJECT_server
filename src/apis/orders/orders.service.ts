@@ -1,0 +1,201 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Connection, Repository } from 'typeorm';
+import { Point, POINT_STATUS_ENUM } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
+import { ProductService } from '../product/product.service';
+import { UsersService } from '../users/users.service';
+import { Order, ORDER_STATUS } from './entities/order.entity';
+
+@Injectable()
+export class OrdersService {
+  constructor(
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(Point)
+    private readonly pointsRepository: Repository<Point>,
+    private readonly pointsService: PointsService,
+    private readonly usersService: UsersService,
+    private readonly productService: ProductService,
+    private readonly connection: Connection,
+  ) {}
+
+  async findOneByOrderId({ orderId }) {
+    return await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('order.product', 'product')
+      .where('order.id = :orderId', { orderId })
+      .getOne();
+  }
+
+  async findAllByUserId({ userId }) {
+    return await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('order.product', 'product')
+      .where('user.id = :userId', { userId })
+      .getMany();
+  }
+
+  async findAllByProductId({ productId }) {
+    return await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('order.product', 'product')
+      .where('product.id = :productId', { productId })
+      .getMany();
+  }
+
+  async createOrder({ userId, productId, price, quantity }) {
+    // INIT queryRunner
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+
+    // START TRANSACTION
+    await queryRunner.startTransaction('SERIALIZABLE');
+    try {
+      // FIND USER
+      const user = await this.usersService.findOneByUserId(userId);
+
+      // FIND PRODUCT
+      const product = await this.productService.findOne({ productId });
+
+      // CREATE ORDER
+      const orderData = this.orderRepository.create({
+        price,
+        quantity,
+        status: ORDER_STATUS.PENDING,
+        user,
+        product,
+      });
+      const order = await queryRunner.manager.save(Order, orderData);
+
+      const pointData = this.pointsRepository.create({
+        point: 0 - price,
+        status: POINT_STATUS_ENUM.USED,
+        user,
+        order,
+      });
+      const point = await queryRunner.manager.save(Point, pointData);
+
+      // FIND CREATOR
+      const creator = await this.usersService.findOneByUserId(product.user.id);
+
+      // UPDATE CREATOR POINT
+      const creatorPointData = this.pointsRepository.create({
+        point: price,
+        status: POINT_STATUS_ENUM.SOLD,
+        user: creator,
+        order,
+      });
+      const creatorPoint = await queryRunner.manager.save(
+        Point,
+        creatorPointData,
+      );
+      await this.pointsService.updateUserPoint({ userId: creator.id });
+
+      // COMMIT TRANSACTION
+      await queryRunner.commitTransaction();
+
+      return order;
+    } catch (err) {
+      // ROLLBACK TRANSACTION
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      // RELEASE QUERY RUNNER
+      await queryRunner.release();
+    }
+  }
+
+  async reqCancelOrder({ userId, orderId }) {
+    // INIT queryRunner
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+
+    // START TRANSACTION
+    await queryRunner.startTransaction('SERIALIZABLE');
+    try {
+      // FIND USER
+      const user = await this.usersService.findOneByUserId(userId);
+
+      // FIND ORDER
+      const order = await this.findOneByOrderId({ orderId });
+      if (order == undefined) throw new NotFoundException('Order not found');
+
+      // UPDATE ORDER
+      order.status = ORDER_STATUS.PENDING_REFUND;
+      const reqOrder = await queryRunner.manager.save(Order, order);
+
+      // COMMIT TRANSACTION
+      await queryRunner.commitTransaction();
+
+      return reqOrder;
+    } catch (err) {
+      // ROLLBACK TRANSACTION
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      // RELEASE QUERY RUNNER
+      await queryRunner.release();
+    }
+  }
+
+  async acceptCancelOrder({ orderId }) {
+    // INIT queryRunner
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+
+    // START TRANSACTION
+    await queryRunner.startTransaction('SERIALIZABLE');
+    try {
+      // FIND ORDER
+      const order = await this.findOneByOrderId({ orderId });
+      if (order == undefined) throw new NotFoundException('Order not found');
+
+      // UPDATE ORDER
+      order.status = ORDER_STATUS.CANCELED;
+      const reqOrder = await queryRunner.manager.save(Order, order);
+
+      // UPDATE POINT
+      const pointData = this.pointsRepository.create({
+        point: order.price,
+        status: POINT_STATUS_ENUM.RESTORED,
+        user: order.user,
+        order,
+      });
+      const point = await queryRunner.manager.save(Point, pointData);
+
+      // FIND CREATOR
+      const creator = await this.usersService.findOneByUserId(
+        order.product.user.id,
+      );
+
+      // UPDATE CREATOR POINT
+      const creatorPointData = this.pointsRepository.create({
+        point: 0 - order.price,
+        status: POINT_STATUS_ENUM.CANCELED_SOLD,
+        user: creator,
+        order,
+      });
+      const creatorPoint = await queryRunner.manager.save(
+        Point,
+        creatorPointData,
+      );
+      await this.pointsService.updateUserPoint({ userId: creator.id });
+
+      // COMMIT TRANSACTION
+      await queryRunner.commitTransaction();
+
+      return reqOrder;
+    } catch (err) {
+      // ROLLBACK TRANSACTION
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      // RELEASE QUERY RUNNER
+      await queryRunner.release();
+    }
+  }
+}

@@ -28,7 +28,7 @@ export class PointsService {
       // CREATE POINT
       const pointData = this.pointsRepository.create({
         point: amount,
-        status: POINT_STATUS_ENUM.CREDIT,
+        status: POINT_STATUS_ENUM.CHARGED,
         user,
       });
       const point = await queryRunner.manager.save(Point, pointData);
@@ -60,7 +60,7 @@ export class PointsService {
       // CREATE POINT
       const pointData = this.pointsRepository.create({
         point: 0 - amount,
-        status: POINT_STATUS_ENUM.REFUND,
+        status: POINT_STATUS_ENUM.REFUNDED,
         user,
       });
       const point = await queryRunner.manager.save(Point, pointData);
@@ -109,5 +109,31 @@ export class PointsService {
       // RELEASE queryRunner
       await queryRunner.release();
     }
+  }
+
+  async findAllHistoryByOrderId({ orderId }) {
+    return this.pointsRepository
+      .createQueryBuilder('point')
+      .leftJoinAndSelect('point.user', 'user')
+      .leftJoinAndSelect('point.order', 'order')
+      .where('point.order = :orderId', { orderId })
+      .getMany();
+  }
+
+  async findAllHistoryByUserId({ userId }) {
+    return this.pointsRepository
+      .createQueryBuilder('point')
+      .leftJoinAndSelect('point.user', 'user')
+      .leftJoinAndSelect('point.order', 'order')
+      .where('point.user = :userId', { userId })
+      .getMany();
+  }
+
+  async getPoint({ userId }) {
+    return this.pointsRepository
+      .createQueryBuilder('point')
+      .select('SUM(point.point)', 'userPoint')
+      .where('point.user = :userId', { userId })
+      .getRawOne();
   }
 }
