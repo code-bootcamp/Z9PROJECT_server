@@ -16,6 +16,9 @@ export class ProductLikeResolver {
     @Args('productId') productId: string,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log('API Like Product Requested');
+
     return this.productLikeService.likeProduct({
       productId,
       userId: ctx.req.user.id,
@@ -25,22 +28,41 @@ export class ProductLikeResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
   async fetchAllLikes(@Context() ctx: IContext) {
+    //LOGGING
+    console.log('API Fetch All Likes Requested');
+
     return this.productLikeService.findAllLikes({ userId: ctx.req.user.id });
   }
 
   @Query(() => Int)
   async fetchLikeCount(@Args('productId') productId: string) {
+    //LOGGING
+    console.log('API Fetch Like Count Requested');
+
     return this.productLikeService.countLikes({ productId });
   }
 
-  // TODO: For Future Use
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Boolean)
+  async fetchIsLiked(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
+    //LOGGING
+    console.log('API Fetch Is Liked Requested');
+
+    return this.productLikeService.isLiked({
+      productId,
+      userId: ctx.req.user.id,
+    });
+  }
+
   // Pending Development
   // @Mutation(() => Boolean)
   // async likeProductComment() {
   //   return true;
   // }
 
-  // TODO: For Future Use
   // Pending Development
   // @Mutation(() => Boolean)
   // async unlikeProductComment() {

@@ -212,6 +212,18 @@ enum PRODUCT_INCLUDE_OPTION {
   EXCLUDE_SOLDED_OUT
 }
 
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
+}
+
 type Mutation {
   """product signup"""
   createProduct(createProductInput: CreateProductInput!, createProductDetailInput: CreateProductDetailInput!): Product!

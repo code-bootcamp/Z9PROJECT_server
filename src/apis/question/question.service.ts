@@ -19,10 +19,13 @@ export class QuestionService {
   ) {}
 
   async create({ createQuestionInput }) {
+    //LOGGING
+    console.log('QuestionService.create()');
+
     const { userId, productId, ...question } = createQuestionInput;
 
     const user: User = await this.userSerivce.findOneByUserId(userId);
-
+    
     const product: Product = await this.productSerivce.findOne({ productId });
 
     const result: Question = await this.questionRepository.save({
@@ -34,12 +37,18 @@ export class QuestionService {
   }
 
   async findAll(): Promise<Question[]> {
+    //LOGGING
+    console.log('QuestionService.findAll()');
+
     return await this.questionRepository.find({
       relations: ['user', 'product'],
     });
   }
 
   async findOne({ questionId }): Promise<Question> {
+    //LOGGING
+    console.log('QuestionService.findOne()');
+
     return await this.questionRepository.findOne({
       where: { id: questionId },
       relations: ['user', 'product'],
@@ -47,6 +56,8 @@ export class QuestionService {
   }
 
   async findByMyQuestion({ userId }) {
+    //LOGGING
+    console.log('QuestionService.findByMyQuestion()');
     return this.questionRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'product'],
@@ -54,6 +65,9 @@ export class QuestionService {
   }
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
+    //LOGGING
+    console.log('QuestionService.update()');
+
     const newQuestsion: Question = {
       ...updateQuestionInput,
       id: questionId,
@@ -62,6 +76,9 @@ export class QuestionService {
   }
 
   async remove({ questionId }): Promise<boolean> {
+    //LOGGING
+    console.log('QuestionService.remove()');
+
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
   }

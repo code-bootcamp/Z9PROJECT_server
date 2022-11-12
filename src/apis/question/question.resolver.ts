@@ -17,6 +17,9 @@ export class QuestionResolver {
   async createQuestion(
     @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //
   ) {
+    //LOGGING
+    console.log('API Create Question Requested');
+
     const result = await this.questionService.create({
       createQuestionInput,
     });
@@ -28,6 +31,9 @@ export class QuestionResolver {
     name: 'fetchQuestion',
   })
   async fetchQuestion(@Args('questionId') questionId: string) {
+    //LOGGING
+    console.log('API Fetch Question Requested');
+
     const result = await this.questionService.findOne({ questionId });
     return result;
   }
@@ -37,18 +43,24 @@ export class QuestionResolver {
     name: 'fetchQuestions',
   })
   async fetchQuestions() {
+    //LOGING
+    console.log('API Fetch Questions Requested');
+    
     return await this.questionService.findAll();
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Question], {
-    deprecationReason:
-      'fetching Questions by creators and commonUsers using userId ',
+    description:
+      'fetching Questions by creators and commonUsers using userId',
   })
   async fetchMyQuestions(
     @Args('userId') userId: string, //
   ) {
+    //LOGGING
+    console.log('API Fetch My Questions Requested');
+    
     return await this.questionService.findByMyQuestion({ userId });
   }
 
@@ -58,12 +70,18 @@ export class QuestionResolver {
     @Args('questionId') questionId: string,
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
   ) {
+    //LOGGING
+    console.log('API Update Question Requested');
+
     return this.questionService.update({ questionId, updateQuestionInput });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteQuestion(@Args('questionId') questionId: string) {
+    //LOGGING
+    console.log('API Delete Question Requested');
+
     return this.questionService.remove({ questionId });
   }
 }

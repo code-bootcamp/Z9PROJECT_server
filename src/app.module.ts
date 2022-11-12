@@ -14,6 +14,9 @@ import { RedisClientOptions } from 'redis';
 import { HttpException } from '@nestjs/common/exceptions';
 import { QuestionModule } from './apis/question/question.module';
 import { AnswerModule } from './apis/answer/answer.module';
+import { PaymentsModule } from './apis/payments/payments.module';
+import { PointsModule } from './apis/points/points.module';
+import { OrdersModule } from './apis/orders/orders.module';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
@@ -26,6 +29,9 @@ const originList = process.env.ORIGIN_LIST.split(',');
     UsersModule,
     QuestionModule,
     AnswerModule,
+    PaymentsModule,
+    PointsModule,
+    OrdersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

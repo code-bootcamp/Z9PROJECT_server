@@ -18,38 +18,25 @@ export class ProductLikeService {
   ) {}
 
   async likeProduct({ productId, userId }) {
+    //LOGGING
+    console.log('ProductLikeService.likeProduct()');
+
     const checkLike = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
       .andWhere('productLike.userId = :userId', { userId })
       .getOne();
-
     if (checkLike) {
-      // 이미 좋아요 상태인지 확인 (deteledAt 값이 null인지 확인)
-      if (checkLike.deletedAt) {
-        // 좋아요 상태가 아닌 경우 좋아요로 변경
-        await this.productLikeRepository
-          .update({ id: checkLike.id }, { deletedAt: null })
-          .catch(() => {
-            throw new UnprocessableEntityException('좋아요 실패');
-          });
-        return true;
-      } else {
-        // 좋아요 상태인 경우 좋아요 취소로 변경
-        const result = await this.productLikeRepository
-          .softDelete({ id: checkLike.id })
-          .catch(() => {
-            throw new UnprocessableEntityException('좋아요 취소 실패');
-          });
-        if (result.affected) {
-          return false;
-        } else {
-          throw new NotFoundException('좋아요 취소 실패');
-        }
-      }
+      const result = await this.productLikeRepository
+        .delete({
+          id: checkLike.id,
+        })
+        .catch(() => {
+          throw new UnprocessableEntityException('좋아요 실패');
+        });
+      return false;
     } else {
-      // 새롭게 좋아요를 누른 경우
-      await this.productLikeRepository
+      const result = await this.productLikeRepository
         .save({
           product: { id: productId },
           user: { id: userId },
@@ -61,28 +48,52 @@ export class ProductLikeService {
     }
   }
 
+  async isLiked({ productId, userId }): Promise<boolean> {
+    //LOGGING
+    console.log('ProductLikeService.isLiked()');
+
+    const checkLike = await this.productLikeRepository
+      .createQueryBuilder('productLike')
+      .where('productLike.productId = :productId', { productId })
+      .andWhere('productLike.userId = :userId', { userId })
+      .getOne();
+    if (checkLike) {
+      if (checkLike.deletedAt) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async findAllLikes({ userId }) {
+    //LOGGING
+    console.log('ProductLikeService.findAllLikes()');
+
     const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
-      .select('productLike.productId')
       .where('productLike.userId = :userId', { userId })
-      .andWhere('productLike.deletedAt IS NULL')
+      .leftJoinAndSelect('productLike.product', 'product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getMany();
-
     const products: Product[] = await Promise.all(
       productIds.map(async (productId): Promise<Product> => {
-        return await this.productService.findOne({ productId });
+        return await this.productService.findOne({
+          productId: productId.product.id,
+        });
       }),
     );
-
     return products;
   }
 
   async countLikes({ productId }): Promise<number> {
+    //LOGGING
+    console.log('ProductLikeService.countLikes()');
+
     const count = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
-      .andWhere('productLike.deletedAt IS NULL')
       .getCount();
     return count;
   }

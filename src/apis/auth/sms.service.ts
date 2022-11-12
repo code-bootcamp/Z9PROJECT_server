@@ -3,6 +3,9 @@ import coolsms from 'coolsms-node-sdk';
 
 export class SmsAuth {
   public static getCorrectPhoneNumber(phoneNumber: string) {
+    //LOGGING
+    console.log('SmsAuth.getCorrectPhoneNumber()');
+
     const regex = /(^\d{3}-\d{3,4}-\d{4}$)|(^\d{10,11}$)/;
     if (!regex.test(phoneNumber)) {
       console.log('휴대폰 형식을 제대로 입력해 주세요.', phoneNumber);
@@ -15,6 +18,9 @@ export class SmsAuth {
   }
 
   public static getSmsToken(digit = 6) {
+    //LOGGING
+    console.log('SmsAuth.getSmsToken()');
+
     if (!digit || isNaN(digit)) {
       console.log('자리수를 제대로 입력해 주세요');
       return false;
@@ -32,6 +38,9 @@ export class SmsAuth {
   }
 
   public static async sendSmsTokenToPhone(phoneNumber, result) {
+    //LOGGING
+    console.log('SmsAuth.sendSmsTokenToPhone()');
+
     const SMS_API_KEY = process.env.SMS_API_KEY;
     const SMS_API_SECRET = process.env.SMS_API_SECRET;
     const SMS_SENDER_TEL = process.env.SMS_SENDER_TEL;

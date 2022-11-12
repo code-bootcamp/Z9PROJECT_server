@@ -15,6 +15,9 @@ export class ImageService {
   ) {}
 
   async uploadOne({ data }: { data: FileUpload }) {
+    //LOGGING
+    console.log('ImageService.uploadOne()');
+
     // Setup Minio Client
     const minioClient = new Minio.Client({
       endPoint: process.env.OBJ_STORAGE_ENDPOINT,
@@ -46,10 +49,15 @@ export class ImageService {
       fileName: data.filename,
     };
     const image: Image = await this.createImage({ image: databaseInput });
+    //LOGGING
+    console.log('========= image =========', image);
     return image;
   }
 
   async uploadMany({ data }: { data: FileUpload[] }) {
+    //LOGGING
+    console.log('ImageService.uploadMany()');
+
     const queue = await Promise.all(data);
     const minioClient = new Minio.Client({
       endPoint: process.env.OBJ_STORAGE_ENDPOINT,
@@ -86,6 +94,8 @@ export class ImageService {
     const images: Promise<Image>[] = databaseInput.map(
       async (image) => await this.createImage({ image }),
     );
+    //LOGGING
+    console.log('========= images =========', images);
     return images;
   }
 
