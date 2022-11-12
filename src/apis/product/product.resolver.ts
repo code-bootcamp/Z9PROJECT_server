@@ -27,11 +27,17 @@ export class ProductResolver {
 
   @Query(() => Product, { description: 'fetching single product by productId' })
   fetchProduct(@Args('productId') productId: string) {
+    //LOGGING
+    console.log('API Fetch Product Requested');
+
     return this.productService.findOne({ productId });
   }
 
   @Query(() => [Product], { description: 'fetching multiple product' })
   fetchProducts() {
+    //LOGGING
+    console.log('API Fetch Products Requested');
+
     return this.productService.findAll();
   }
 
@@ -39,6 +45,9 @@ export class ProductResolver {
     description: 'fetching multiple product by creator nickname',
   })
   fetchProductsByCreator(@Args('nickname') nickname: string) {
+    //LOGGING
+    console.log('API Fetch Products By Creator Requested');
+
     return this.productService.findProductByCreator({ name: nickname });
   }
 
@@ -51,11 +60,19 @@ export class ProductResolver {
     @Args({ name: 'option', type: () => PRODUCT_INCLUDE_OPTION })
     option: PRODUCT_INCLUDE_OPTION,
   ) {
+    //LOGGING
+    console.log('API Fetch Products By Status Requested');
+    console.log('type: ', type);
+    console.log('option: ', option);
+
     return this.productService.findProductByStatus({ type, option });
   }
 
   @Query(() => Number, { description: 'count product by userId' })
   countProductByUserId(@Args('userId') userId: string) {
+    //LOGGING
+    console.log('API Count Product By UserId Requested');
+
     return this.productService.countProductByUserId({ userId });
   }
 
@@ -67,6 +84,9 @@ export class ProductResolver {
     createProductDetailInput: CreateProductDetailInput,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log('API Create Product Requested');
+
     await this.productService.checkBussinessNumber({ createProductInput });
     return this.productService.create({
       userId: ctx.req.user.id,
@@ -82,6 +102,9 @@ export class ProductResolver {
     @Args('updateProductDetailInput')
     updateProductDetailInput: UpdateProductInput,
   ) {
+    //LOGGING
+    console.log('API Update Product Requested');
+
     await this.productService.checkSoldout({ productId });
     return this.productService.update({
       productId,
@@ -92,6 +115,9 @@ export class ProductResolver {
 
   @Mutation(() => Boolean, { description: 'delete product' })
   async deleteProduct(@Args('productId') productId: string) {
+    //LOGGING
+    console.log('API Delete Product Requested');
+
     return this.productService.delete({ productId });
   }
 }

@@ -16,6 +16,9 @@ export class OrdersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Order])
   async fetchOrdersByUserId(@Context() ctx: IContext) {
+    //LOGGING
+    console.log('API Fetch Orders By User Id Requested');
+
     return await this.ordersService.findAllByUserId({
       userId: ctx.req.user.id,
     });
@@ -23,11 +26,17 @@ export class OrdersResolver {
 
   @Query(() => Order)
   async fetchOrder(@Args('orderId') orderId: string) {
+    //LOGGING
+    console.log('API Fetch Order Requested');
+
     return await this.ordersService.findOneByOrderId({ orderId });
   }
 
   @Query(() => [Order])
   async fetchOrdersByProductId(@Args('productId') productId: string) {
+    //LOGGING
+    console.log('API Fetch Orders By Product Id Requested');
+
     return await this.ordersService.findAllByProductId({ productId });
   }
 
@@ -39,6 +48,9 @@ export class OrdersResolver {
     @Args('quantity') quantity: number,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log('API Create Order Requested');
+
     const order = await this.ordersService.createOrder({
       userId: ctx.req.user.id,
       productId,
@@ -57,6 +69,9 @@ export class OrdersResolver {
     @Args('orderId') orderId: string,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log('API Cancel Order Requested');
+
     return await this.ordersService.reqCancelOrder({
       userId: ctx.req.user.id,
       orderId,
@@ -65,6 +80,9 @@ export class OrdersResolver {
 
   @Mutation(() => Order)
   async cancelOrderAccept(@Args('orderId') orderId: string) {
+    //LOGGING
+    console.log('API Cancel Order Accepted');
+
     const order = await this.ordersService.acceptCancelOrder({ orderId });
     await this.pointsService.updateUserPoint({
       userId: order.user.id,

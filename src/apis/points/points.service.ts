@@ -15,6 +15,9 @@ export class PointsService {
   ) {}
 
   async createPoint({ amount, userId }) {
+    //LOGGING
+    console.log('PointsService.createPoint()');
+
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -35,6 +38,10 @@ export class PointsService {
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
+
+      //LOGGING
+      console.log('PointsService.createPoint() - point', point);
+
       return point;
     } catch (err) {
       // ROLLBACK TRANSACTION
@@ -47,6 +54,9 @@ export class PointsService {
   }
 
   async refundPoint({ amount, userId }) {
+    //LOGGING
+    console.log('PointsService.refundPoint()');
+
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -67,6 +77,10 @@ export class PointsService {
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
+
+      //LOGGING
+      console.log('PointsService.refundPoint() - point', point);
+
       return point;
     } catch (err) {
       // ROLLBACK TRANSACTION
@@ -79,6 +93,9 @@ export class PointsService {
   }
 
   async updateUserPoint({ userId }) {
+    //LOGGING
+    console.log('PointsService.updateUserPoint()');
+
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -100,6 +117,10 @@ export class PointsService {
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
+
+      //LOGGING
+      console.log('PointsService.updateUserPoint() - user', user);
+
       return user;
     } catch (err) {
       // ROLLBACK TRANSACTION
@@ -112,6 +133,9 @@ export class PointsService {
   }
 
   async findAllHistoryByOrderId({ orderId }) {
+    //LOGGING
+    console.log('PointsService.findAllHistoryByOrderId()');
+
     return this.pointsRepository
       .createQueryBuilder('point')
       .leftJoinAndSelect('point.user', 'user')
@@ -121,6 +145,9 @@ export class PointsService {
   }
 
   async findAllHistoryByUserId({ userId }) {
+    //LOGGING
+    console.log('PointsService.findAllHistoryByUserId()');
+
     return this.pointsRepository
       .createQueryBuilder('point')
       .leftJoinAndSelect('point.user', 'user')
@@ -130,6 +157,9 @@ export class PointsService {
   }
 
   async getPoint({ userId }) {
+    //LOGGING
+    console.log('PointsService.getPoint()');
+
     return this.pointsRepository
       .createQueryBuilder('point')
       .select('SUM(point.point)', 'userPoint')

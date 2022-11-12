@@ -21,6 +21,8 @@ export class OrdersService {
   ) {}
 
   async findOneByOrderId({ orderId }) {
+    //LOGGING
+    console.log('OrdersService.findOneByOrderId()');
     return await this.orderRepository
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.user', 'user')
@@ -30,6 +32,8 @@ export class OrdersService {
   }
 
   async findAllByUserId({ userId }) {
+    //LOGGING
+    console.log('OrdersService.findAllByUserId()');
     return await this.orderRepository
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.user', 'user')
@@ -39,6 +43,8 @@ export class OrdersService {
   }
 
   async findAllByProductId({ productId }) {
+    //LOGGING
+    console.log('OrdersService.findAllByProductId()');
     return await this.orderRepository
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.user', 'user')
@@ -48,6 +54,8 @@ export class OrdersService {
   }
 
   async createOrder({ userId, productId, price, quantity }) {
+    //LOGGING
+    console.log('OrdersService.createOrder()');
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -98,6 +106,8 @@ export class OrdersService {
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
 
+      //LOGGING
+      console.log('Order Created ', order);
       return order;
     } catch (err) {
       // ROLLBACK TRANSACTION
@@ -130,6 +140,9 @@ export class OrdersService {
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
+
+      //LOGGING
+      console.log('Order Request Cancelled ', reqOrder);
 
       return reqOrder;
     } catch (err) {
@@ -184,6 +197,9 @@ export class OrdersService {
         creatorPointData,
       );
       await this.pointsService.updateUserPoint({ userId: creator.id });
+
+      //LOGGING
+      console.log('Order Accepted Cancelled ', reqOrder);
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();

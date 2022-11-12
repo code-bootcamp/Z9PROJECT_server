@@ -4,13 +4,19 @@ import axios from 'axios';
 @Injectable()
 export class IamportService {
   private getAccessToken = async () => {
+    //LOGGING
+    console.log('IamportService.getAccessToken()');
+
     return await axios.post('https://api.iamport.kr/users/getToken', {
       imp_key: process.env.IAMPORT_REST_API_KEY,
       imp_secret: process.env.IAMPORT_REST_API_SECRET,
     });
   };
 
-  async validatePayment({ impUid, amount }) {
+  async validatePayment({ impUid }) {
+    //LOGGING
+    console.log('IamportService.validatePayment()');
+
     // get access token from iamport
     const { data: accessTokenData } = await this.getAccessToken();
 
@@ -28,10 +34,17 @@ export class IamportService {
       });
     if (paymentData.code !== 0)
       throw new UnprocessableEntityException(paymentData.message);
-    else return paymentData;
+    else {
+      //LOGGING
+      console.log(`Payment Validated : ${impUid}`);
+      return paymentData;
+    }
   }
 
   async refundPayment({ impUid, amount }) {
+    //LOGGING
+    console.log('IamportService.refundPayment()');
+
     // get access token from iamport
     const { data: accessTokenData } = await this.getAccessToken();
 
@@ -56,7 +69,8 @@ export class IamportService {
 
     if (paymentData.code !== 0)
       throw new UnprocessableEntityException(paymentData.message);
-
+    //LOGGING
+    console.log(`Payment Refunded : ${impUid}`);
     return paymentData;
   }
 }

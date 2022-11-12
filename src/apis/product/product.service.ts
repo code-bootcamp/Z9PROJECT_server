@@ -42,6 +42,9 @@ export class ProductService {
   ) {}
 
   async findOne({ productId }) {
+    //LOGGING
+    console.log('ProductService.findOne()');
+
     const result = await this.productRepository
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
@@ -51,6 +54,9 @@ export class ProductService {
   }
 
   async countProductByUserId({ userId }) {
+    //LOGGING
+    console.log('ProductService.countProductByUserId()');
+
     return await this.productRepository
       .createQueryBuilder('product')
       .where('product.user = :userId', { userId })
@@ -64,6 +70,9 @@ export class ProductService {
     type: PRODUCT_SEARCH_TYPE;
     option: PRODUCT_INCLUDE_OPTION;
   }) {
+    //LOGGING
+    console.log('ProductService.findProductByStatus()');
+
     if (type === PRODUCT_SEARCH_TYPE.ALL) {
       if (option === PRODUCT_INCLUDE_OPTION.INCLUDE_SOLDED_OUT) {
         return await this.productRepository
@@ -138,6 +147,9 @@ export class ProductService {
   }
 
   async findProductByCreator({ name }) {
+    //LOGGING
+    console.log('ProductService.findProductByCreator()');
+
     const user = await this.usersService.findOneByNickName(name);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -150,10 +162,16 @@ export class ProductService {
   }
 
   async findAll() {
+    //LOGGING
+    console.log('ProductService.findAll()');
+
     return await this.productRepository.find();
   }
 
   async create({ userId, createProductInput, createProductDetailInput }) {
+    //LOGGING
+    console.log('ProductService.create()');
+
     const calcDiscountRate: number =
       createProductInput.discountPrice !== null
         ? Math.ceil(
@@ -185,6 +203,9 @@ export class ProductService {
   }
 
   async update({ productId, updateProductInput, updateProductDetailInput }) {
+    //LOGGING
+    console.log('ProductService.update()');
+
     const originProduct: Product = await this.productRepository
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
@@ -221,6 +242,9 @@ export class ProductService {
   }
 
   async checkSoldout({ productId }): Promise<Product> {
+    //LOGGING
+    console.log('ProductService.checkSoldout()');
+
     const product: Product = await this.productRepository.findOne({
       where: { id: productId },
     });
@@ -231,6 +255,9 @@ export class ProductService {
   }
 
   async delete({ productId }) {
+    //LOGGING
+    console.log('ProductService.delete()');
+
     await this.productRepository.softDelete({ id: productId }).catch(() => {
       throw new UnprocessableEntityException('삭제 실패');
     });
@@ -241,6 +268,9 @@ export class ProductService {
   }
 
   async checkBussinessNumber({ createProductInput }) {
+    //LOGGING
+    console.log('ProductService.checkBussinessNumber()');
+
     const { brn } = createProductInput;
     const url = `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.SERVICEKEY}`;
     const isValidation = await axios

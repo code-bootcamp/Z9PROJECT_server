@@ -15,6 +15,9 @@ export class PointsResolver {
     @Args('amount') amount: number,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log('API Request Point Refund Requested');
+
     const point = await this.pointsService.refundPoint({
       amount,
       userId: ctx.req.user.id,
@@ -29,6 +32,9 @@ export class PointsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => [Point])
   async fetchPointHistory(@Context() ctx: IContext) {
+    //LOGGING
+    console.log('API Fetch Point History Requested');
+
     return await this.pointsService.findAllHistoryByUserId({
       userId: ctx.req.user.id,
     });
@@ -37,6 +43,9 @@ export class PointsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Number)
   async fetchMyPoint(@Context() ctx: IContext) {
+    //LOGGING
+    console.log('API Fetch My Point Requested');
+
     return await this.pointsService.getPoint({ userId: ctx.req.user.id });
   }
 }

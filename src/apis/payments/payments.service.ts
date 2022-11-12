@@ -19,6 +19,8 @@ export class PaymentsService {
   ) {}
 
   async createPayment({ impUid, amount, userId }) {
+    //LOGGING
+    console.log('PaymentsService.createPayment()');
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -40,7 +42,6 @@ export class PaymentsService {
       }
       const isValid = await this.iamportService.validatePayment({
         impUid,
-        amount,
       });
       if (isValid == null) {
         throw new ConflictException('유효하지 않은 결제입니다.');
@@ -70,6 +71,9 @@ export class PaymentsService {
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
 
+      //LOGGING
+      console.log('PaymentsService.createPayment() payment', payment);
+
       return payment;
     } catch (error) {
       // ROLLBACK TRANSACTION
@@ -82,6 +86,9 @@ export class PaymentsService {
   }
 
   async refundPayment({ impUid, amount, userId }) {
+    //LOGGING
+    console.log('PaymentsService.refundPayment()');
+
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -108,7 +115,6 @@ export class PaymentsService {
       // VALIDATE PAYMENT
       const isValid = await this.iamportService.validatePayment({
         impUid,
-        amount,
       });
       if (isValid == null) {
         throw new ConflictException('유효하지 않은 결제입니다.');
@@ -147,6 +153,9 @@ export class PaymentsService {
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
+
+      //LOGGING
+      console.log('PaymentsService.refundPayment() payment', payment);
 
       return payment;
     } catch (error) {

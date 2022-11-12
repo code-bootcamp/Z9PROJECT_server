@@ -18,12 +18,14 @@ export class ProductLikeService {
   ) {}
 
   async likeProduct({ productId, userId }) {
+    //LOGGING
+    console.log('ProductLikeService.likeProduct()');
+
     const checkLike = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
       .andWhere('productLike.userId = :userId', { userId })
       .getOne();
-    console.log(checkLike);
     if (checkLike) {
       const result = await this.productLikeRepository
         .delete({
@@ -32,7 +34,6 @@ export class ProductLikeService {
         .catch(() => {
           throw new UnprocessableEntityException('좋아요 실패');
         });
-      console.log(result);
       return false;
     } else {
       const result = await this.productLikeRepository
@@ -43,12 +44,14 @@ export class ProductLikeService {
         .catch(() => {
           throw new UnprocessableEntityException('좋아요 실패');
         });
-      console.log(result);
       return true;
     }
   }
 
   async isLiked({ productId, userId }): Promise<boolean> {
+    //LOGGING
+    console.log('ProductLikeService.isLiked()');
+
     const checkLike = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
@@ -65,13 +68,15 @@ export class ProductLikeService {
   }
 
   async findAllLikes({ userId }) {
+    //LOGGING
+    console.log('ProductLikeService.findAllLikes()');
+
     const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.userId = :userId', { userId })
       .leftJoinAndSelect('productLike.product', 'product')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getMany();
-    console.log('productIds', productIds);
     const products: Product[] = await Promise.all(
       productIds.map(async (productId): Promise<Product> => {
         return await this.productService.findOne({
@@ -79,11 +84,13 @@ export class ProductLikeService {
         });
       }),
     );
-    console.log('products', products);
     return products;
   }
 
   async countLikes({ productId }): Promise<number> {
+    //LOGGING
+    console.log('ProductLikeService.countLikes()');
+
     const count = await this.productLikeRepository
       .createQueryBuilder('productLike')
       .where('productLike.productId = :productId', { productId })
