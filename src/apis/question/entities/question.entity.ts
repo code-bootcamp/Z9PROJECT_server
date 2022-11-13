@@ -28,7 +28,7 @@ export class Question {
 
   @UpdateDateColumn()
   @Field(() => Date, { nullable: true })
-  upatedAt: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
   @Field(() => Date, { nullable: true })
