@@ -1,63 +1,86 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Answer } from 'src/apis/answer/entites/answer.entity';
-import { Product } from 'src/apis/product/entities/product.entity';
-import { User } from 'src/apis/users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { QuestionService } from './question.service';
+import { CreateQuestionInput } from './dto/createQuestion.input';
+import { Question } from './entities/question.entity';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
+import { UpdateQuestionInput } from './dto/updateQuestion.input';
 
-export enum QUESTION_STATUS_TYPE_ENUM {
-  PROGRESS = 'PROGRESS',
-  SOLVED = 'SOLVED',
-}
-registerEnumType(QUESTION_STATUS_TYPE_ENUM, {
-  name: 'QUESTION_STATUS_TYPE_ENUM',
-});
+@Resolver()
+export class QuestionResolver {
+  constructor(
+    private readonly questionService: QuestionService, //
+  ) {}
 
-@Entity()
-@ObjectType()
-export class Question {
-  @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
-  id: string;
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Question, { description: 'question signup' })
+  async createQuestion(
+    @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API Create Question Requested');
 
-  @Column()
-  @Field(() => String, { nullable: true })
-  question: string;
+    const result = await this.questionService.create({
+      createQuestionInput,
+    });
+    return result;
+  }
 
-  @CreateDateColumn()
-  @Field(() => Date, { nullable: true })
-  createdAt: Date;
-
-  @Column({
-    type: 'enum',
-    enum: QUESTION_STATUS_TYPE_ENUM,
-    nullable: true,
-    default: QUESTION_STATUS_TYPE_ENUM.PROGRESS,
+  @Query(() => Question, {
+    description: 'fetching Question',
+    name: 'fetchQuestion',
   })
-  @Field(() => QUESTION_STATUS_TYPE_ENUM, {
-    nullable: false,
-    defaultValue: QUESTION_STATUS_TYPE_ENUM.PROGRESS,
+  async fetchQuestion(@Args('questionId') questionId: string) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Question Requested');
+
+    const result = await this.questionService.findOne({ questionId });
+    return result;
+  }
+
+  @Query(() => [Question], {
+    description: ' fetching Questions',
+    name: 'fetchQuestions',
   })
-  status: QUESTION_STATUS_TYPE_ENUM;
+  async fetchQuestions() {
+    //LOGING
+    console.log(new Date(), ' | API Fetch Questions Requested');
 
-  @JoinColumn()
-  @OneToOne(() => Product)
-  @Field(() => Product)
-  product: Product;
+    return await this.questionService.findAll();
+  }
 
-  @JoinColumn()
-  @OneToOne(() => Product)
-  @Field(() => Product)
-  answer: Answer;
+  // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Question], {
+    description: 'fetching Questions by creators and commonUsers using userId',
+  })
+  async fetchMyQuestions(
+    @Args('userId') userId: string, //
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch My Questions Requested');
 
-  @ManyToOne(() => User)
-  @Field(() => User)
-  user: User;
+    return await this.questionService.findByMyQuestion({ userId });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Question)
+  updateQuestion(
+    @Args('questionId') questionId: string,
+    @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API Update Question Requested');
+
+    return this.questionService.update({ questionId, updateQuestionInput });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Boolean)
+  deleteQuestion(@Args('questionId') questionId: string) {
+    //LOGGING
+    console.log(new Date(), ' | API Delete Question Requested');
+
+    return this.questionService.remove({ questionId });
+  }
 }
