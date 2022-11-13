@@ -16,6 +16,7 @@ export class AnswerService {
 
     @InjectRepository(Question)
     private readonly QuestionRepository: Repository<Question>,
+
   ) {}
 
   async create({ createAnswerInput, question }) {
@@ -36,6 +37,7 @@ export class AnswerService {
       order: {
         createdAt: 'DESC',
       },
+
       relations: ['user'],
     });
   }
