@@ -36,6 +36,6 @@ export class Answer {
 
   @JoinColumn()
   @OneToOne(() => Question)
-  @Field(() => Question, { nullable: true })
+  @Field(() => Question, { nullable: false })
   question: Question;
 }

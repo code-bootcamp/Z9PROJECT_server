@@ -2,6 +2,9 @@ import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
+import { UpdateQuestionInput } from '../question/dto/updateQuestion.input';
+import { QUESTION_STATUS_TYPE_ENUM } from '../question/question.resolver';
+
 import { QuestionService } from '../question/question.service';
 import { USER_TYPE_ENUM } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -34,7 +37,14 @@ export class AnswerResolver {
     if (findUser.userType !== USER_TYPE_ENUM.CREATOR)
       throw new NotFoundException('크리에이터가 아닙니다.');
 
-    const question = await this.questionService.findOne({ questionId });
+    const updateQuestionInput: UpdateQuestionInput = {
+      status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+    };
+
+    const question = await this.questionService.update({
+      questionId,
+      updateQuestionInput,
+    });
 
     const result = await this.answerSerivce.create({
       createAnswerInput,

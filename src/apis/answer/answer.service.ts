@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Question } from '../question/entities/question.entity';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { Answer } from './entites/answer.entity';
@@ -12,6 +13,9 @@ export class AnswerService {
     private readonly AnswerRepository: Repository<Answer>,
 
     private readonly userSerivce: UsersService,
+
+    @InjectRepository(Question)
+    private readonly QuestionRepository: Repository<Question>,
   ) {}
 
   async create({ createAnswerInput, question }) {
@@ -29,6 +33,9 @@ export class AnswerService {
 
   async findAll(): Promise<Answer[]> {
     return await this.AnswerRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
       relations: ['user'],
     });
   }
@@ -42,6 +49,9 @@ export class AnswerService {
 
   async findAllByQuestion({ questionId }) {
     return await this.AnswerRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
       relations: ['question'],
       where: { question: { id: questionId } },
     });
