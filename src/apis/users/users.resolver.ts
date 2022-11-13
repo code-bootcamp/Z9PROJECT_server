@@ -6,51 +6,45 @@ import { UpdateUserInput } from './dto/updateUser.input';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
-import {
-  UnauthorizedException,
-  UnprocessableEntityException,
-  UseGuards,
-} from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { SmsAuth } from '../auth/sms.service';
 
 @Resolver()
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(() => User, { description: 'fetching single creator by userId' })
-  async fetchCreator(@Args('userId') userId: string) {
-    const creator = await this.usersService.findOneByUserId(userId);
-    if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
-      throw new UnprocessableEntityException(
-        'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
-      );
-    }
+  // @Query(() => User, { description: 'fetching single creator by userId' })
+  // async fetchCreator(@Args('userId') userId: string) {
+  //   //LOGGING
+  //   console.log(new Date(), ' | API fetch creator requested');
 
-    return creator;
-  }
+  //   const creator = await this.usersService.findOneByUserId(userId);
+  //   if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
+  //     throw new UnprocessableEntityException(
+  //       'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
+  //     );
+  //   }
+
+  //   return creator;
+  // }
 
   @Query(() => [User], { description: 'fetching multiple creators' })
   async fetchCreators(
     @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
   ) {
-    let creator = null;
-    const creators = usersId.map(async (userId) => {
-      creator = await this.usersService.findOneByUserId(userId);
-      if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
-        throw new UnprocessableEntityException(
-          'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
-        );
-      }
-      return creator;
-    });
+    //LOGGING
+    console.log(new Date(), ' | API fetch creators requested');
 
-    return creators;
+    return await this.usersService.findAllCreator();
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User, { description: 'fetching user details logined' })
-  fetchUser(@Context() context: IContext) {
-    return this.usersService.findOneByUserId(context.req.user.id);
+  async fetchUser(@Context() context: IContext) {
+    //LOGGING
+    console.log(new Date(), ' | API fetch user requested');
+
+    return await this.usersService.findOneByUserId(context.req.user.id);
   }
 
   @Mutation(() => User, { description: 'user signup' })
@@ -58,7 +52,9 @@ export class UsersResolver {
     @Args('signupId') signupId: string,
     @Args('createCommonUserInput') createCommonUserInput: CreateCommonUserInput,
   ) {
-    console.log(createCommonUserInput);
+    //LOGGING
+    console.log(new Date(), ' | API create user requested');
+
     createCommonUserInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCommonUserInput.phoneNumber,
     );
@@ -81,11 +77,13 @@ export class UsersResolver {
     @Args('signupId') signupId: string,
     @Args('createCreatorInput') createCreatorInput: CreateCreatorInput,
   ) {
-    console.log(createCreatorInput);
+    //LOGGING
+    console.log(new Date(), ' | API create creator requested');
+
     createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCreatorInput.phoneNumber,
     );
-    
+
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
@@ -103,6 +101,9 @@ export class UsersResolver {
     description: 'return true if user nickname is already exist',
   })
   async checkNickname(@Args('nickname') nickname: string) {
+    //LOGGING
+    console.log(new Date(), ' | API check nickname requested');
+
     if (await this.usersService.findOneByNickName(nickname)) return true;
     return false;
   }
@@ -113,6 +114,9 @@ export class UsersResolver {
     @Args('userId') userId: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
+    //LOGGING
+    console.log(new Date(), ' | API update user requested');
+
     return this.usersService.update({
       userId,
       updateUserInput,
@@ -128,6 +132,9 @@ export class UsersResolver {
     @Args('prevPassword') prevPassword: string,
     @Context() ctx: IContext,
   ) {
+    //LOGGING
+    console.log(new Date(), ' | API validate password requested');
+
     return await this.usersService.isSameLoginPassword(
       ctx.req.user.id,
       prevPassword,
@@ -137,29 +144,21 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User, { description: 'update user password' })
   async updatePassword(
-    @Args('userId') userId: string,
     @Args('password') password: string,
     @Context() ctx: IContext,
   ) {
-    if (userId !== ctx.req.user.id)
-      throw new UnauthorizedException(
-        '로그인한 회원의 정보는 본인만 수정 가능합니다.',
-      );
-    return this.updateUser(userId, { password });
+    //LOGGING
+    console.log(new Date(), ' | API update password requested');
+
+    return await this.updateUser(ctx.req.user.id, { password });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean, { description: 'delete user' })
-  deleteUser(
-    @Args('userId') userId: string, //
-    @Context() ctx: IContext,
-  ) {
-    if (userId !== ctx.req.user.id) {
-      throw new UnauthorizedException(
-        '로그인한 회원정보 삭제는 본인만 가능합니다.',
-      );
-    }
+  async deleteUser(@Context() ctx: IContext) {
+    //LOGGING
+    console.log(new Date(), ' | API delete user requested');
 
-    return this.usersService.delete(userId);
+    return await this.usersService.delete(ctx.req.user.id);
   }
 }

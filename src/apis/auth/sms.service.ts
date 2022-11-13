@@ -3,9 +3,16 @@ import coolsms from 'coolsms-node-sdk';
 
 export class SmsAuth {
   public static getCorrectPhoneNumber(phoneNumber: string) {
+    //LOGGING
+    console.log(new Date(), ' | SmsAuth.getCorrectPhoneNumber()');
+
     const regex = /(^\d{3}-\d{3,4}-\d{4}$)|(^\d{10,11}$)/;
     if (!regex.test(phoneNumber)) {
-      console.log('휴대폰 형식을 제대로 입력해 주세요.', phoneNumber);
+      console.log(
+        new Date(),
+        ' | 휴대폰 형식을 제대로 입력해 주세요.',
+        phoneNumber,
+      );
       throw new UnprocessableEntityException(
         '폰번호 형식을 제대로 입력해 주세요.',
       );
@@ -15,12 +22,15 @@ export class SmsAuth {
   }
 
   public static getSmsToken(digit = 6) {
+    //LOGGING
+    console.log(new Date(), ' | SmsAuth.getSmsToken()');
+
     if (!digit || isNaN(digit)) {
-      console.log('자리수를 제대로 입력해 주세요');
+      console.log(new Date(), ' | 자리수를 제대로 입력해 주세요');
       return false;
     }
     if (digit < 2 || digit >= 10) {
-      console.log('에러발생! 범위가 너무 작거나 너무 큽니다');
+      console.log(new Date(), ' | 에러발생! 범위가 너무 작거나 너무 큽니다');
       return false;
     }
 
@@ -32,6 +42,9 @@ export class SmsAuth {
   }
 
   public static async sendSmsTokenToPhone(phoneNumber, result) {
+    //LOGGING
+    console.log(new Date(), ' | SmsAuth.sendSmsTokenToPhone()');
+
     const SMS_API_KEY = process.env.SMS_API_KEY;
     const SMS_API_SECRET = process.env.SMS_API_SECRET;
     const SMS_SENDER_TEL = process.env.SMS_SENDER_TEL;
@@ -45,6 +58,8 @@ export class SmsAuth {
     //   autoTypeDetect: true,
     // });
     // console.log(response);
-    console.log(`${phoneNumber}번호로 인증번호 ${result}를 전송합니다!!!`);
+    console.log(
+      `${new Date()} | ${phoneNumber}번호로 인증번호 ${result}를 전송합니다!!!`,
+    );
   }
 }

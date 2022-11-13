@@ -11,6 +11,9 @@ export class ImageResolver {
   async uploadImage(
     @Args({ name: 'image', type: () => GraphQLUpload }) image: FileUpload,
   ) {
+    //LOGGING
+    console.log(new Date(), ' | API uploadImage requested');
+
     return await this.imageService.uploadOne({ data: image });
   }
 
@@ -18,6 +21,9 @@ export class ImageResolver {
   async uploadImages(
     @Args({ name: 'images', type: () => [GraphQLUpload] }) images: FileUpload[],
   ) {
+    //LOGGING
+    console.log(new Date(), ' | API uploadImages requested');
+
     return await this.imageService.uploadMany({ data: images });
   }
 }

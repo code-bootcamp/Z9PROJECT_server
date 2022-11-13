@@ -14,14 +14,28 @@ export class AuthService {
   ) {}
 
   setRefreshToken({ user, req, res }) {
+    //LOGGING
+    console.log(new Date(), ' | AuthService.setRefreshToken()');
+
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: '2w' },
     );
 
+    this.setCookie(req, res, refreshToken);
+  }
+
+  setCookie(req, res, refreshToken = null, user = null) {
+    //LOGGING
+    console.log(new Date(), ' | AuthService.setCookie()');
+
+    let cookie = '';
     if (process.env.DEPLOY_ENV === 'LOCAL') {
-      // 개발환경용
-      res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+      // 로컬개발환경용
+      if (refreshToken) cookie = `refreshToken=${refreshToken}; path=/;`;
+      else cookie = `snsLoginInfo=${user}; path=/;`;
+
+      res.setHeader('Set-Cookie', cookie);
     } else {
       const originList = process.env.ORIGIN_LIST.split(',');
       const origin = req.headers.origin;
@@ -37,16 +51,25 @@ export class AuthService {
         'Access-Control-Allow-Headers',
         'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers',
       );
-      res.setHeader(
-        'Set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=${
+
+      if (refreshToken) {
+        cookie = `refreshToken=${refreshToken}; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=${
           3600 * 24 * 14
-        };`,
-      );
+        };`;
+      } else {
+        cookie = `snsLoginInfo=${user}; path=/;`;
+      }
+      res.setHeader('Set-Cookie', cookie);
+
+      //LOGGING
+      console.log(new Date(), ' | setRefreshToken', refreshToken);
     }
   }
 
   getAccessToken({ user }) {
+    //LOGGING
+    console.log(new Date(), ' | AuthService.getAccessToken()');
+
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: process.env.ACCESS_TOKEN_KEY, expiresIn: '1h' },
@@ -54,6 +77,9 @@ export class AuthService {
   }
 
   verifyToken(accToken, refreshToken) {
+    //LOGGING
+    console.log(new Date(), ' | AuthService.verifyToken()');
+
     let decodedAccToken = null;
     let decodedRefreshToken = null;
     try {
@@ -73,6 +99,9 @@ export class AuthService {
   }
 
   async logout({ req, res }) {
+    //LOGGING
+    console.log(new Date(), ' | AuthService.logout()');
+
     const accToken = req.headers['authorization'].replace('Bearer ', '');
     const refreshToken = req.headers['cookie'].replace('refreshToken=', '');
 
@@ -109,7 +138,6 @@ export class AuthService {
         `refreshToken=; path=/; domain=.brian-hong.tech; SameSite=None; Secure; httpOnly; Max-Age=0;`,
       );
     }
-
     return '로그아웃에 성공했습니다.';
   }
 }

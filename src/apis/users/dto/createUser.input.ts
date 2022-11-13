@@ -1,5 +1,4 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { stringify } from 'uuid';
 import { SNS_TYPE_ENUM, USER_TYPE_ENUM } from '../entities/user.entity';
 
 @InputType()

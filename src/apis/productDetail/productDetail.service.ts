@@ -11,6 +11,9 @@ export class ProductDetailService {
   ) {}
 
   async findDetail({ productId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductDetailService.findDetail()');
+
     return await this.productDetailRepository
       .createQueryBuilder('productDetail')
       .where('productDetail.product = :productId', { productId })
@@ -18,6 +21,9 @@ export class ProductDetailService {
   }
 
   async createDetail({ productId, ...rest }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductDetailService.createDetail()');
+
     const productDetail = this.productDetailRepository.create({
       product: { id: productId },
       ...rest,
@@ -27,6 +33,9 @@ export class ProductDetailService {
   }
 
   async updateDetail({ productId, ...rest }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductDetailService.updateDetail()');
+
     const productDetail = await this.findDetail({ productId });
 
     if (!productDetail) {
@@ -42,6 +51,9 @@ export class ProductDetailService {
   }
 
   async deleteDetail({ productId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductDetailService.deleteDetail()');
+
     const productDetail = await this.findDetail({ productId });
 
     if (!productDetail) {
