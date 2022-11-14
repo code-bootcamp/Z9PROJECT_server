@@ -31,7 +31,13 @@ export class OrdersResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Number)
-  async fetchCountOfOrderByUserId(@Context() ctx: IContext) {
+  async fetchCountOfOrderByUserId(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+  ) {
     //LOGGING
     console.log(
       new Date(),
@@ -40,6 +46,8 @@ export class OrdersResolver {
 
     return await this.ordersService.countByUserId({
       userId: ctx.req.user.id,
+      startDate,
+      endDate,
     });
   }
 
@@ -66,7 +74,13 @@ export class OrdersResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Number)
-  async fetchCountOfOrderByCreatorId(@Context() ctx: IContext) {
+  async fetchCountOfOrderByCreatorId(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+  ) {
     //LOGGING
     console.log(
       new Date(),
@@ -75,6 +89,8 @@ export class OrdersResolver {
 
     return await this.ordersService.countByCreatorId({
       userId: ctx.req.user.id,
+      startDate,
+      endDate,
     });
   }
 
