@@ -33,16 +33,16 @@ export class QuestionService {
     return result;
   }
 
-  async findAll(): Promise<Question[]> {
+  async findAll({ productId }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
-    return await this.questionRepository.find({
-      order: {
-        createdAt: 'desc',
-      },
-      relations: ['user', 'product'],
-    });
+    return await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.user', 'user')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('product.id = :productId', { productId })
+      .getMany();
   }
 
   async findOne({ questionId }): Promise<Question> {
@@ -58,7 +58,7 @@ export class QuestionService {
   async findByMyQuestion({ userId }) {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findByMyQuestion()');
-    
+
     return this.questionRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'product'],
@@ -67,7 +67,12 @@ export class QuestionService {
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
-    console.log(new Date(), ' | QuestionService.update()')
+    console.log(new Date(), ' | QuestionService.update()');
+
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .where('question.id = :questionId', { questionId })
+      .getOne();
 
     const newQuestsion: Question = {
       ...question,
@@ -79,7 +84,7 @@ export class QuestionService {
   async remove({ questionId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
-    
+
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
   }

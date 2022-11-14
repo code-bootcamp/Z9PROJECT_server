@@ -3,7 +3,7 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { UpdateQuestionInput } from '../question/dto/updateQuestion.input';
-import { QUESTION_STATUS_TYPE_ENUM } from '../question/question.resolver';
+import { QUESTION_STATUS_TYPE_ENUM } from '../question/entities/question.entity';
 import { QuestionService } from '../question/question.service';
 import { USER_TYPE_ENUM } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -44,7 +44,6 @@ export class AnswerResolver {
       questionId,
       updateQuestionInput,
     });
-    const question = await this.questionService.findOne({ questionId });
 
     const result = await this.answerSerivce.create({
       createAnswerInput,
