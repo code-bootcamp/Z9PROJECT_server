@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { Point } from './entities/point.entity';
@@ -30,7 +30,7 @@ export class PointsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => [Point])
+  @Query(() => [Point])
   async fetchPointHistory(@Context() ctx: IContext) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Point History Requested');
@@ -41,7 +41,7 @@ export class PointsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Number)
+  @Query(() => Number)
   async fetchMyPoint(@Context() ctx: IContext) {
     //LOGGING
     console.log(new Date(), ' | API Fetch My Point Requested');

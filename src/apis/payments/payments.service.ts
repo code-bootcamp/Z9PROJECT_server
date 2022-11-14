@@ -35,11 +35,11 @@ export class PaymentsService {
       });
 
       // VALIDATE PAYMENT
-      const isPaymentExist = await this.paymentsRepository
-        .createQueryBuilder('payment')
-        .setLock('pessimistic_write')
-        .where('payment.impUid = :impUid', { impUid })
-        .getOne();
+      const isPaymentExist = await queryRunner.manager.findOne(Payment, {
+        where: { impUid },
+        lock: { mode: 'pessimistic_write' },
+      });
+
       if (isPaymentExist) {
         throw new ConflictException('이미 결제된 거래입니다.');
       }
@@ -116,7 +116,7 @@ export class PaymentsService {
         .andWhere('payment.status = :status', {
           status: PAYMENT_STATUS_ENUM.CANCELED,
         })
-        .getOne();
+        .getRawOne();
       if (isRefund) {
         throw new ConflictException('이미 환불된 거래입니다.');
       }

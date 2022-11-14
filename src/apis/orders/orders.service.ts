@@ -42,6 +42,19 @@ export class OrdersService {
       .getMany();
   }
 
+  async findAllByCreatorId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | OrdersService.findAllByCreatorId()');
+
+    const productIds = await this.productService.findProductsByUserId({
+      userId,
+    });
+    const result = productIds.map(async (product) => {
+      return await this.findAllByProductId({ productId: product.id });
+    });
+    return result;
+  }
+
   async findAllByProductId({ productId }) {
     //LOGGING
     console.log(new Date(), ' | OrdersService.findAllByProductId()');

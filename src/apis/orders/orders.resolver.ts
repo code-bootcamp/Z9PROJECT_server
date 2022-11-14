@@ -40,6 +40,16 @@ export class OrdersResolver {
     return await this.ordersService.findAllByProductId({ productId });
   }
 
+  @Query(() => [Order])
+  async fetchOrdersByCreatorId(@Context() ctx: IContext) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Orders By Creator Id Requested');
+
+    return await this.ordersService.findAllByCreatorId({
+      userId: ctx.req.user.id,
+    });
+  }
+
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Order)
   async createOrder(

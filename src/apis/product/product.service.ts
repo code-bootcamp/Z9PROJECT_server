@@ -53,6 +53,17 @@ export class ProductService {
     return result;
   }
 
+  async findProductsByUserId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByUserId()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user = :userId', { userId })
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
+  }
+
   async countProductByUserId({ userId }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.countProductByUserId()');
