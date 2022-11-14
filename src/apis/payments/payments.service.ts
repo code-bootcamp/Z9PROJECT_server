@@ -5,6 +5,7 @@ import { Connection, Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Point, POINT_STATUS_ENUM } from '../points/entities/point.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -29,7 +30,9 @@ export class PaymentsService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+      });
 
       // VALIDATE PAYMENT
       const isPaymentExist = await this.paymentsRepository
@@ -101,7 +104,9 @@ export class PaymentsService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+      });
 
       // CHECK IF ALREADY REFUNDED
       const isRefund = await this.paymentsRepository
