@@ -31,10 +31,6 @@ export class Question {
   @Field(() => String, { nullable: true })
   question: string;
 
-  @CreateDateColumn()
-  @Field(() => Date, { nullable: true })
-  createdAt: Date;
-
   @Column({
     type: 'enum',
     enum: QUESTION_STATUS_TYPE_ENUM,
@@ -47,14 +43,25 @@ export class Question {
   })
   status: QUESTION_STATUS_TYPE_ENUM;
 
-  @JoinColumn()
-  @OneToOne(() => Product)
+  @CreateDateColumn()
+  @Field(() => Date, { nullable: true })
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => Date, { nullable: true })
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Field(() => Date, { nullable: true })
+  deletedAt: Date;
+
+  @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
 
   @JoinColumn()
-  @OneToOne(() => Product)
-  @Field(() => Product)
+  @OneToOne(() => Answer)
+  @Field(() => Answer)
   answer: Answer;
 
   @ManyToOne(() => User)

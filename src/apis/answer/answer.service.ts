@@ -11,12 +11,9 @@ export class AnswerService {
   constructor(
     @InjectRepository(Answer)
     private readonly AnswerRepository: Repository<Answer>,
-
     private readonly userSerivce: UsersService,
-
     @InjectRepository(Question)
     private readonly QuestionRepository: Repository<Question>,
-
   ) {}
 
   async create({ createAnswerInput, question }) {
@@ -37,7 +34,6 @@ export class AnswerService {
       order: {
         createdAt: 'DESC',
       },
-
       relations: ['user'],
     });
   }

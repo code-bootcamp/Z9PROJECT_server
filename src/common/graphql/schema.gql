@@ -144,7 +144,6 @@ type Question {
   user: User!
 }
 
-
 enum QUESTION_STATUS_TYPE_ENUM {
   PROGRESS
   SOLVED
@@ -247,14 +246,12 @@ type Query {
   """ fetching Questions"""
   fetchQuestions: [Question!]!
 
-
   """fetching Questions by creators and commonUsers using userId"""
   fetchMyQuestions(userId: String!): [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
   fetchOrdersByUserId: [Order!]!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
-
   fetchMyQuestions(userId: String!): [Question!]! @deprecated(reason: "fetching Questions by creators and commonUsers using userId ")
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
 }
@@ -340,7 +337,6 @@ type Mutation {
   createAnswer(questionId: String!, createAnswerInput: CreateAnswerInput!): Answer!
   updateAnswer(answerId: String!, updateAnswerInput: UpdateAnswerInput!): Answer!
   deleteAnswer(answerId: String!): Boolean!
-
   createPayment(impUid: String!, amount: Float!): Payment!
   refundPayment(impUid: String!, amount: Float!): Payment!
   requestPointRefund(amount: Float!): Boolean!
@@ -349,7 +345,6 @@ type Mutation {
   createOrder(productId: String!, price: Float!, quantity: Float!): Order!
   cancelOrderRequest(orderId: String!): Order!
   cancelOrderAccept(orderId: String!): Order!
-
 }
 
 input CreateProductInput {

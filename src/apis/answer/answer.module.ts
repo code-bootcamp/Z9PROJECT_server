@@ -7,10 +7,8 @@ import { ProductDetailService } from '../productDetail/productDetail.service';
 import { Question } from '../question/entities/question.entity';
 import { QuestionService } from '../question/question.service';
 import { User } from '../users/entities/user.entity';
-import { QuestionResolver } from '../question/question.resolver';
 import { QuestionService } from '../question/question.service';
 import { User } from '../users/entities/user.entity';
-import { UsersResolver } from '../users/users.resolver';
 import { UsersService } from '../users/users.service';
 import { AnswerResolver } from './answer.resolver';
 import { AnswerService } from './answer.service';
@@ -27,7 +25,6 @@ import { Answer } from './entites/answer.entity';
     ]),
   ],
   providers: [
-    UsersResolver,
     UsersService,
     AnswerResolver, //
     AnswerService,
