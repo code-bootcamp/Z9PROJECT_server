@@ -35,10 +35,12 @@ export class PaymentsService {
       });
 
       // VALIDATE PAYMENT
-      const isPaymentExist = await queryRunner.manager.findOne(Payment, {
-        where: { impUid },
-        lock: { mode: 'pessimistic_write' },
-      });
+      const isPaymentExist = await this.paymentsRepository
+        .createQueryBuilder('payment')
+        .useTransaction(true)
+        .setLock('pessimistic_write')
+        .where('payment.impUid = :impUid', { impUid })
+        .getOne();
 
       if (isPaymentExist) {
         throw new ConflictException('이미 결제된 거래입니다.');
@@ -46,6 +48,12 @@ export class PaymentsService {
       const isValid = await this.iamportService.validatePayment({
         impUid,
       });
+      console.log(
+        new Date(),
+        ' | PaymentsService.createPayment() isValid',
+        isValid,
+      );
+      console.log(amount);
       if (isValid == null) {
         throw new ConflictException('유효하지 않은 결제입니다.');
       } else {
