@@ -155,19 +155,17 @@ export class PointsService {
     if (startDate && endDate) {
       return this.pointsRepository
         .createQueryBuilder('point')
-        .select('COUNT(point.id)', 'count')
         .where('point.user = :userId', { userId })
         .andWhere('point.createdAt BETWEEN :startDate AND :endDate', {
           startDate,
           endDate,
         })
-        .getRawOne();
+        .getCount();
     } else {
       return this.pointsRepository
         .createQueryBuilder('point')
-        .select('COUNT(point.id)', 'count')
         .where('point.user = :userId', { userId })
-        .getRawOne();
+        .getCount();
     }
   }
 

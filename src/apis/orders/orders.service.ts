@@ -31,28 +31,86 @@ export class OrdersService {
       .getOne();
   }
 
-  async findAllByUserId({ userId }) {
+  async findAllByUserId({ userId, startDate, endDate, page }) {
     //LOGGING
     console.log(new Date(), ' | OrdersService.findAllByUserId()');
-    return await this.orderRepository
-      .createQueryBuilder('order')
-      .leftJoinAndSelect('order.user', 'user')
-      .leftJoinAndSelect('order.product', 'product')
-      .where('user.id = :userId', { userId })
-      .getMany();
+
+    if (startDate && endDate) {
+      const result = this.orderRepository
+        .createQueryBuilder('order')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.product', 'product')
+        .where('user.id = :userId', { userId })
+        .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
+          startDate,
+          endDate,
+        })
+        .orderBy('order.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+      return result;
+    } else {
+      const result = this.orderRepository
+        .createQueryBuilder('order')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.product', 'product')
+        .where('user.id = :userId', { userId })
+        .orderBy('order.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+      return result;
+    }
   }
 
-  async findAllByCreatorId({ userId }) {
+  async findAllByCreatorId({ userId, startDate, endDate, page }) {
     //LOGGING
     console.log(new Date(), ' | OrdersService.findAllByCreatorId()');
 
-    const productIds = await this.productService.findProductsByUserId({
-      userId,
-    });
-    const result = productIds.map(async (product) => {
-      return await this.findAllByProductId({ productId: product.id });
-    });
-    return result;
+    if (startDate && endDate) {
+      const productIds = await this.productService.findProductsByUserId({
+        userId,
+      });
+      const orders = [];
+      productIds.map(async (product) => {
+        orders.push(
+          await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect('order.product', 'product')
+            .where('product.id = :productId', { productId: product.id })
+            .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
+              startDate,
+              endDate,
+            })
+            .orderBy('order.createdAt', 'DESC')
+            .skip((page - 1) * 10)
+            .take(10)
+            .getMany(),
+        );
+      });
+      return orders;
+    } else {
+      const productIds = await this.productService.findProductsByUserId({
+        userId,
+      });
+      const orders = [];
+      productIds.map(async (product) => {
+        orders.push(
+          await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect('order.product', 'product')
+            .where('product.id = :productId', { productId: product.id })
+            .orderBy('order.createdAt', 'DESC')
+            .skip((page - 1) * 10)
+            .take(10)
+            .getMany(),
+        );
+      });
+      return orders;
+    }
   }
 
   async findAllByProductId({ productId }) {
@@ -64,6 +122,35 @@ export class OrdersService {
       .leftJoinAndSelect('order.product', 'product')
       .where('product.id = :productId', { productId })
       .getMany();
+  }
+
+  async countByCreatorId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | OrdersService.countByCreatorId()');
+
+    const productIds = await this.productService.findProductsByUserId({
+      userId,
+    });
+    let count = 0;
+    productIds.map(async (product) => {
+      count += await this.orderRepository
+        .createQueryBuilder('order')
+        .leftJoinAndSelect('order.product', 'product')
+        .where('product.id = :productId', { productId: product.id })
+        .getCount();
+    });
+    return count;
+  }
+
+  async countByUserId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | OrdersService.countByUserId()');
+
+    return await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.user', 'user')
+      .where('user.id = :userId', { userId })
+      .getCount();
   }
 
   async createOrder({ userId, productId, price, quantity }) {

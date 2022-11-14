@@ -13,17 +13,6 @@ export class OrdersResolver {
     private readonly pointsService: PointsService,
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard)
-  @Query(() => [Order])
-  async fetchOrdersByUserId(@Context() ctx: IContext) {
-    //LOGGING
-    console.log(new Date(), ' | API Fetch Orders By User Id Requested');
-
-    return await this.ordersService.findAllByUserId({
-      userId: ctx.req.user.id,
-    });
-  }
-
   @Query(() => Order)
   async fetchOrder(@Args('orderId') orderId: string) {
     //LOGGING
@@ -40,13 +29,73 @@ export class OrdersResolver {
     return await this.ordersService.findAllByProductId({ productId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Number)
+  async fetchCountOfOrderByUserId(@Context() ctx: IContext) {
+    //LOGGING
+    console.log(
+      new Date(),
+      ' | API Fetch Count Of Order By Creator Id Requested',
+    );
+
+    return await this.ordersService.countByUserId({
+      userId: ctx.req.user.id,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Order])
-  async fetchOrdersByCreatorId(@Context() ctx: IContext) {
+  async fetchOrdersByUserId(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+    @Args('page') page: number,
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Orders By User Id Requested');
+
+    return await this.ordersService.findAllByUserId({
+      userId: ctx.req.user.id,
+      startDate,
+      endDate,
+      page,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Number)
+  async fetchCountOfOrderByCreatorId(@Context() ctx: IContext) {
+    //LOGGING
+    console.log(
+      new Date(),
+      ' | API Fetch Count Of Order By Creator Id Requested',
+    );
+
+    return await this.ordersService.countByCreatorId({
+      userId: ctx.req.user.id,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Order])
+  async fetchOrdersByCreatorId(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+    @Args('page') page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Orders By Creator Id Requested');
 
     return await this.ordersService.findAllByCreatorId({
       userId: ctx.req.user.id,
+      startDate,
+      endDate,
+      page,
     });
   }
 
