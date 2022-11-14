@@ -135,24 +135,30 @@ type SmsPostReturn {
   message: String!
 }
 
-type Question {
-  id: String!
-  question: String
-  createdAt: DateTime
-  upatedAt: DateTime
-  deletedAt: DateTime
-  isDeleted: Boolean!
-  product: Product!
-  user: User!
-}
-
 type Answer {
   id: String!
   answer: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  question: Question
+  question: Question!
+}
+
+type Question {
+  id: String!
+  question: String
+  createdAt: DateTime
+  deletedAt: DateTime
+  updatedAt: DateTime
+  status: QUESTION_STATUS_TYPE_ENUM!
+  product: Product!
+  answer: Product!
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
 }
 
 type Order {
@@ -475,6 +481,7 @@ input CreateQuestionInput {
   isDeleted: Boolean = false
   userId: String!
   productId: String!
+  status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
 input UpdateQuestionInput {
@@ -485,6 +492,7 @@ input UpdateQuestionInput {
   isDeleted: Boolean = false
   userId: String
   productId: String
+  status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
 input CreateAnswerInput {
