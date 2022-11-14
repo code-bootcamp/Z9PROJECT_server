@@ -161,6 +161,15 @@ enum QUESTION_STATUS_TYPE_ENUM {
   SOLVED
 }
 
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
+}
+
 type Order {
   id: String!
   price: Int!
@@ -255,6 +264,32 @@ type Query {
   fetchOrdersByUserId: [Order!]!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
+  fetchMyQuestions(userId: String!): [Question!]! @deprecated(reason: "fetching Questions by creators and commonUsers using userId ")
+  fetchLoginUserAnswer(questionId: String!): [Answer!]!
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
 }
 
 enum PRODUCT_SEARCH_TYPE {

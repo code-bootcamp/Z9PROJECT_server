@@ -26,11 +26,8 @@ export class QuestionService {
     console.log(new Date(), ' | QuestionService.create()');
 
     const { userId, productId, ...question } = createQuestionInput;
-
     const user: User = await this.userSerivce.findOneByUserId(userId);
-
     const product: Product = await this.productSerivce.findOne({ productId });
-
     const result: Question = await this.questionRepository.save({
       ...question,
       product,
@@ -44,6 +41,9 @@ export class QuestionService {
     console.log(new Date(), ' | QuestionService.findAll()');
 
     return await this.questionRepository.find({
+      order: {
+        createdAt: 'desc',
+      },
       relations: ['user', 'product'],
     });
   }
@@ -61,6 +61,7 @@ export class QuestionService {
   async findByMyQuestion({ userId }) {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findByMyQuestion()');
+    
     return this.questionRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'product'],
@@ -69,11 +70,11 @@ export class QuestionService {
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
-    console.log(new Date(), ' | QuestionService.update()');
+    console.log(new Date(), ' | QuestionService.update()')
 
     const newQuestsion: Question = {
+      ...question,
       ...updateQuestionInput,
-      id: questionId,
     };
     return await this.questionRepository.save(newQuestsion);
   }
@@ -81,7 +82,7 @@ export class QuestionService {
   async remove({ questionId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
-
+    
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
   }
