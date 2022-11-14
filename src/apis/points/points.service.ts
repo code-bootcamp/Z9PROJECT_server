@@ -148,16 +148,62 @@ export class PointsService {
       .getMany();
   }
 
-  async findAllHistoryByUserId({ userId }) {
+  async countPointHistoryByUserId({ userId, startDate, endDate }) {
+    //LOGGING
+    console.log(new Date(), ' | PointsService.countPointHistoryByUserId()');
+
+    if (startDate && endDate) {
+      return this.pointsRepository
+        .createQueryBuilder('point')
+        .select('COUNT(point.id)', 'count')
+        .where('point.user = :userId', { userId })
+        .andWhere('point.createdAt BETWEEN :startDate AND :endDate', {
+          startDate,
+          endDate,
+        })
+        .getRawOne();
+    } else {
+      return this.pointsRepository
+        .createQueryBuilder('point')
+        .select('COUNT(point.id)', 'count')
+        .where('point.user = :userId', { userId })
+        .getRawOne();
+    }
+  }
+
+  async findAllHistoryByUserId({ userId, startDate, endDate, page }) {
     //LOGGING
     console.log(new Date(), ' | PointsService.findAllHistoryByUserId()');
 
-    return this.pointsRepository
-      .createQueryBuilder('point')
-      .leftJoinAndSelect('point.user', 'user')
-      .leftJoinAndSelect('point.order', 'order')
-      .where('point.user = :userId', { userId })
-      .getMany();
+    if (startDate && endDate) {
+      //최신순으로 정렬
+      const result = await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .leftJoinAndSelect('point.order', 'order')
+        .where('point.user = :userId', { userId })
+        .andWhere('point.createdAt BETWEEN :startDate AND :endDate', {
+          startDate,
+          endDate,
+        })
+        .orderBy('point.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+      return result;
+    } else {
+      //최신순으로 정렬
+      const result = await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .leftJoinAndSelect('point.order', 'order')
+        .where('point.user = :userId', { userId })
+        .orderBy('point.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+      return result;
+    }
   }
 
   async getPoint({ userId }) {

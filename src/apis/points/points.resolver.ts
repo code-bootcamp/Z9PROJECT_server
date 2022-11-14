@@ -31,12 +31,41 @@ export class PointsResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Point])
-  async fetchPointHistory(@Context() ctx: IContext) {
+  async fetchPointHistory(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+    @Args('page') page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Point History Requested');
 
     return await this.pointsService.findAllHistoryByUserId({
       userId: ctx.req.user.id,
+      startDate,
+      endDate,
+      page,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Number)
+  async fetchCountOfPointHistory(
+    @Context() ctx: IContext,
+    @Args({ name: 'startDate', nullable: true, defaultValue: null })
+    startDate: Date,
+    @Args({ name: 'endDate', nullable: true, defaultValue: null })
+    endDate: Date,
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Count Of Point History Requested');
+
+    return await this.pointsService.countPointHistoryByUserId({
+      userId: ctx.req.user.id,
+      startDate,
+      endDate,
     });
   }
 
