@@ -57,7 +57,7 @@ export class PaymentsService {
       if (isValid == null) {
         throw new ConflictException('유효하지 않은 결제입니다.');
       } else {
-        if (isValid.data?.response.amount !== amount)
+        if (isValid.response.amount !== amount)
           throw new ConflictException('결제 금액 오류');
       }
 
