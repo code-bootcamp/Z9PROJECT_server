@@ -27,14 +27,14 @@ export class UsersService {
 
   private readonly encryptPassword = async (inputPassword): Promise<string> => {
     //LOGGING
-    console.log('UsersService.encryptPassword()');
+    console.log(new Date(), ' | UsersService.encryptPassword()');
 
     return await bcrypt.hash(inputPassword, parseInt(process.env.BCRYPT_SALT));
   };
 
   async findAllCreator() {
     //LOGGING
-    console.log('UsersService.findAllCreator()');
+    console.log(new Date(), ' | UsersService.findAllCreator()');
 
     return await this.usersRepository
       .createQueryBuilder('user')
@@ -44,28 +44,28 @@ export class UsersService {
 
   async findOneByUserId(userId) {
     //LOGGING
-    console.log('UsersService.findOneByUserId()');
+    console.log(new Date(), ' | UsersService.findOneByUserId()');
 
     return this.usersRepository.findOne({ where: { id: userId } });
   }
 
   async findOneByEmail(email) {
     //LOGGING
-    console.log('UsersService.findOneByEmail()');
+    console.log(new Date(), ' | UsersService.findOneByEmail()');
 
     return this.usersRepository.findOne({ where: { email } });
   }
 
   async findOneByNickName(nickname) {
     //LOGGING
-    console.log('UsersService.findOneByNickName()');
+    console.log(new Date(), ' | UsersService.findOneByNickName()');
 
     return this.usersRepository.findOne({ where: { nickname } });
   }
 
   async isSameLoginPassword(userId, password) {
     //LOGGING
-    console.log('UsersService.isSameLoginPassword()');
+    console.log(new Date(), ' | UsersService.isSameLoginPassword()');
 
     const user = await this.findOneByUserId(userId);
     return await bcrypt.compare(password, user.password);
@@ -73,7 +73,7 @@ export class UsersService {
 
   private async checkSmsAuth(phoneNumber: string, signupId: string) {
     //LOGGING
-    console.log('UsersService.checkSmsAuth()');
+    console.log(new Date(), ' | UsersService.checkSmsAuth()');
 
     const smsToken: ISmsToken = await this.cacheManager.get(
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
@@ -95,7 +95,7 @@ export class UsersService {
       | CreateCreatorInput,
   ) {
     //LOGGING
-    console.log('UsersService.checkUserBeforeCreate()');
+    console.log(new Date(), ' | UsersService.checkUserBeforeCreate()');
 
     const user = await this.usersRepository.findOne({
       where: { email: createUserInput.email },
@@ -120,7 +120,7 @@ export class UsersService {
       | CreateCreatorInput,
   ) {
     //LOGGING
-    console.log('UsersService.createUserInFinalStep()');
+    console.log(new Date(), ' | UsersService.createUserInFinalStep()');
 
     createUserInput.password = await this.encryptPassword(
       createUserInput.password,
@@ -136,7 +136,7 @@ export class UsersService {
       | CreateCreatorInput,
   ) {
     //LOGGING
-    console.log('UsersService.create()');
+    console.log(new Date(), ' | UsersService.create()');
 
     await this.checkUserBeforeCreate(signupId, createUserInput);
 
@@ -147,9 +147,13 @@ export class UsersService {
     return await this.createUserInFinalStep(createUserInput);
   }
 
+  async createUserObj(email: string, nickname: string, profileImg: string) {
+    return await this.usersRepository.create({ email, nickname, profileImg });
+  }
+
   async update({ userId, updateUserInput }) {
     //LOGGING
-    console.log('UsersService.update()');
+    console.log(new Date(), ' | UsersService.update()');
 
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -171,7 +175,7 @@ export class UsersService {
 
   async delete(userId: string) {
     //LOGGING
-    console.log('UsersService.delete()');
+    console.log(new Date(), ' | UsersService.delete()');
 
     const user = await this.usersRepository.findOne({
       where: { id: userId },

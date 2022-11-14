@@ -21,7 +21,7 @@ export class PaymentsResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Create Payment Requested');
+    console.log(new Date(), ' | API Create Payment Requested');
 
     const payment = await this.paymentsService.createPayment({
       impUid,
@@ -33,7 +33,7 @@ export class PaymentsResolver {
     });
 
     //LOGGING
-    console.log('User Point Updated', user.point);
+    console.log(new Date(), ' | User Point Updated', user.point);
 
     return payment;
   }
@@ -46,7 +46,7 @@ export class PaymentsResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Refund Payment Requested');
+    console.log(new Date(), ' | API Refund Payment Requested');
 
     const payment = await this.paymentsService.refundPayment({
       impUid,
@@ -58,7 +58,7 @@ export class PaymentsResolver {
     });
 
     //LOGGING
-    console.log('User Point Updated', user.point);
+    console.log(new Date(), ' | User Point Updated', user.point);
 
     return payment;
   }

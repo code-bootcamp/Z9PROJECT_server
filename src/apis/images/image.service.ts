@@ -16,7 +16,7 @@ export class ImageService {
 
   async uploadOne({ data }: { data: FileUpload }) {
     //LOGGING
-    console.log('ImageService.uploadOne()');
+    console.log(new Date(), ' | ImageService.uploadOne()');
 
     // Setup Minio Client
     const minioClient = new Minio.Client({
@@ -38,7 +38,7 @@ export class ImageService {
           if (err) {
             rej(err);
           }
-          console.log('========= etag =========', etag);
+          console.log(new Date(), ' | ========= etag =========', etag);
           res(`${process.env.OBJ_STORAGE_URL_PREFIX}${fname}`);
         },
       );
@@ -49,14 +49,16 @@ export class ImageService {
       fileName: data.filename,
     };
     const image: Image = await this.createImage({ image: databaseInput });
+
     //LOGGING
-    console.log('========= image =========', image);
+    console.log(new Date(), ' | ========= image =========', image);
+
     return image;
   }
 
   async uploadMany({ data }: { data: FileUpload[] }) {
     //LOGGING
-    console.log('ImageService.uploadMany()');
+    console.log(new Date(), ' | ImageService.uploadMany()');
 
     const queue = await Promise.all(data);
     const minioClient = new Minio.Client({
@@ -78,7 +80,7 @@ export class ImageService {
               if (err) {
                 rej(err);
               }
-              console.log('========= etag =========', etag);
+              console.log(new Date(), ' | ========= etag =========', etag);
               res(`${process.env.OBJ_STORAGE_URL_PREFIX}${fname}`);
             },
           );
@@ -95,7 +97,7 @@ export class ImageService {
       async (image) => await this.createImage({ image }),
     );
     //LOGGING
-    console.log('========= images =========', images);
+    console.log(new Date(), ' | ========= images =========', images);
     return images;
   }
 

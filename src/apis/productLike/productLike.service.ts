@@ -1,9 +1,5 @@
 import { ProductService } from './../product/product.service';
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductLike } from './entities/productLike.entity';
@@ -19,7 +15,7 @@ export class ProductLikeService {
 
   async likeProduct({ productId, userId }) {
     //LOGGING
-    console.log('ProductLikeService.likeProduct()');
+    console.log(new Date(), ' | ProductLikeService.likeProduct()');
 
     const checkLike = await this.productLikeRepository
       .createQueryBuilder('productLike')
@@ -50,7 +46,7 @@ export class ProductLikeService {
 
   async isLiked({ productId, userId }): Promise<boolean> {
     //LOGGING
-    console.log('ProductLikeService.isLiked()');
+    console.log(new Date(), ' | ProductLikeService.isLiked()');
 
     const checkLike = await this.productLikeRepository
       .createQueryBuilder('productLike')
@@ -69,7 +65,7 @@ export class ProductLikeService {
 
   async findAllLikes({ userId }) {
     //LOGGING
-    console.log('ProductLikeService.findAllLikes()');
+    console.log(new Date(), ' | ProductLikeService.findAllLikes()');
 
     const productIds = await this.productLikeRepository
       .createQueryBuilder('productLike')
@@ -89,7 +85,7 @@ export class ProductLikeService {
 
   async countLikes({ productId }): Promise<number> {
     //LOGGING
-    console.log('ProductLikeService.countLikes()');
+    console.log(new Date(), ' | ProductLikeService.countLikes()');
 
     const count = await this.productLikeRepository
       .createQueryBuilder('productLike')

@@ -1,12 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import {
-  Args,
-  CONTEXT,
-  Context,
-  Mutation,
-  Query,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
@@ -28,7 +21,7 @@ export class ProductResolver {
   @Query(() => Product, { description: 'fetching single product by productId' })
   fetchProduct(@Args('productId') productId: string) {
     //LOGGING
-    console.log('API Fetch Product Requested');
+    console.log(new Date(), ' | API Fetch Product Requested');
 
     return this.productService.findOne({ productId });
   }
@@ -36,7 +29,7 @@ export class ProductResolver {
   @Query(() => [Product], { description: 'fetching multiple product' })
   fetchProducts() {
     //LOGGING
-    console.log('API Fetch Products Requested');
+    console.log(new Date(), ' | API Fetch Products Requested');
 
     return this.productService.findAll();
   }
@@ -46,7 +39,7 @@ export class ProductResolver {
   })
   fetchProductsByCreator(@Args('nickname') nickname: string) {
     //LOGGING
-    console.log('API Fetch Products By Creator Requested');
+    console.log(new Date(), ' | API Fetch Products By Creator Requested');
 
     return this.productService.findProductByCreator({ name: nickname });
   }
@@ -61,9 +54,9 @@ export class ProductResolver {
     option: PRODUCT_INCLUDE_OPTION,
   ) {
     //LOGGING
-    console.log('API Fetch Products By Status Requested');
-    console.log('type: ', type);
-    console.log('option: ', option);
+    console.log(new Date(), ' | API Fetch Products By Status Requested');
+    console.log(new Date(), ' | type: ', type);
+    console.log(new Date(), ' | option: ', option);
 
     return this.productService.findProductByStatus({ type, option });
   }
@@ -71,7 +64,7 @@ export class ProductResolver {
   @Query(() => Number, { description: 'count product by userId' })
   countProductByUserId(@Args('userId') userId: string) {
     //LOGGING
-    console.log('API Count Product By UserId Requested');
+    console.log(new Date(), ' | API Count Product By UserId Requested');
 
     return this.productService.countProductByUserId({ userId });
   }
@@ -85,7 +78,7 @@ export class ProductResolver {
     @Context() ctx: IContext,
   ) {
     //LOGGING
-    console.log('API Create Product Requested');
+    console.log(new Date(), ' | API Create Product Requested');
 
     await this.productService.checkBussinessNumber({ createProductInput });
     return this.productService.create({
@@ -103,7 +96,7 @@ export class ProductResolver {
     updateProductDetailInput: UpdateProductInput,
   ) {
     //LOGGING
-    console.log('API Update Product Requested');
+    console.log(new Date(), ' | API Update Product Requested');
 
     await this.productService.checkSoldout({ productId });
     return this.productService.update({
@@ -116,7 +109,7 @@ export class ProductResolver {
   @Mutation(() => Boolean, { description: 'delete product' })
   async deleteProduct(@Args('productId') productId: string) {
     //LOGGING
-    console.log('API Delete Product Requested');
+    console.log(new Date(), ' | API Delete Product Requested');
 
     return this.productService.delete({ productId });
   }

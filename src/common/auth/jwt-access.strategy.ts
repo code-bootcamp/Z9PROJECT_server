@@ -18,7 +18,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
 
   async validate(req, payload) {
     //LOGGING
-    console.log('JwtAccessStrategy.validate()');
+    console.log(new Date(), ' | JwtAccessStrategy.validate()');
 
     const token = req.headers.authorization.replace('Bearer ', '');
     const isToken = await this.cacheManager.get(`accessToken:${token}`);
