@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { Question } from './entities/question.entity';
+import {
+  Question,
+  QUESTION_STATUS_TYPE_ENUM,
+} from './entities/question.entity';
 
 @Injectable()
 export class QuestionService {
@@ -37,12 +40,12 @@ export class QuestionService {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
-    return await this.questionRepository
-      .createQueryBuilder('question')
-      .leftJoinAndSelect('question.user', 'user')
-      .leftJoinAndSelect('question.product', 'product')
-      .where('product.id = :productId', { productId })
-      .getMany();
+    return await this.questionRepository.find({
+      order: {
+        createdAt: 'desc',
+      },
+      relations: ['user', 'product'],
+    });
   }
 
   async findOne({ questionId }): Promise<Question> {
@@ -67,7 +70,7 @@ export class QuestionService {
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
-    console.log(new Date(), ' | QuestionService.update()');
+    console.log(new Date(), ' | QuestionService.update()')
 
     const question = await this.questionRepository
       .createQueryBuilder('question')
@@ -84,8 +87,34 @@ export class QuestionService {
   async remove({ questionId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
-
+    
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
+  }
+
+  async checkAnswer({ questionId }) {
+    const status = await this.questionRepository.findOne({
+      where: {
+        id: questionId,
+        status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+      },
+    });
+    if (status)
+      throw new UnprocessableEntityException(
+        '답변이 완료된 질문은 삭제 할 수 없습니다.',
+      );
+  }
+
+  async checkUpdate({ questionId }) {
+    const status = await this.questionRepository.findOne({
+      where: {
+        id: questionId,
+        status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+      },
+    });
+    if (status)
+      throw new UnprocessableEntityException(
+        '답변이 완료된 질문은 수정 할 수 없습니다.',
+      );
   }
 }

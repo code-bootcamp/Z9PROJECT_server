@@ -141,10 +141,27 @@ type Answer {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  question: Question
+  question: Question!
 }
 
 type Question {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  deletedAt: DateTime
+  updatedAt: DateTime
+  status: QUESTION_STATUS_TYPE_ENUM!
+  product: Product!
+  answer: Product!
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
+}
+
+type Answer {
   id: String!
   question: String
   status: QUESTION_STATUS_TYPE_ENUM!
@@ -255,6 +272,32 @@ type Query {
   fetchOrdersByUserId: [Order!]!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
+  fetchMyQuestions(userId: String!): [Question!]! @deprecated(reason: "fetching Questions by creators and commonUsers using userId ")
+  fetchLoginUserAnswer(questionId: String!): [Answer!]!
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
+}
+
+enum PRODUCT_SEARCH_TYPE {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+  ALL
+}
+
+enum PRODUCT_INCLUDE_OPTION {
+  INCLUDE_SOLDED_OUT
+  EXCLUDE_SOLDED_OUT
 }
 
 enum PRODUCT_SEARCH_TYPE {

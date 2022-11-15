@@ -67,21 +67,25 @@ export class QuestionResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
-  updateQuestion(
+  async updateQuestion(
     @Args('questionId') questionId: string,
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
   ) {
     //LOGGING
     console.log(new Date(), ' | API Update Question Requested');
 
+    await this.questionService.checkUpdate({ questionId });
+
     return this.questionService.update({ questionId, updateQuestionInput });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  deleteQuestion(@Args('questionId') questionId: string) {
+  async deleteQuestion(@Args('questionId') questionId: string) {
     //LOGGING
     console.log(new Date(), ' | API Delete Question Requested');
+
+    await this.questionService.checkAnswer({ questionId });
 
     return this.questionService.remove({ questionId });
   }
