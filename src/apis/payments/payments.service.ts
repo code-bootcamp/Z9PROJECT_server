@@ -2,10 +2,10 @@ import { IamportService } from './../iamport/iamport.service';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { UsersService } from '../users/users.service';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Point, POINT_STATUS_ENUM } from '../points/entities/point.entity';
 import { User } from '../users/entities/user.entity';
+import { PointsService } from '../points/points.service';
 
 @Injectable()
 export class PaymentsService {
@@ -14,7 +14,7 @@ export class PaymentsService {
     private readonly paymentsRepository: Repository<Payment>,
     @InjectRepository(Point)
     private readonly pointsRepository: Repository<Point>,
-    private readonly usersService: UsersService,
+    private readonly pointsService: PointsService,
     private readonly iamportService: IamportService,
     private readonly connection: Connection,
   ) {}
@@ -97,6 +97,7 @@ export class PaymentsService {
     } finally {
       // RELEASE QUERY RUNNER
       await queryRunner.release();
+      await this.pointsService.updateUserPoint({ userId });
     }
   }
 
@@ -186,6 +187,7 @@ export class PaymentsService {
     } finally {
       // RELEASE QUERY RUNNER
       await queryRunner.release();
+      await this.pointsService.updateUserPoint({ userId });
     }
   }
 }

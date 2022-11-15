@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Point, POINT_STATUS_ENUM } from '../points/entities/point.entity';
 import { PointsService } from '../points/points.service';
+import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
-import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 import { Order, ORDER_STATUS } from './entities/order.entity';
 
 @Injectable()
@@ -14,8 +15,11 @@ export class OrdersService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(Point)
     private readonly pointsRepository: Repository<Point>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly pointsService: PointsService,
-    private readonly usersService: UsersService,
     private readonly productService: ProductService,
     private readonly connection: Connection,
   ) {}
@@ -199,10 +203,17 @@ export class OrdersService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :userId', { userId })
+        .getOne();
 
       // FIND PRODUCT
-      const product = await this.productService.findOne({ productId });
+      const product = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.id = :productId', { productId })
+        .leftJoinAndSelect('product.user', 'user')
+        .getOne();
 
       // CREATE ORDER
       const orderData = this.orderRepository.create({
@@ -223,7 +234,10 @@ export class OrdersService {
       const point = await queryRunner.manager.save(Point, pointData);
 
       // FIND CREATOR
-      const creator = await this.usersService.findOneByUserId(product.user.id);
+      const creator = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :userId', { userId: product.user.id })
+        .getOne();
 
       // UPDATE CREATOR POINT
       const creatorPointData = this.pointsRepository.create({
@@ -232,11 +246,11 @@ export class OrdersService {
         user: creator,
         order,
       });
+
       const creatorPoint = await queryRunner.manager.save(
         Point,
         creatorPointData,
       );
-      await this.pointsService.updateUserPoint({ userId: creator.id });
 
       // COMMIT TRANSACTION
       await queryRunner.commitTransaction();
@@ -251,6 +265,8 @@ export class OrdersService {
     } finally {
       // RELEASE QUERY RUNNER
       await queryRunner.release();
+      await this.pointsService.updateUserPoint({ userId });
+      await this.pointsService.updateSellerPoint({ productId });
     }
   }
 
@@ -263,10 +279,21 @@ export class OrdersService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :userId', { userId })
+        .getOne();
 
       // FIND ORDER
-      const order = await this.findOneByOrderId({ orderId });
+      const order = await this.orderRepository
+        .createQueryBuilder('order')
+        .setLock('pessimistic_write')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.product', 'product')
+        .where('order.id = :orderId', { orderId })
+        .andWhere('order.status = :status', { status: ORDER_STATUS.PAID })
+        .getOne();
+
       if (order == undefined) throw new NotFoundException('Order not found');
 
       // UPDATE ORDER
@@ -294,12 +321,25 @@ export class OrdersService {
     // INIT queryRunner
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
-
+    let productId = null;
+    let userId = null;
     // START TRANSACTION
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND ORDER
-      const order = await this.findOneByOrderId({ orderId });
+      const order = await this.orderRepository
+        .createQueryBuilder('order')
+        .setLock('pessimistic_write')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.product', 'product')
+        .leftJoinAndSelect('product.user', 'user')
+        .where('order.id = :orderId', { orderId })
+        .andWhere('order.status = :status', {
+          status: ORDER_STATUS.PENDING_REFUND,
+        })
+        .getOne();
+      userId = order.user.id;
+
       if (order == undefined) throw new NotFoundException('Order not found');
 
       // UPDATE ORDER
@@ -316,10 +356,11 @@ export class OrdersService {
       const point = await queryRunner.manager.save(Point, pointData);
 
       // FIND CREATOR
-      const creator = await this.usersService.findOneByUserId(
-        order.product.user.id,
-      );
-
+      const creator = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :userId', { userId: order.product.user.id })
+        .getOne();
+      productId = order.product.id;
       // UPDATE CREATOR POINT
       const creatorPointData = this.pointsRepository.create({
         point: 0 - order.price,
@@ -331,7 +372,6 @@ export class OrdersService {
         Point,
         creatorPointData,
       );
-      await this.pointsService.updateUserPoint({ userId: creator.id });
 
       //LOGGING
       console.log(new Date(), ' | Order Accepted Cancelled ', reqOrder);
@@ -347,6 +387,18 @@ export class OrdersService {
     } finally {
       // RELEASE QUERY RUNNER
       await queryRunner.release();
+      await this.pointsService.updateUserPoint({ userId });
+      await this.pointsService.updateSellerPoint({ productId });
     }
+  }
+
+  async getSalesTotal({ productId }) {
+    const salesTotal = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('SUM(order.price)', 'total')
+      .where('order.product_id = :productId', { productId })
+      .getRawOne();
+
+    return salesTotal;
   }
 }
