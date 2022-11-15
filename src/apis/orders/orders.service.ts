@@ -40,7 +40,7 @@ export class OrdersService {
     console.log(new Date(), ' | OrdersService.findAllByUserId()');
 
     if (startDate && endDate) {
-      const result = this.orderRepository
+      const result = await this.orderRepository
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
@@ -53,9 +53,10 @@ export class OrdersService {
         .skip((page - 1) * 10)
         .take(10)
         .getMany();
+      console.log(result);
       return result;
     } else {
-      const result = this.orderRepository
+      const result = await this.orderRepository
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
@@ -64,6 +65,7 @@ export class OrdersService {
         .skip((page - 1) * 10)
         .take(10)
         .getMany();
+      console.log(result);
       return result;
     }
   }
