@@ -219,7 +219,7 @@ export class OrdersService {
       const orderData = this.orderRepository.create({
         price,
         quantity,
-        status: ORDER_STATUS.PENDING,
+        status: ORDER_STATUS.PAID,
         user,
         product,
       });
