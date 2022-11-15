@@ -288,6 +288,7 @@ export class OrdersService {
       const order = await this.orderRepository
         .createQueryBuilder('order')
         .setLock('pessimistic_write')
+        .useTransaction(true)
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
         .where('order.id = :orderId', { orderId })
@@ -330,6 +331,7 @@ export class OrdersService {
       const order = await this.orderRepository
         .createQueryBuilder('order')
         .setLock('pessimistic_write')
+        .useTransaction(true)
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
         .leftJoinAndSelect('product.user', 'user')

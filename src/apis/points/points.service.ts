@@ -121,6 +121,7 @@ export class PointsService {
         .createQueryBuilder('user')
         .setLock('pessimistic_write')
         .where('user.id = :userId', { userId })
+        .useTransaction(true)
         .getOne();
 
       // UPDATE USER POINT
@@ -175,6 +176,7 @@ export class PointsService {
       const creatorData = await this.usersRepository
         .createQueryBuilder('user')
         .setLock('pessimistic_write')
+        .useTransaction(true)
         .where('user.id = :userId', { userId: product.user.id })
         .getOne();
 

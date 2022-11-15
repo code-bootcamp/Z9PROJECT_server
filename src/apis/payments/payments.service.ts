@@ -121,6 +121,7 @@ export class PaymentsService {
       const isRefund = await this.paymentsRepository
         .createQueryBuilder('payment')
         .setLock('pessimistic_write')
+        .useTransaction(true)
         .where('payment.impUid = :impUid', { impUid })
         .andWhere('payment.status = :status', {
           status: PAYMENT_STATUS_ENUM.CANCELED,
@@ -142,6 +143,7 @@ export class PaymentsService {
       const payment = await this.paymentsRepository
         .createQueryBuilder('payment')
         .setLock('pessimistic_write')
+        .useTransaction(true)
         .where('payment.impUid = :impUid', { impUid })
         .andWhere('payment.status = :status', {
           status: PAYMENT_STATUS_ENUM.COMPLETE,
