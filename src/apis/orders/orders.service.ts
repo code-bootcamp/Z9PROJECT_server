@@ -76,42 +76,40 @@ export class OrdersService {
       const productIds = await this.productService.findProductsByUserId({
         userId,
       });
-      const orders = [];
-      productIds.map(async (product) => {
-        orders.push(
-          await this.orderRepository
-            .createQueryBuilder('order')
-            .leftJoinAndSelect('order.user', 'user')
-            .leftJoinAndSelect('order.product', 'product')
-            .where('product.id = :productId', { productId: product.id })
-            .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
-              startDate,
-              endDate,
-            })
-            .orderBy('order.createdAt', 'DESC')
-            .skip((page - 1) * 10)
-            .take(10)
-            .getMany(),
-        );
+      const orders = productIds.map(async (product) => {
+        const order = await this.orderRepository
+          .createQueryBuilder('order')
+          .leftJoinAndSelect('order.user', 'user')
+          .leftJoinAndSelect('order.product', 'product')
+          .where('product.id = :productId', { productId: product.id })
+          .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
+            startDate,
+            endDate,
+          })
+          .orderBy('order.createdAt', 'DESC')
+          .skip((page - 1) * 10)
+          .take(10)
+          .getMany();
+        console.log(order);
+        return order;
       });
       return orders;
     } else {
       const productIds = await this.productService.findProductsByUserId({
         userId,
       });
-      const orders = [];
-      productIds.map(async (product) => {
-        orders.push(
-          await this.orderRepository
-            .createQueryBuilder('order')
-            .leftJoinAndSelect('order.user', 'user')
-            .leftJoinAndSelect('order.product', 'product')
-            .where('product.id = :productId', { productId: product.id })
-            .orderBy('order.createdAt', 'DESC')
-            .skip((page - 1) * 10)
-            .take(10)
-            .getMany(),
-        );
+      const orders = productIds.map(async (product) => {
+        const order = await this.orderRepository
+          .createQueryBuilder('order')
+          .leftJoinAndSelect('order.user', 'user')
+          .leftJoinAndSelect('order.product', 'product')
+          .where('product.id = :productId', { productId: product.id })
+          .orderBy('order.createdAt', 'DESC')
+          .skip((page - 1) * 10)
+          .take(10)
+          .getMany();
+        console.log(order);
+        return order;
       });
       return orders;
     }
