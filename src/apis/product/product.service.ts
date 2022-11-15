@@ -180,6 +180,19 @@ export class ProductService {
     return await this.productRepository.find();
   }
 
+  async findProductsByPages({ page }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByPages()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
+      .skip((page - 1) * 4)
+      .take(4)
+      .getMany();
+  }
+
   async create({ userId, createProductInput, createProductDetailInput }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.create()');

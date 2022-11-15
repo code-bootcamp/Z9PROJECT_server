@@ -34,6 +34,14 @@ export class ProductResolver {
     return this.productService.findAll();
   }
 
+  @Query(() => [Product], { description: 'fetching multiple product' })
+  fetchProductsByPages(@Args('page') page: number) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Products By Pages Requested');
+
+    return this.productService.findProductsByPages({ page });
+  }
+
   @Query(() => [Product], {
     description: 'fetching multiple product by creator nickname',
   })
