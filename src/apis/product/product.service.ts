@@ -220,12 +220,11 @@ export class ProductService {
     }
 
     const user = await this.usersService.findOneByUserId(userId);
-    const { discountRate, images, ...product } = createProductInput;
-    console.log(calcDiscountRate);
-    console.log(images);
-    console.log(product);
+    const { discountRate, images, quantity, ...product } = createProductInput;
     const savedProduct: Product = await this.productRepository.save({
       ...product,
+      quantity,
+      originalQuantity: quantity,
       images: images,
       user,
       discountRate: calcDiscountRate,

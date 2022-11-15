@@ -429,9 +429,9 @@ export class OrdersService {
   async getSalesTotal({ productId }) {
     const salesTotal = await this.orderRepository
       .createQueryBuilder('order')
-      .select('SUM(order.price)', 'total')
       .leftJoinAndSelect('order.product', 'product')
       .where('product.id = :productId', { productId })
+      .andWhere('order.status = :status', { status: ORDER_STATUS.PAID })
       .getRawOne();
 
     return salesTotal;

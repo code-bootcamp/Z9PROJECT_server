@@ -155,7 +155,9 @@ export class OrdersResolver {
     return order;
   }
 
-  @Query(() => Number)
+  @Query(() => Number, {
+    deprecationReason: "Use Product's quantity and originalQuantity instead",
+  })
   async fetchSalesTotal(@Args('productId') productId: string) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Sales Total Requested');

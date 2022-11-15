@@ -45,6 +45,11 @@ export class Product {
   quantity: number;
 
   @Min(0)
+  @Column({ type: 'int' })
+  @Field(() => Number, { nullable: true })
+  originalQuantity: number;
+
+  @Min(0)
   @Column({ type: 'float', default: 0 })
   @Field(() => Number, { nullable: true })
   discountRate: number;
