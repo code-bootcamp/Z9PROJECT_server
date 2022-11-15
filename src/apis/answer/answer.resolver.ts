@@ -44,7 +44,6 @@ export class AnswerResolver {
       questionId,
       updateQuestionInput,
     });
-    const question = await this.questionService.findOne({ questionId });
 
     const result = await this.answerSerivce.create({
       createAnswerInput,
