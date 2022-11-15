@@ -40,12 +40,15 @@ export class QuestionService {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
-    return await this.questionRepository.find({
+    const result = await this.questionRepository.find({
+      where: { product: { id: productId } },
       order: {
         createdAt: 'desc',
       },
       relations: ['user', 'product'],
     });
+    console.log(result);
+    return result;
   }
 
   async findOne({ questionId }): Promise<Question> {
@@ -70,7 +73,7 @@ export class QuestionService {
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
-    console.log(new Date(), ' | QuestionService.update()');
+    console.log(new Date(), ' | QuestionService.update()')
 
     const question = await this.questionRepository
       .createQueryBuilder('question')
@@ -87,7 +90,7 @@ export class QuestionService {
   async remove({ questionId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
-
+    
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
   }
