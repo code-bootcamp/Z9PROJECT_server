@@ -3,6 +3,7 @@ import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
+import { UpdateProductDetailInput } from '../productDetail/dto/updateProductDetail.input';
 import { CreateProductInput } from './dto/createProduct.input';
 import { UpdateProductInput } from './dto/updateProduct.input';
 import { Product } from './entities/product.entity';
@@ -101,7 +102,7 @@ export class ProductResolver {
     @Args('productId') productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
     @Args('updateProductDetailInput')
-    updateProductDetailInput: UpdateProductInput,
+    updateProductDetailInput: UpdateProductDetailInput,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Update Product Requested');
