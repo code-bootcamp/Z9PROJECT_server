@@ -2,16 +2,12 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
-import { PointsService } from '../points/points.service';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 
 @Resolver()
 export class OrdersResolver {
-  constructor(
-    private readonly ordersService: OrdersService,
-    private readonly pointsService: PointsService,
-  ) {}
+  constructor(private readonly ordersService: OrdersService) {}
 
   @Query(() => Order)
   async fetchOrder(@Args('orderId') orderId: string) {
@@ -132,9 +128,6 @@ export class OrdersResolver {
       price,
       quantity,
     });
-    await this.pointsService.updateUserPoint({
-      userId: ctx.req.user.id,
-    });
     return order;
   }
 
@@ -159,9 +152,14 @@ export class OrdersResolver {
     console.log(new Date(), ' | API Cancel Order Accepted');
 
     const order = await this.ordersService.acceptCancelOrder({ orderId });
-    await this.pointsService.updateUserPoint({
-      userId: order.user.id,
-    });
     return order;
+  }
+
+  @Query(() => Number)
+  async fetchSalesTotal(@Args('productId') productId: string) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Sales Total Requested');
+
+    return await this.ordersService.getSalesTotal({ productId });
   }
 }
