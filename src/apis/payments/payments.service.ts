@@ -5,6 +5,7 @@ import { Connection, Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Point, POINT_STATUS_ENUM } from '../points/entities/point.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -29,24 +30,34 @@ export class PaymentsService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+      });
 
       // VALIDATE PAYMENT
       const isPaymentExist = await this.paymentsRepository
         .createQueryBuilder('payment')
+        .useTransaction(true)
         .setLock('pessimistic_write')
         .where('payment.impUid = :impUid', { impUid })
         .getOne();
+
       if (isPaymentExist) {
         throw new ConflictException('이미 결제된 거래입니다.');
       }
       const isValid = await this.iamportService.validatePayment({
         impUid,
       });
+      console.log(
+        new Date(),
+        ' | PaymentsService.createPayment() isValid',
+        isValid,
+      );
+      console.log(amount);
       if (isValid == null) {
         throw new ConflictException('유효하지 않은 결제입니다.');
       } else {
-        if (isValid.data?.response.amount !== amount)
+        if (isValid.response.amount !== amount)
           throw new ConflictException('결제 금액 오류');
       }
 
@@ -101,7 +112,9 @@ export class PaymentsService {
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
       // FIND USER
-      const user = await this.usersService.findOneByUserId(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+      });
 
       // CHECK IF ALREADY REFUNDED
       const isRefund = await this.paymentsRepository
@@ -111,7 +124,7 @@ export class PaymentsService {
         .andWhere('payment.status = :status', {
           status: PAYMENT_STATUS_ENUM.CANCELED,
         })
-        .getOne();
+        .getRawOne();
       if (isRefund) {
         throw new ConflictException('이미 환불된 거래입니다.');
       }

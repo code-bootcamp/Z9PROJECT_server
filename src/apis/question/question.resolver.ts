@@ -42,11 +42,13 @@ export class QuestionResolver {
     description: ' fetching Questions',
     name: 'fetchQuestions',
   })
-  async fetchQuestions() {
+  async fetchQuestions(
+    @Args('productId') productId: string, //
+  ) {
     //LOGING
     console.log(new Date(), ' | API Fetch Questions Requested');
 
-    return await this.questionService.findAll();
+    return await this.questionService.findAll({ productId });
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
@@ -65,21 +67,25 @@ export class QuestionResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
-  updateQuestion(
+  async updateQuestion(
     @Args('questionId') questionId: string,
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
   ) {
     //LOGGING
     console.log(new Date(), ' | API Update Question Requested');
 
+    await this.questionService.checkUpdate({ questionId });
+
     return this.questionService.update({ questionId, updateQuestionInput });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  deleteQuestion(@Args('questionId') questionId: string) {
+  async deleteQuestion(@Args('questionId') questionId: string) {
     //LOGGING
     console.log(new Date(), ' | API Delete Question Requested');
+
+    await this.questionService.checkAnswer({ questionId });
 
     return this.questionService.remove({ questionId });
   }

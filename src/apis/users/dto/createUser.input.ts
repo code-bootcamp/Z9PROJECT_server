@@ -36,6 +36,9 @@ export class CreateUserInput {
   @Field(() => Boolean, { defaultValue: false })
   isAuthedCreator: boolean;
 
+  @Field(() => String, { nullable: true })
+  snsId: string;
+
   /** YouTube ChannelName or Instagram Name */
   @Field(() => String, { nullable: true })
   snsName: string;

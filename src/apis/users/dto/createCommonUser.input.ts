@@ -5,6 +5,7 @@ import { CreateUserInput } from './createUser.input';
 export class CreateCommonUserInput extends OmitType(
   CreateUserInput,
   [
+    'snsId',
     'snsName',
     'snsChannel',
     'isAuthedCreator',
