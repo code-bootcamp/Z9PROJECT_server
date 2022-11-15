@@ -5,11 +5,13 @@ import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum QUESTION_STATUS_TYPE_ENUM {
@@ -47,31 +49,9 @@ export class Question {
   @Field(() => Date, { nullable: true })
   createdAt: Date;
 
-<<<<<<< Updated upstream
   @UpdateDateColumn()
   @Field(() => Date, { nullable: true })
   updatedAt: Date;
-=======
-  @DeleteDateColumn()
-  @Field(() => Date, { nullable: true })
-  deletedAt: Date;
-
-  @UpdateDateColumn()
-  @Field(() => Date, { nullable: true })
-  updatedAt: Date;
-
-  @Column({
-    type: 'enum',
-    enum: QUESTION_STATUS_TYPE_ENUM,
-    nullable: true,
-    default: QUESTION_STATUS_TYPE_ENUM.PROGRESS,
-  })
-  @Field(() => QUESTION_STATUS_TYPE_ENUM, {
-    nullable: false,
-    defaultValue: QUESTION_STATUS_TYPE_ENUM.PROGRESS,
-  })
-  status: QUESTION_STATUS_TYPE_ENUM;
->>>>>>> Stashed changes
 
   @DeleteDateColumn()
   @Field(() => Date, { nullable: true })
