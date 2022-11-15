@@ -49,6 +49,7 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
       .getOne();
     return result;
   }
