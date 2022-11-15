@@ -43,14 +43,21 @@ export class ProductResolver {
     return this.productService.findProductsByPages({ page });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product], {
-    description: 'fetching multiple product by creator nickname',
+    description: 'fetching multiple product by creator id',
   })
-  fetchProductsByCreator(@Args('nickname') nickname: string) {
+  fetchProductsByCreator(
+    @Context() ctx: IContext,
+    @Args({ name: 'page', type: () => Int }) page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Creator Requested');
 
-    return this.productService.findProductByCreator({ name: nickname });
+    return this.productService.findProductByCreator({
+      userId: ctx.req.user.id,
+      page,
+    });
   }
 
   @Query(() => [Product], {

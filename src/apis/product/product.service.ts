@@ -158,18 +158,17 @@ export class ProductService {
     }
   }
 
-  async findProductByCreator({ name }) {
+  async findProductByCreator({ userId, page }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.findProductByCreator()');
 
-    const user = await this.usersService.findOneByNickName(name);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
     return await this.productRepository
       .createQueryBuilder('product')
-      .where('product.user = :userId', { userId: user.id })
+      .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .where('product.user = :userId', { userId })
+      .skip((page - 1) * 10)
+      .take(10)
       .getMany();
   }
 

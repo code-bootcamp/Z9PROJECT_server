@@ -253,7 +253,7 @@ type Query {
   fetchQuestions(productId: String!): [Question!]!
 
   """fetching Questions by creators and commonUsers using userId"""
-  fetchMyQuestions(userId: String!): [Question!]!
+  fetchMyQuestions: [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
   fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Point!]!
   fetchCountOfPointHistory(startDate: DateTime = null, endDate: DateTime = null): Float!
