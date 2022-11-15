@@ -7,6 +7,7 @@ import { ProductService } from '../product/product.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 import { ProductDetailService } from '../productDetail/productDetail.service';
 import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { Order } from './entities/order.entity';
 import { OrdersResolver } from './orders.resolver';
 import { OrdersService } from './orders.service';
@@ -20,6 +21,7 @@ import { OrdersService } from './orders.service';
     OrdersService,
     ProductService,
     PointsService,
+    UsersService,
     ProductDetailService,
   ],
 })

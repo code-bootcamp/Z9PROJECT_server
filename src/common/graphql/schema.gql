@@ -141,27 +141,10 @@ type Answer {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  question: Question!
+  question: Question
 }
 
 type Question {
-  id: String!
-  answer: String!
-  createdAt: DateTime
-  deletedAt: DateTime
-  updatedAt: DateTime
-  status: QUESTION_STATUS_TYPE_ENUM!
-  product: Product!
-  answer: Product!
-  user: User!
-}
-
-enum QUESTION_STATUS_TYPE_ENUM {
-  PROGRESS
-  SOLVED
-}
-
-type Answer {
   id: String!
   question: String
   status: QUESTION_STATUS_TYPE_ENUM!
@@ -281,6 +264,7 @@ type Query {
   fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
   fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchSalesTotal(productId: String!): Float!
 }
 
 enum PRODUCT_SEARCH_TYPE {
