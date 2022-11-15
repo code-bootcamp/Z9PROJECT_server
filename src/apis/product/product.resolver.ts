@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
@@ -35,7 +35,7 @@ export class ProductResolver {
   }
 
   @Query(() => [Product], { description: 'fetching multiple product' })
-  fetchProductsByPages(@Args('page') page: number) {
+  fetchProductsByPages(@Args({ name: 'page', type: () => Int }) page: number) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Pages Requested');
 
