@@ -1,10 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QuestionService } from './question.service';
 import { CreateQuestionInput } from './dto/createQuestion.input';
 import { Question } from './entities/question.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { UpdateQuestionInput } from './dto/updateQuestion.input';
+import { IContext } from 'src/common/types/context';
 
 @Resolver()
 export class QuestionResolver {
@@ -56,13 +57,13 @@ export class QuestionResolver {
   @Query(() => [Question], {
     description: 'fetching Questions by creators and commonUsers using userId',
   })
-  async fetchMyQuestions(
-    @Args('userId') userId: string, //
-  ) {
+  async fetchMyQuestions(@Context() ctx: IContext) {
     //LOGGING
     console.log(new Date(), ' | API Fetch My Questions Requested');
 
-    return await this.questionService.findByMyQuestion({ userId });
+    return await this.questionService.findByMyQuestion({
+      userId: ctx.req.user.id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)
