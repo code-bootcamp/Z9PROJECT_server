@@ -40,12 +40,15 @@ export class QuestionService {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
-    return await this.questionRepository.find({
+    const result = await this.questionRepository.find({
+      where: { product: { id: productId } },
       order: {
         createdAt: 'desc',
       },
       relations: ['user', 'product'],
     });
+    console.log(result);
+    return result;
   }
 
   async findOne({ questionId }): Promise<Question> {

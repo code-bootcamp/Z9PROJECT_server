@@ -88,6 +88,10 @@ export class User {
   isAuthedCreator: boolean;
 
   @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  snsId: string;
+
+  @Column({ nullable: true })
   @Field(() => String, {
     nullable: true,
     description: 'YOUTUBE ChannelName or INSTA Name',
