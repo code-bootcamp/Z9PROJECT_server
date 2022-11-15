@@ -199,13 +199,27 @@ export class ProductService {
 
     const calcDiscountRate: number =
       createProductInput.discountPrice !== null
-        ? Math.ceil(
+        ? Math.floor(
             ((createProductInput.originPrice -
               createProductInput.discountPrice) /
               createProductInput.originPrice) *
               100,
           )
         : 0;
+    if (
+      calcDiscountRate >= 100 ||
+      calcDiscountRate < 0 ||
+      createProductInput.discountPrice < 0
+    ) {
+      throw new UnprocessableEntityException('그딴 미친 할인은 안돼');
+    }
+    if (
+      createProductInput.originPrice <= 0 ||
+      createProductInput.discountPrice <= 0
+    ) {
+      throw new UnprocessableEntityException('그딴 미친 가격은 안돼');
+    }
+
     const user = await this.usersService.findOneByUserId(userId);
     const { discountRate, images, ...product } = createProductInput;
     console.log(calcDiscountRate);

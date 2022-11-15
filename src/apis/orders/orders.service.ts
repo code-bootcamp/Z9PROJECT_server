@@ -44,6 +44,7 @@ export class OrdersService {
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
+        .leftJoinAndSelect('product.user', 'user')
         .where('user.id = :userId', { userId })
         .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
           startDate,
@@ -60,6 +61,7 @@ export class OrdersService {
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
+        .leftJoinAndSelect('product.user', 'user')
         .where('user.id = :userId', { userId })
         .orderBy('order.createdAt', 'DESC')
         .skip((page - 1) * 10)
@@ -227,6 +229,11 @@ export class OrdersService {
         .leftJoinAndSelect('product.user', 'user')
         .getOne();
 
+      // CHECK IF USER HAS ENOUGH MONEY
+      if (user.point < price * quantity) {
+        throw new NotFoundException('Insufficient vaspene gas');
+      }
+
       // CREATE ORDER
       const orderData = this.orderRepository.create({
         price,
@@ -237,13 +244,18 @@ export class OrdersService {
       });
       const order = await queryRunner.manager.save(Order, orderData);
 
+      product.quantity -= quantity;
+
+      // UPDATE PRODUCT
+      await queryRunner.manager.save(Product, product);
+
       const pointData = this.pointsRepository.create({
         point: 0 - price,
         status: POINT_STATUS_ENUM.USED,
         user,
         order,
       });
-      const point = await queryRunner.manager.save(Point, pointData);
+      await queryRunner.manager.save(Point, pointData);
 
       // FIND CREATOR
       const creator = await this.userRepository
@@ -367,7 +379,7 @@ export class OrdersService {
         user: order.user,
         order,
       });
-      const point = await queryRunner.manager.save(Point, pointData);
+      await queryRunner.manager.save(Point, pointData);
 
       // FIND CREATOR
       const creator = await this.userRepository
@@ -375,6 +387,17 @@ export class OrdersService {
         .where('user.id = :userId', { userId: order.product.user.id })
         .getOne();
       productId = order.product.id;
+
+      // FIND PRODUCT
+      const product = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.id = :productId', { productId })
+        .getOne();
+
+      // UPDATE PRODUCT QUANTITY
+      product.quantity += order.quantity;
+      await queryRunner.manager.save(Product, product);
+
       // UPDATE CREATOR POINT
       const creatorPointData = this.pointsRepository.create({
         point: 0 - order.price,
@@ -382,10 +405,7 @@ export class OrdersService {
         user: creator,
         order,
       });
-      const creatorPoint = await queryRunner.manager.save(
-        Point,
-        creatorPointData,
-      );
+      await queryRunner.manager.save(Point, creatorPointData);
 
       //LOGGING
       console.log(new Date(), ' | Order Accepted Cancelled ', reqOrder);
@@ -410,7 +430,8 @@ export class OrdersService {
     const salesTotal = await this.orderRepository
       .createQueryBuilder('order')
       .select('SUM(order.price)', 'total')
-      .where('order.product_id = :productId', { productId })
+      .leftJoinAndSelect('order.product', 'product')
+      .where('product.id = :productId', { productId })
       .getRawOne();
 
     return salesTotal;
