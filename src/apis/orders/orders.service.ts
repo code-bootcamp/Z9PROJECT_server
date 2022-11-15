@@ -87,13 +87,12 @@ export class OrdersService {
             endDate,
           })
           .orderBy('order.createdAt', 'DESC')
-          .skip((page - 1) * 10)
-          .take(10)
           .getMany();
         console.log(order);
         return order;
       });
-      return orders;
+      const result = orders.slice((page - 1) * 10, page * 10);
+      return result;
     } else {
       const productIds = await this.productService.findProductsByUserId({
         userId,
@@ -105,13 +104,12 @@ export class OrdersService {
           .leftJoinAndSelect('order.product', 'product')
           .where('product.id = :productId', { productId: product.id })
           .orderBy('order.createdAt', 'DESC')
-          .skip((page - 1) * 10)
-          .take(10)
           .getMany();
         console.log(order);
         return order;
       });
-      return orders;
+      const result = orders.slice((page - 1) * 10, page * 10);
+      return result;
     }
   }
 
