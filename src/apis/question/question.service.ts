@@ -70,7 +70,7 @@ export class QuestionService {
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
-    console.log(new Date(), ' | QuestionService.update()')
+    console.log(new Date(), ' | QuestionService.update()');
 
     const question = await this.questionRepository
       .createQueryBuilder('question')
@@ -87,7 +87,7 @@ export class QuestionService {
   async remove({ questionId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
-    
+
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
   }
