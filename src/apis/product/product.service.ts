@@ -49,8 +49,20 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
       .getOne();
     return result;
+  }
+
+  async findProductsByUserId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByUserId()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user = :userId', { userId })
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
   }
 
   async countProductByUserId({ userId }) {
@@ -166,6 +178,19 @@ export class ProductService {
     console.log(new Date(), ' | ProductService.findAll()');
 
     return await this.productRepository.find();
+  }
+
+  async findProductsByPages({ page }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByPages()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
+      .skip((page - 1) * 4)
+      .take(4)
+      .getMany();
   }
 
   async create({ userId, createProductInput, createProductDetailInput }) {

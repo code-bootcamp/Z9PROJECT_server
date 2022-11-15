@@ -146,7 +146,7 @@ type Answer {
 
 type Question {
   id: String!
-  question: String
+  answer: String!
   createdAt: DateTime
   deletedAt: DateTime
   updatedAt: DateTime
@@ -163,11 +163,19 @@ enum QUESTION_STATUS_TYPE_ENUM {
 
 type Answer {
   id: String!
-  answer: String!
+  question: String
+  status: QUESTION_STATUS_TYPE_ENUM!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  question: Question
+  product: Product!
+  answer: Answer!
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
 }
 
 type Order {
@@ -256,7 +264,7 @@ type Query {
   fetchQuestion(questionId: String!): Question!
 
   """ fetching Questions"""
-  fetchQuestions: [Question!]!
+  fetchQuestions(productId: String!): [Question!]!
 
   """fetching Questions by creators and commonUsers using userId"""
   fetchMyQuestions(userId: String!): [Question!]!

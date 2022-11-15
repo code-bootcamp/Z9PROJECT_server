@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
@@ -32,6 +32,14 @@ export class ProductResolver {
     console.log(new Date(), ' | API Fetch Products Requested');
 
     return this.productService.findAll();
+  }
+
+  @Query(() => [Product], { description: 'fetching multiple product' })
+  fetchProductsByPages(@Args({ name: 'page', type: () => Int }) page: number) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Products By Pages Requested');
+
+    return this.productService.findProductsByPages({ page });
   }
 
   @Query(() => [Product], {

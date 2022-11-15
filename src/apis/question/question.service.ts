@@ -36,7 +36,7 @@ export class QuestionService {
     return result;
   }
 
-  async findAll(): Promise<Question[]> {
+  async findAll({ productId }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
@@ -61,7 +61,7 @@ export class QuestionService {
   async findByMyQuestion({ userId }) {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findByMyQuestion()');
-    
+
     return this.questionRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'product'],
@@ -71,6 +71,11 @@ export class QuestionService {
   async update({ questionId, updateQuestionInput }): Promise<Question> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.update()')
+
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .where('question.id = :questionId', { questionId })
+      .getOne();
 
     const newQuestsion: Question = {
       ...question,

@@ -42,11 +42,13 @@ export class QuestionResolver {
     description: ' fetching Questions',
     name: 'fetchQuestions',
   })
-  async fetchQuestions() {
+  async fetchQuestions(
+    @Args('productId') productId: string, //
+  ) {
     //LOGING
     console.log(new Date(), ' | API Fetch Questions Requested');
 
-    return await this.questionService.findAll();
+    return await this.questionService.findAll({ productId });
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
