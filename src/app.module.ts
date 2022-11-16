@@ -16,6 +16,7 @@ import { AnswerModule } from './apis/answer/answer.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { PointsModule } from './apis/points/points.module';
 import { OrdersModule } from './apis/orders/orders.module';
+import { SearchModule } from './apis/search/search.module';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
@@ -31,6 +32,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
     PaymentsModule,
     PointsModule,
     OrdersModule,
+    SearchModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
