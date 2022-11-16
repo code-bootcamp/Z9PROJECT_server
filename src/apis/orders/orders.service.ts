@@ -231,6 +231,11 @@ export class OrdersService {
 
       // CHECK IF USER HAS ENOUGH MONEY
       if (user.point < price * quantity) {
+        throw new NotFoundException('Not Enough Minerals');
+      }
+
+      // CHECK IF PRODUCT IS AVAILABLE
+      if (product.quantity < quantity) {
         throw new NotFoundException('Insufficient vaspene gas');
       }
 
@@ -315,6 +320,7 @@ export class OrdersService {
         .useTransaction(true)
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
+        .leftJoinAndSelect('product.user', 'creator')
         .where('order.id = :orderId', { orderId })
         .andWhere('order.status = :status', { status: ORDER_STATUS.PAID })
         .getOne();
@@ -358,7 +364,7 @@ export class OrdersService {
         .useTransaction(true)
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
-        .leftJoinAndSelect('product.user', 'user')
+        .leftJoinAndSelect('product.user', 'creator')
         .where('order.id = :orderId', { orderId })
         .andWhere('order.status = :status', {
           status: ORDER_STATUS.PENDING_REFUND,
