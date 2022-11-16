@@ -151,16 +151,23 @@ export class Product {
   @Column({ type: 'int', nullable: false })
   @Field(() => Number, {
     nullable: false,
-    description: 'skin is seleted by user',
+    description: 'skin is seleted by user about skin style',
   })
   skin: number;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   @Field(() => String, {
     nullable: true,
-    description: 'color is seleted by user',
+    description: 'color is seleted by user about text color',
   })
-  color: string;
+  textColor: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'color is seleted by user about background color',
+  })
+  bgColor: string;
 
   @CreateDateColumn()
   @Field(() => Date, { nullable: true })
