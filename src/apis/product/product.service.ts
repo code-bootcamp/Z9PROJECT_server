@@ -232,11 +232,12 @@ export class ProductService {
     }
 
     const user = await this.usersService.findOneByUserId(userId);
-    const { discountRate, images, quantity, ...product } = createProductInput;
+    const { discountRate, images, originalQuantity, ...product } =
+      createProductInput;
     const savedProduct: Product = await this.productRepository.save({
       ...product,
-      quantity,
-      originalQuantity: quantity,
+      quantity: originalQuantity,
+      originalQuantity,
       images: images,
       user,
       discountRate: calcDiscountRate,
@@ -273,12 +274,20 @@ export class ProductService {
     if (updateProductInput.images == null) {
       updateProductInput.images = originProduct.images;
     }
-    const { discountRate, images, ...product } = updateProductInput;
+    const { discountRate, images, originalQuantity, ...product } =
+      updateProductInput;
+
+    if (originProduct.quantity <= originalQuantity) {
+      throw new UnprocessableEntityException(
+        '남은 수량 이하로 재고를 변경할 수 없습니다',
+      );
+    }
 
     const newProduct: Product = await this.productRepository.save({
       ...originProduct,
-      images: images,
+      images,
       discountRate: calcDiscountRate,
+      originalQuantity,
       ...product,
     });
 

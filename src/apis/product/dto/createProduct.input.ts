@@ -12,7 +12,7 @@ export class CreateProductInput {
   originPrice: number;
 
   @Field(() => Number, { nullable: false })
-  quantity: number;
+  originalQuantity: number;
 
   @Min(0)
   @Field(() => Number, { nullable: true })

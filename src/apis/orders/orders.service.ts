@@ -81,6 +81,7 @@ export class OrdersService {
         userId,
       });
       const orders = [];
+      /* *|CURSOR_MARCADOR|* */
       await Promise.all(
         productIds.map(async (product) => {
           const order = await this.orderRepository
