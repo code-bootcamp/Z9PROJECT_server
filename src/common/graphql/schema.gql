@@ -61,6 +61,7 @@ type Product {
   name: String!
   originPrice: Float!
   quantity: Float!
+  originalQuantity: Float
   discountRate: Float
   discountPrice: Float
   isSoldout: Boolean!
@@ -135,15 +136,6 @@ type SmsPostReturn {
   message: String!
 }
 
-type Answer {
-  id: String!
-  answer: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  question: Question
-}
-
 type Question {
   id: String!
   question: String
@@ -151,14 +143,23 @@ type Question {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  product: Product!
-  answer: Answer!
+  product: Product
+  answer: Answer
   user: User!
 }
 
 enum QUESTION_STATUS_TYPE_ENUM {
   PROGRESS
   SOLVED
+}
+
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
 }
 
 type Order {
@@ -225,8 +226,8 @@ type Query {
   """fetching multiple product"""
   fetchProductsByPages(page: Int!): [Product!]!
 
-  """fetching multiple product by creator nickname"""
-  fetchProductsByCreator(nickname: String!): [Product!]!
+  """fetching multiple product by creator id"""
+  fetchProductsByCreator(page: Int!): [Product!]!
 
   """fetching multiple product by status"""
   fetchProductsByStatus(type: PRODUCT_SEARCH_TYPE!, option: PRODUCT_INCLUDE_OPTION!): [Product!]!
@@ -264,7 +265,7 @@ type Query {
   fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
   fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
-  fetchSalesTotal(productId: String!): Float!
+  fetchSalesTotal(productId: String!): Float! @deprecated(reason: "Use Product's quantity and originalQuantity instead")
 }
 
 enum PRODUCT_SEARCH_TYPE {
@@ -416,6 +417,7 @@ input UpdateProductInput {
   """color is seleted by user"""
   color: String
   userId: String
+  originalQuantity: Float!
 }
 
 input UpdateProductDetailInput {
@@ -509,6 +511,7 @@ input CreateQuestionInput {
   isDeleted: Boolean = false
   userId: String!
   productId: String!
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
@@ -520,6 +523,7 @@ input UpdateQuestionInput {
   isDeleted: Boolean = false
   userId: String
   productId: String
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 

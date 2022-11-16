@@ -1,6 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Answer } from '../answer/entites/answer.entity';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { User } from '../users/entities/user.entity';
@@ -15,6 +16,9 @@ export class QuestionService {
   constructor(
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
+
+    @InjectRepository(Answer)
+    private readonly answerRepository: Repository<Answer>,
 
     private readonly productSerivce: ProductService,
 
@@ -65,10 +69,12 @@ export class QuestionService {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findByMyQuestion()');
 
-    return this.questionRepository.find({
+    const result = await this.questionRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'product'],
+      relations: ['user', 'product', 'answer'],
     });
+    console.log(userId, result);
+    return result;
   }
 
   async update({ questionId, updateQuestionInput }): Promise<Question> {
@@ -79,10 +85,16 @@ export class QuestionService {
       .createQueryBuilder('question')
       .where('question.id = :questionId', { questionId })
       .getOne();
+    const { answerId, ...rest } = updateQuestionInput;
+    const answer = await this.answerRepository
+      .createQueryBuilder('answer')
+      .where('answer.id = :answerId', { answerId })
+      .getOne();
 
     const newQuestsion: Question = {
       ...question,
-      ...updateQuestionInput,
+      answer,
+      ...rest,
     };
     return await this.questionRepository.save(newQuestsion);
   }
