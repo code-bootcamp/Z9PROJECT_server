@@ -15,6 +15,7 @@ import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
 import { CreateCreatorInput } from './dto/createCreator.input';
 import axios from 'axios';
+import { PointsService } from '../points/points.service';
 
 @Injectable()
 export class UsersService {
@@ -188,6 +189,8 @@ export class UsersService {
     const result = this.usersRepository.save({
       ...user,
       ...updateUserInput,
+      userType: user.userType,
+      point: user.point,
     });
 
     return result;

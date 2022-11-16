@@ -166,7 +166,7 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
-      .where('product.user = :userId', { userId })
+      .where('user.id = :userId', { userId })
       .skip((page - 1) * 10)
       .take(10)
       .getMany();
