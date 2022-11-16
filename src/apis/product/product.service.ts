@@ -172,6 +172,18 @@ export class ProductService {
       .getMany();
   }
 
+  async countProductByCreator({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.countProductByCreator()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .where('user.id = :userId', { userId })
+      .getCount();
+  }
+
   async findAll() {
     //LOGGING
     console.log(new Date(), ' | ProductService.findAll()');
