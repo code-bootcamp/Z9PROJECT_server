@@ -230,7 +230,7 @@ export class OrdersService {
         .getOne();
 
       // CHECK IF USER HAS ENOUGH MONEY
-      if (user.point < price * quantity) {
+      if (user.point < product.discountPrice * quantity) {
         throw new NotFoundException('Not Enough Minerals');
       }
 
