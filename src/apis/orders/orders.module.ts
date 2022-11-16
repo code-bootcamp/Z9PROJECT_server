@@ -19,9 +19,9 @@ import { OrdersService } from './orders.service';
   providers: [
     OrdersResolver,
     OrdersService,
-    UsersService,
     ProductService,
     PointsService,
+    UsersService,
     ProductDetailService,
   ],
 })

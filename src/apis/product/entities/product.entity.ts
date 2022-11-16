@@ -45,6 +45,11 @@ export class Product {
   quantity: number;
 
   @Min(0)
+  @Column({ type: 'int' })
+  @Field(() => Number, { nullable: true })
+  originalQuantity: number;
+
+  @Min(0)
   @Column({ type: 'float', default: 0 })
   @Field(() => Number, { nullable: true })
   discountRate: number;
@@ -84,10 +89,6 @@ export class Product {
   // @Column({ type: 'text', nullable: true })
   // @Field(() => [String], { nullable: true })
   // detailImages: string[];
-
-  @Column({ type: 'text', nullable: true })
-  @Field(() => [String], { nullable: true })
-  detailImages: string[];
 
   @Column({ type: 'text', nullable: true })
   @Field(() => String, { nullable: true })

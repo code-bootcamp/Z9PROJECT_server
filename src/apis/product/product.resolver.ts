@@ -1,8 +1,9 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { CreateProductDetailInput } from '../productDetail/dto/createProductDetail.input';
+import { UpdateProductDetailInput } from '../productDetail/dto/updateProductDetail.input';
 import { CreateProductInput } from './dto/createProduct.input';
 import { UpdateProductInput } from './dto/updateProduct.input';
 import { Product } from './entities/product.entity';
@@ -34,14 +35,29 @@ export class ProductResolver {
     return this.productService.findAll();
   }
 
+  @Query(() => [Product], { description: 'fetching multiple product' })
+  fetchProductsByPages(@Args({ name: 'page', type: () => Int }) page: number) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Products By Pages Requested');
+
+    return this.productService.findProductsByPages({ page });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product], {
-    description: 'fetching multiple product by creator nickname',
+    description: 'fetching multiple product by creator id',
   })
-  fetchProductsByCreator(@Args('nickname') nickname: string) {
+  fetchProductsByCreator(
+    @Context() ctx: IContext,
+    @Args({ name: 'page', type: () => Int }) page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Creator Requested');
 
-    return this.productService.findProductByCreator({ name: nickname });
+    return this.productService.findProductByCreator({
+      userId: ctx.req.user.id,
+      page,
+    });
   }
 
   @Query(() => [Product], {
@@ -93,7 +109,7 @@ export class ProductResolver {
     @Args('productId') productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
     @Args('updateProductDetailInput')
-    updateProductDetailInput: UpdateProductInput,
+    updateProductDetailInput: UpdateProductDetailInput,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Update Product Requested');

@@ -1,4 +1,4 @@
-import { User, USER_TYPE_ENUM } from './entities/user.entity';
+import { SNS_TYPE_ENUM, User, USER_TYPE_ENUM } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CreateCommonUserInput } from './dto/createCommonUser.input';
 import { CreateCreatorInput } from './dto/createCreator.input';
@@ -88,6 +88,22 @@ export class UsersResolver {
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,
     });
+
+    if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.YOUTUBE) {
+      const data = await this.usersService.getYoutubeInfo({
+        chennelId: createCreatorInput.snsId,
+      });
+      if (data.items[0].statistics.hiddenSubscriberCount == true) {
+        createCreatorInput.followerNumber = 0;
+      } else {
+        createCreatorInput.followerNumber =
+          data.items[0].statistics.subscriberCount;
+      }
+      createCreatorInput.snsName = data.items[0].snippet.title;
+    } else if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.INSTAGRAM) {
+      createCreatorInput.snsName = createCreatorInput.snsId;
+      createCreatorInput.followerNumber = 0;
+    }
 
     const user: User = await this.usersService.createUserInFinalStep({
       ...createCreatorInput,

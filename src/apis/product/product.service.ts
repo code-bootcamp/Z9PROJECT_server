@@ -49,8 +49,20 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.id = :productId', { productId })
       .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
       .getOne();
     return result;
+  }
+
+  async findProductsByUserId({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByUserId()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user = :userId', { userId })
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .getMany();
   }
 
   async countProductByUserId({ userId }) {
@@ -146,18 +158,17 @@ export class ProductService {
     }
   }
 
-  async findProductByCreator({ name }) {
+  async findProductByCreator({ userId, page }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.findProductByCreator()');
 
-    const user = await this.usersService.findOneByNickName(name);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
     return await this.productRepository
       .createQueryBuilder('product')
-      .where('product.user = :userId', { userId: user.id })
+      .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .where('product.user = :userId', { userId })
+      .skip((page - 1) * 10)
+      .take(10)
       .getMany();
   }
 
@@ -168,26 +179,52 @@ export class ProductService {
     return await this.productRepository.find();
   }
 
+  async findProductsByPages({ page }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProductsByPages()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
+      .skip((page - 1) * 4)
+      .take(4)
+      .getMany();
+  }
+
   async create({ userId, createProductInput, createProductDetailInput }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.create()');
 
     const calcDiscountRate: number =
       createProductInput.discountPrice !== null
-        ? Math.ceil(
+        ? Math.floor(
             ((createProductInput.originPrice -
               createProductInput.discountPrice) /
               createProductInput.originPrice) *
               100,
           )
         : 0;
+    if (
+      calcDiscountRate >= 100 ||
+      calcDiscountRate < 0 ||
+      createProductInput.discountPrice < 0
+    ) {
+      throw new UnprocessableEntityException('그딴 미친 할인은 안돼');
+    }
+    if (
+      createProductInput.originPrice <= 0 ||
+      createProductInput.discountPrice <= 0
+    ) {
+      throw new UnprocessableEntityException('그딴 미친 가격은 안돼');
+    }
+
     const user = await this.usersService.findOneByUserId(userId);
-    const { discountRate, images, ...product } = createProductInput;
-    console.log(calcDiscountRate);
-    console.log(images);
-    console.log(product);
+    const { discountRate, images, quantity, ...product } = createProductInput;
     const savedProduct: Product = await this.productRepository.save({
       ...product,
+      quantity,
+      originalQuantity: quantity,
       images: images,
       user,
       discountRate: calcDiscountRate,

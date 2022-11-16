@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { Question } from './entities/question.entity';
+import {
+  Question,
+  QUESTION_STATUS_TYPE_ENUM,
+} from './entities/question.entity';
 
 @Injectable()
 export class QuestionService {
@@ -23,11 +26,8 @@ export class QuestionService {
     console.log(new Date(), ' | QuestionService.create()');
 
     const { userId, productId, ...question } = createQuestionInput;
-
     const user: User = await this.userSerivce.findOneByUserId(userId);
-
     const product: Product = await this.productSerivce.findOne({ productId });
-
     const result: Question = await this.questionRepository.save({
       ...question,
       product,
@@ -36,13 +36,19 @@ export class QuestionService {
     return result;
   }
 
-  async findAll(): Promise<Question[]> {
+  async findAll({ productId }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
-    return await this.questionRepository.find({
+    const result = await this.questionRepository.find({
+      where: { product: { id: productId } },
+      order: {
+        createdAt: 'desc',
+      },
       relations: ['user', 'product'],
     });
+    console.log(result);
+    return result;
   }
 
   async findOne({ questionId }): Promise<Question> {
@@ -58,6 +64,7 @@ export class QuestionService {
   async findByMyQuestion({ userId }) {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findByMyQuestion()');
+
     return this.questionRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'product'],
@@ -68,9 +75,14 @@ export class QuestionService {
     //LOGGING
     console.log(new Date(), ' | QuestionService.update()');
 
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .where('question.id = :questionId', { questionId })
+      .getOne();
+
     const newQuestsion: Question = {
+      ...question,
       ...updateQuestionInput,
-      id: questionId,
     };
     return await this.questionRepository.save(newQuestsion);
   }
@@ -81,5 +93,31 @@ export class QuestionService {
 
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;
+  }
+
+  async checkAnswer({ questionId }) {
+    const status = await this.questionRepository.findOne({
+      where: {
+        id: questionId,
+        status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+      },
+    });
+    if (status)
+      throw new UnprocessableEntityException(
+        '답변이 완료된 질문은 삭제 할 수 없습니다.',
+      );
+  }
+
+  async checkUpdate({ questionId }) {
+    const status = await this.questionRepository.findOne({
+      where: {
+        id: questionId,
+        status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+      },
+    });
+    if (status)
+      throw new UnprocessableEntityException(
+        '답변이 완료된 질문은 수정 할 수 없습니다.',
+      );
   }
 }
