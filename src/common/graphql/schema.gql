@@ -131,37 +131,6 @@ type Image {
   deletedAt: DateTime
 }
 
-type SmsPostReturn {
-  smsAuthTime: Int!
-  message: String!
-}
-
-type Answer {
-  id: String!
-  answer: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  question: Question
-}
-
-type Question {
-  id: String!
-  question: String
-  status: QUESTION_STATUS_TYPE_ENUM!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  product: Product!
-  answer: Answer!
-  user: User!
-}
-
-enum QUESTION_STATUS_TYPE_ENUM {
-  PROGRESS
-  SOLVED
-}
-
 type Order {
   id: String!
   price: Int!
@@ -197,6 +166,37 @@ enum POINT_STATUS_ENUM {
   REFUNDED
   SOLD
   CANCELED_SOLD
+}
+
+type SmsPostReturn {
+  smsAuthTime: Int!
+  message: String!
+}
+
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
+}
+
+type Question {
+  id: String!
+  question: String
+  status: QUESTION_STATUS_TYPE_ENUM!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  product: Product!
+  answer: Answer!
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
 }
 
 type Payment {
