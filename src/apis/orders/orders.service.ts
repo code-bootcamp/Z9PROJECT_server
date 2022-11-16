@@ -44,7 +44,7 @@ export class OrdersService {
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
-        .leftJoinAndSelect('product.user', 'user')
+        .leftJoinAndSelect('product.user', 'creator')
         .where('user.id = :userId', { userId })
         .andWhere('order.createdAt BETWEEN :startDate AND :endDate', {
           startDate,
@@ -61,7 +61,7 @@ export class OrdersService {
         .createQueryBuilder('order')
         .leftJoinAndSelect('order.user', 'user')
         .leftJoinAndSelect('order.product', 'product')
-        .leftJoinAndSelect('product.user', 'user')
+        .leftJoinAndSelect('product.user', 'creator')
         .where('user.id = :userId', { userId })
         .orderBy('order.createdAt', 'DESC')
         .skip((page - 1) * 10)
