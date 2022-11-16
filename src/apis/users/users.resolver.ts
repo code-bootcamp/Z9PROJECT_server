@@ -8,6 +8,7 @@ import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { UseGuards } from '@nestjs/common';
 import { SmsAuth } from '../auth/sms.service';
+import { CreateUserInput } from './dto/createUser.input';
 
 @Resolver()
 export class UsersResolver {
@@ -83,6 +84,8 @@ export class UsersResolver {
     createCreatorInput.phoneNumber = SmsAuth.getCorrectPhoneNumber(
       createCreatorInput.phoneNumber,
     );
+
+    await this.usersService.checkBankHolder({ createCreatorInput });
 
     await this.usersService.checkUserBeforeCreate(signupId, {
       ...createCreatorInput,
