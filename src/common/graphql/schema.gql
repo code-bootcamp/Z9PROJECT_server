@@ -131,6 +131,37 @@ type Image {
   deletedAt: DateTime
 }
 
+type SmsPostReturn {
+  smsAuthTime: Int!
+  message: String!
+}
+
+type Question {
+  id: String!
+  question: String
+  status: QUESTION_STATUS_TYPE_ENUM!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  product: Product
+  answer: Answer
+  user: User!
+}
+
+enum QUESTION_STATUS_TYPE_ENUM {
+  PROGRESS
+  SOLVED
+}
+
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
+}
+
 type Order {
   id: String!
   price: Int!
@@ -511,6 +542,7 @@ input CreateQuestionInput {
   isDeleted: Boolean = false
   userId: String!
   productId: String!
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
@@ -522,6 +554,7 @@ input UpdateQuestionInput {
   isDeleted: Boolean = false
   userId: String
   productId: String
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
