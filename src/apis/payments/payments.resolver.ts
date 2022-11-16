@@ -28,12 +28,6 @@ export class PaymentsResolver {
       amount,
       userId: ctx.req.user.id,
     });
-    const user = await this.pointsService.updateUserPoint({
-      userId: ctx.req.user.id,
-    });
-
-    //LOGGING
-    console.log(new Date(), ' | User Point Updated', user.point);
 
     return payment;
   }
@@ -53,12 +47,6 @@ export class PaymentsResolver {
       amount,
       userId: ctx.req.user.id,
     });
-    const user = await this.pointsService.updateUserPoint({
-      userId: ctx.req.user.id,
-    });
-
-    //LOGGING
-    console.log(new Date(), ' | User Point Updated', user.point);
 
     return payment;
   }

@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
 import { CreateCreatorInput } from './dto/createCreator.input';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
@@ -111,6 +112,25 @@ export class UsersService {
         '핸드폰 번호가 인증되지 않았거나 존재하지 않습니다',
       );
     }
+  }
+  async getYoutubeInfo({ chennelId }) {
+    //LOGGING
+    console.log(new Date(), ' | UsersService.getYoutubeInfo()');
+
+    const { data } = await axios.get(
+      'https://www.googleapis.com/youtube/v3/channels',
+      {
+        params: {
+          part: 'snippet,statistics',
+          id: chennelId,
+          key: process.env.YOUTUBE_API_KEY,
+          fields:
+            'items(snippet(title, description),statistics(viewCount,subscriberCount,videoCount,hiddenSubscriberCount))',
+        },
+      },
+    );
+
+    return data;
   }
 
   async createUserInFinalStep(
