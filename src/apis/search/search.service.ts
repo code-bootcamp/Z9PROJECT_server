@@ -153,7 +153,8 @@ export class SearchService {
             deletedAt: d.user_deletedat,
           },
           skin: d.skin,
-          color: d.color,
+          textColor: d.textcolor,
+          bgColor: d.bgColor,
           createdAt: d.createdat,
           deletedAt: d.deletedat,
         };
