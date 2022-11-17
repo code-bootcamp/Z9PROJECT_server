@@ -15,7 +15,6 @@ export class PointsService {
     private readonly productsRepository: Repository<Product>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
     private readonly connection: Connection,
   ) {}
 

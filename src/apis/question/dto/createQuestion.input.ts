@@ -21,6 +21,9 @@ export class CreateQuestionInput {
   @Field(() => String)
   productId: string;
 
+  @Field(() => String, { nullable: true })
+  answerId: string;
+
   @Field(() => QUESTION_STATUS_TYPE_ENUM, {
     nullable: true,
     defaultValue: QUESTION_STATUS_TYPE_ENUM.PROGRESS,

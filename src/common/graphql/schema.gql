@@ -12,40 +12,28 @@ type User {
   address: String
   addressDetail: String
 
-  """
-  Need Img URL to be saved
-  """
+  """Need Img URL to be saved"""
   profileImg: String
 
-  """
-  Need Img URL to be saved
-  """
+  """Need Img URL to be saved"""
   creatorAuthImg: String
   isAuthedCreator: Boolean
   snsId: String
 
-  """
-  YOUTUBE ChannelName or INSTA Name
-  """
+  """YOUTUBE ChannelName or INSTA Name"""
   snsName: String
 
-  """
-  YOUTUBE or INSTAGRAM
-  """
+  """YOUTUBE or INSTAGRAM"""
   snsChannel: SNS_TYPE_ENUM
   followerNumber: Int
   mainContents: String
   introduce: String
   bank: String
 
-  """
-  Account Number
-  """
+  """Account Number"""
   account: String
 
-  """
-  Account Owner Name (only Creator)
-  """
+  """Account Owner Name (only Creator)"""
   accountName: String
   point: Int
   createdAt: DateTime
@@ -78,9 +66,7 @@ type Product {
   discountPrice: Float
   isSoldout: Boolean!
 
-  """
-  delivery method is one method.
-  """
+  """delivery method is one method."""
   delivery: String!
   endType: PRODUCT_END_TYPE!
   validFrom: DateTime!
@@ -96,27 +82,22 @@ type Product {
   shopName: String!
   ceo: String!
 
-  """
-  brn is business_registraion_number
-  """
+  """brn is business_registraion_number"""
   brn: String!
 
-  """
-  mobn is mail_order_business_number
-  """
+  """mobn is mail_order_business_number"""
   mobn: String!
   productDetail: ProductDetail
   user: User
 
-  """
-  skin is seleted by user
-  """
+  """skin is seleted by user about skin style"""
   skin: Float!
 
-  """
-  color is seleted by user
-  """
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -158,15 +139,6 @@ type SmsPostReturn {
   message: String!
 }
 
-type Answer {
-  id: String!
-  answer: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  question: Question
-}
-
 type Question {
   id: String!
   question: String
@@ -174,14 +146,23 @@ type Question {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  product: Product!
-  answer: Answer!
+  product: Product
+  answer: Answer
   user: User!
 }
 
 enum QUESTION_STATUS_TYPE_ENUM {
   PROGRESS
   SOLVED
+}
+
+type Answer {
+  id: String!
+  answer: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  question: Question
 }
 
 type Order {
@@ -248,9 +229,7 @@ type SearchProductOutput {
   discountPrice: Float
   isSoldout: Boolean!
 
-  """
-  delivery method is one method.
-  """
+  """delivery method is one method."""
   delivery: String!
   endType: PRODUCT_END_TYPE!
   images: [String!]
@@ -264,26 +243,21 @@ type SearchProductOutput {
   shopName: String!
   ceo: String!
 
-  """
-  brn is business_registraion_number
-  """
+  """brn is business_registraion_number"""
   brn: String!
 
-  """
-  mobn is mail_order_business_number
-  """
+  """mobn is mail_order_business_number"""
   mobn: String!
   user: User
 
-  """
-  skin is seleted by user
-  """
+  """skin is seleted by user about skin style"""
   skin: Float!
 
-  """
-  color is seleted by user
-  """
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   validFrom: String
   validUntil: String
   createdAt: String
@@ -300,40 +274,28 @@ type SearchCreatorOutput {
   address: String
   addressDetail: String
 
-  """
-  Need Img URL to be saved
-  """
+  """Need Img URL to be saved"""
   profileImg: String
 
-  """
-  Need Img URL to be saved
-  """
+  """Need Img URL to be saved"""
   creatorAuthImg: String
   isAuthedCreator: Boolean
   snsId: String
 
-  """
-  YOUTUBE ChannelName or INSTA Name
-  """
+  """YOUTUBE ChannelName or INSTA Name"""
   snsName: String
 
-  """
-  YOUTUBE or INSTAGRAM
-  """
+  """YOUTUBE or INSTAGRAM"""
   snsChannel: SNS_TYPE_ENUM
   followerNumber: Int
   mainContents: String
   introduce: String
   bank: String
 
-  """
-  Account Number
-  """
+  """Account Number"""
   account: String
 
-  """
-  Account Owner Name (only Creator)
-  """
+  """Account Owner Name (only Creator)"""
   accountName: String
   point: Int
   createdAt: String
@@ -341,104 +303,56 @@ type SearchCreatorOutput {
 }
 
 type Query {
-  """
-  fetching single product by productId
-  """
+  """fetching single product by productId"""
   fetchProduct(productId: String!): Product!
 
-  """
-  fetching multiple product
-  """
+  """fetching multiple product"""
   fetchProducts: [Product!]!
 
-  """
-  fetching multiple product
-  """
+  """fetching multiple product"""
   fetchProductsByPages(page: Int!): [Product!]!
 
-  """
-  fetching multiple product by creator id
-  """
+  """fetching multiple product by creator id"""
   fetchProductsByCreator(page: Int!): [Product!]!
+  countProductByCreator: Float!
 
-  """
-  fetching multiple product by status
-  """
-  fetchProductsByStatus(
-    type: PRODUCT_SEARCH_TYPE!
-    option: PRODUCT_INCLUDE_OPTION!
-  ): [Product!]!
+  """fetching multiple product by status"""
+  fetchProductsByStatus(type: PRODUCT_SEARCH_TYPE!, option: PRODUCT_INCLUDE_OPTION!): [Product!]!
 
-  """
-  count product by userId
-  """
+  """count product by userId"""
   countProductByUserId(userId: String!): Float!
   fetchAllLikes: [Product!]!
   fetchLikeCount(productId: String!): Int!
   fetchIsLiked(productId: String!): Boolean!
 
-  """
-  fetching multiple creators
-  """
+  """fetching multiple creators"""
   fetchCreators(usersId: [String!]!): [User!]!
 
-  """
-  fetching user details logined
-  """
+  """fetching user details logined"""
   fetchUser: User!
 
-  """
-  validate password if it is the same password currently using
-  """
+  """validate password if it is the same password currently using """
   validatePassword(prevPassword: String!): Boolean!
 
-  """
-  fetching Question
-  """
+  """fetching Question"""
   fetchQuestion(questionId: String!): Question!
 
-  """
-  fetching Questions
-  """
+  """ fetching Questions"""
   fetchQuestions(productId: String!): [Question!]!
 
-  """
-  fetching Questions by creators and commonUsers using userId
-  """
+  """fetching Questions by creators and commonUsers using userId"""
   fetchMyQuestions: [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
-  fetchPointHistory(
-    startDate: DateTime = null
-    endDate: DateTime = null
-    page: Float!
-  ): [Point!]!
-  fetchCountOfPointHistory(
-    startDate: DateTime = null
-    endDate: DateTime = null
-  ): Float!
+  fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Point!]!
+  fetchCountOfPointHistory(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchMyPoint: Float!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
-  fetchCountOfOrderByUserId(
-    startDate: DateTime = null
-    endDate: DateTime = null
-  ): Float!
-  fetchOrdersByUserId(
-    startDate: DateTime = null
-    endDate: DateTime = null
-    page: Float!
-  ): [Order!]!
-  fetchCountOfOrderByCreatorId(
-    startDate: DateTime = null
-    endDate: DateTime = null
-  ): Float!
-  fetchOrdersByCreatorId(
-    startDate: DateTime = null
-    endDate: DateTime = null
-    page: Float!
-  ): [Order!]!
-  fetchSalesTotal(productId: String!): Float!
-    @deprecated(reason: "Use Product's quantity and originalQuantity instead")
+  fetchCountOfOrderByUserId(startDate: DateTime = null, endDate: DateTime = null): Float!
+  fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
+  fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchSalesTotal(productId: String!): Float! @deprecated(reason: "Use Product's quantity and originalQuantity instead")
 
   """
   searching creators In Creator Page by nickname or UtubeChannelName/InstaName
@@ -464,26 +378,13 @@ enum PRODUCT_INCLUDE_OPTION {
 }
 
 type Mutation {
-  """
-  product signup
-  """
-  createProduct(
-    createProductInput: CreateProductInput!
-    createProductDetailInput: CreateProductDetailInput!
-  ): Product!
+  """product signup"""
+  createProduct(createProductInput: CreateProductInput!, createProductDetailInput: CreateProductDetailInput!): Product!
 
-  """
-  update product detail
-  """
-  updateProduct(
-    productId: String!
-    updateProductInput: UpdateProductInput!
-    updateProductDetailInput: UpdateProductDetailInput!
-  ): Product!
+  """update product detail"""
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!, updateProductDetailInput: UpdateProductDetailInput!): Product!
 
-  """
-  delete product
-  """
+  """delete product"""
   deleteProduct(productId: String!): Boolean!
   likeProduct(productId: String!): Boolean!
   uploadImage(image: Upload!): Image!
@@ -492,69 +393,34 @@ type Mutation {
   restoreAccessToken: String!
   logout: String!
   postSmsToken(phoneNumber: String!): SmsPostReturn!
-  patchSmsToken(
-    phoneNumber: String!
-    smsToken: String!
-    signupId: String!
-  ): Boolean!
+  patchSmsToken(phoneNumber: String!, smsToken: String!, signupId: String!): Boolean!
 
-  """
-  user signup
-  """
-  createUser(
-    signupId: String!
-    createCommonUserInput: CreateCommonUserInput!
-  ): User!
+  """user signup"""
+  createUser(signupId: String!, createCommonUserInput: CreateCommonUserInput!): User!
 
-  """
-  creator signup
-  """
-  createCreator(
-    signupId: String!
-    createCreatorInput: CreateCreatorInput!
-  ): User!
+  """creator signup"""
+  createCreator(signupId: String!, createCreatorInput: CreateCreatorInput!): User!
 
-  """
-  return true if user nickname is already exist
-  """
+  """return true if user nickname is already exist"""
   checkNickname(nickname: String!): Boolean!
 
-  """
-  update user detail
-  """
+  """update user detail"""
   updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
 
-  """
-  update user password
-  """
+  """update user password"""
   updatePassword(password: String!): User!
 
-  """
-  delete user
-  """
+  """delete user"""
   deleteUser: Boolean!
 
-  """
-  question signup
-  """
+  """question signup"""
   createQuestion(createQuestionInput: CreateQuestionInput!): Question!
-  updateQuestion(
-    questionId: String!
-    updateQuestionInput: UpdateQuestionInput!
-  ): Question!
+  updateQuestion(questionId: String!, updateQuestionInput: UpdateQuestionInput!): Question!
   deleteQuestion(questionId: String!): Boolean!
 
-  """
-  answer signup
-  """
-  createAnswer(
-    questionId: String!
-    createAnswerInput: CreateAnswerInput!
-  ): Answer!
-  updateAnswer(
-    answerId: String!
-    updateAnswerInput: UpdateAnswerInput!
-  ): Answer!
+  """answer signup"""
+  createAnswer(questionId: String!, createAnswerInput: CreateAnswerInput!): Answer!
+  updateAnswer(answerId: String!, updateAnswerInput: UpdateAnswerInput!): Answer!
   deleteAnswer(answerId: String!): Boolean!
   createPayment(impUid: String!, amount: Float!): Payment!
   refundPayment(impUid: String!, amount: Float!): Payment!
@@ -567,7 +433,7 @@ type Mutation {
 input CreateProductInput {
   name: String!
   originPrice: Float!
-  quantity: Float!
+  originalQuantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -584,25 +450,20 @@ input CreateProductInput {
   shopName: String!
   ceo: String!
 
-  """
-  brn is business_registration_number
-  """
+  """brn is business_registration_number"""
   brn: String!
 
-  """
-  mobn is mail_order_business_number
-  """
+  """mobn is mail_order_business_number"""
   mobn: String!
 
-  """
-  skin is seleted by user
-  """
+  """skin is seleted by user"""
   skin: Float!
 
-  """
-  color is seleted by user
-  """
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   userId: String!
 }
 
@@ -627,7 +488,7 @@ input CreateProductDetailInput {
 input UpdateProductInput {
   name: String
   originPrice: Float
-  quantity: Float
+  originalQuantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -644,27 +505,21 @@ input UpdateProductInput {
   shopName: String
   ceo: String
 
-  """
-  brn is business_registration_number
-  """
+  """brn is business_registration_number"""
   brn: String
 
-  """
-  mobn is mail_order_business_number
-  """
+  """mobn is mail_order_business_number"""
   mobn: String
 
-  """
-  skin is seleted by user
-  """
+  """skin is seleted by user"""
   skin: Float
 
-  """
-  color is seleted by user
-  """
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   userId: String
-  originalQuantity: Float!
 }
 
 input UpdateProductDetailInput {
@@ -685,9 +540,7 @@ input UpdateProductDetailInput {
   option14: String = null
 }
 
-"""
-The `Upload` scalar type represents a file upload.
-"""
+"""The `Upload` scalar type represents a file upload."""
 scalar Upload
 
 input CreateCommonUserInput {
@@ -753,51 +606,41 @@ input UpdateUserInput {
 }
 
 input CreateQuestionInput {
-  """
-  """
+  """"""
   question: String
 
-  """
-  When question is removed by admin, isDeleted convert to ture
-  """
+  """When question is removed by admin, isDeleted convert to ture"""
   isDeleted: Boolean = false
   userId: String!
   productId: String!
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
 input UpdateQuestionInput {
-  """
-  """
+  """"""
   question: String
 
-  """
-  When question is removed by admin, isDeleted convert to ture
-  """
+  """When question is removed by admin, isDeleted convert to ture"""
   isDeleted: Boolean = false
   userId: String
   productId: String
+  answerId: String
   status: QUESTION_STATUS_TYPE_ENUM = PROGRESS
 }
 
 input CreateAnswerInput {
-  """
-  """
+  """"""
   answer: String
 
-  """
-  When answer is removed by admin, isDeleted convert to true
-  """
+  """When answer is removed by admin, isDeleted convert to true"""
   isDeleted: Boolean = false
 }
 
 input UpdateAnswerInput {
-  """
-  """
+  """"""
   answer: String
 
-  """
-  When answer is removed by admin, isDeleted convert to true
-  """
+  """When answer is removed by admin, isDeleted convert to true"""
   isDeleted: Boolean = false
 }

@@ -57,7 +57,10 @@ export class QuestionResolver {
   @Query(() => [Question], {
     description: 'fetching Questions by creators and commonUsers using userId',
   })
-  async fetchMyQuestions(@Context() ctx: IContext) {
+  async fetchMyQuestions(
+    @Context()
+    ctx: IContext,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch My Questions Requested');
 
