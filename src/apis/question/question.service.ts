@@ -60,6 +60,17 @@ export class QuestionService {
     return result;
   }
 
+  async findCountQuestions({ productId }) {
+    //LOGGING
+    console.log(new Date(), ' | QuestionService.findCountQuestions()');
+
+    return await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('question.product = :productId', { productId })
+      .getCount();
+  }
+
   async findOne({ questionId }): Promise<Question> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findOne()');

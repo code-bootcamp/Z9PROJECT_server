@@ -53,6 +53,14 @@ export class QuestionResolver {
     return await this.questionService.findAll({ productId, page });
   }
 
+  @Query(() => Int)
+  async fetchCountOfQuestions(@Args('productId') productId: string) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Count Of Questions Requested');
+
+    return await this.questionService.findCountQuestions({ productId });
+  }
+
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Question], {
