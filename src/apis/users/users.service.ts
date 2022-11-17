@@ -209,7 +209,7 @@ export class UsersService {
         '해당 유저 정보를 찾을 수 없습니다.',
       );
 
-    const result = await this.usersRepository.delete({
+    const result = await this.usersRepository.softDelete({
       id: userId,
     });
     return result.affected ? true : false;
