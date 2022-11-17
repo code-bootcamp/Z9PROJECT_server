@@ -201,6 +201,7 @@ export class OrdersService {
           endDate,
         })
         .getCount();
+      console.log(count);
       return count;
     } else {
       const count = await this.orderRepository
@@ -209,6 +210,7 @@ export class OrdersService {
         .leftJoinAndSelect('order.product', 'product')
         .where('user.id = :userId', { userId })
         .getCount();
+      console.log(count);
       return count;
     }
   }

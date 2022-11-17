@@ -73,6 +73,8 @@ export class ProductLikeService {
       .leftJoinAndSelect('productLike.product', 'product')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .getMany();
+    //TODO: update
+    console.log(productIds);
     const products: Product[] = await Promise.all(
       productIds.map(async (productId): Promise<Product> => {
         return await this.productService.findOne({
