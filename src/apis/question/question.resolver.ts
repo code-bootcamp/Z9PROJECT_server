@@ -45,11 +45,12 @@ export class QuestionResolver {
   })
   async fetchQuestions(
     @Args('productId') productId: string, //
+    @Args('page') page: number,
   ) {
     //LOGING
     console.log(new Date(), ' | API Fetch Questions Requested');
 
-    return await this.questionService.findAll({ productId });
+    return await this.questionService.findAll({ productId, page });
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()
