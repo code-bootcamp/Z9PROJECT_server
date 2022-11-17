@@ -255,20 +255,21 @@ type Query {
   fetchQuestion(questionId: String!): Question!
 
   """ fetching Questions"""
-  fetchQuestions(productId: String!): [Question!]!
+  fetchQuestions(productId: String!, page: Int!): [Question!]!
+  fetchCountOfQuestions(productId: String!): Int!
 
   """fetching Questions by creators and commonUsers using userId"""
   fetchMyQuestions: [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
-  fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Point!]!
+  fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Point!]!
   fetchCountOfPointHistory(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchMyPoint: Float!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
   fetchCountOfOrderByUserId(startDate: DateTime = null, endDate: DateTime = null): Float!
-  fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Order!]!
   fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
-  fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Order!]!
   fetchSalesTotal(productId: String!): Float! @deprecated(reason: "Use Product's quantity and originalQuantity instead")
 }
 
