@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Answer } from '../answer/entites/answer.entity';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
@@ -17,6 +18,7 @@ import { QuestionService } from './question.service';
       Product,
       User,
       ProductDetail,
+      Answer,
     ]),
   ],
   providers: [

@@ -166,10 +166,22 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
-      .where('product.user = :userId', { userId })
+      .where('user.id = :userId', { userId })
       .skip((page - 1) * 10)
       .take(10)
       .getMany();
+  }
+
+  async countProductByCreator({ userId }) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.countProductByCreator()');
+
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .where('user.id = :userId', { userId })
+      .getCount();
   }
 
   async findAll() {
@@ -210,21 +222,26 @@ export class ProductService {
       calcDiscountRate < 0 ||
       createProductInput.discountPrice < 0
     ) {
-      throw new UnprocessableEntityException('그딴 미친 할인은 안돼');
+      throw new UnprocessableEntityException(
+        '100프로를 초과하거나 0프로 미만인 할인율을 책정할 수 없습니다',
+      );
     }
     if (
       createProductInput.originPrice <= 0 ||
       createProductInput.discountPrice <= 0
     ) {
-      throw new UnprocessableEntityException('그딴 미친 가격은 안돼');
+      throw new UnprocessableEntityException(
+        '원가보다 낮은 할인가를 입력할 수 없습니다',
+      );
     }
 
     const user = await this.usersService.findOneByUserId(userId);
-    const { discountRate, images, quantity, ...product } = createProductInput;
+    const { discountRate, images, originalQuantity, ...product } =
+      createProductInput;
     const savedProduct: Product = await this.productRepository.save({
       ...product,
-      quantity,
-      originalQuantity: quantity,
+      quantity: originalQuantity,
+      originalQuantity,
       images: images,
       user,
       discountRate: calcDiscountRate,
@@ -261,12 +278,20 @@ export class ProductService {
     if (updateProductInput.images == null) {
       updateProductInput.images = originProduct.images;
     }
-    const { discountRate, images, ...product } = updateProductInput;
+    const { discountRate, images, originalQuantity, ...product } =
+      updateProductInput;
+
+    if (originProduct.quantity <= originalQuantity) {
+      throw new UnprocessableEntityException(
+        '남은 수량 이하로 재고를 변경할 수 없습니다',
+      );
+    }
 
     const newProduct: Product = await this.productRepository.save({
       ...originProduct,
-      images: images,
+      images,
       discountRate: calcDiscountRate,
+      originalQuantity,
       ...product,
     });
 

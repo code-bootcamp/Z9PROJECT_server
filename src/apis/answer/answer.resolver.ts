@@ -35,21 +35,20 @@ export class AnswerResolver {
 
     if (findUser.userType !== USER_TYPE_ENUM.CREATOR)
       throw new NotFoundException('크리에이터가 아닙니다.');
-
-    const updateQuestionInput: UpdateQuestionInput = {
-      status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
-    };
-
-    const question = await this.questionService.update({
-      questionId,
-      updateQuestionInput,
-    });
-
-    const result = await this.answerSerivce.create({
+    const question = await this.questionService.findOne({ questionId });
+    const answer = await this.answerSerivce.create({
       createAnswerInput,
       question,
     });
-    return result;
+    const updateQuestionInput: UpdateQuestionInput = {
+      status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
+      answerId: answer.id,
+    };
+    await this.questionService.update({
+      questionId,
+      updateQuestionInput,
+    });
+    return answer;
   }
 
   @UseGuards(GqlAuthAccessGuard)

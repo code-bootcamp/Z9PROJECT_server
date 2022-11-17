@@ -58,12 +58,12 @@ export class Question {
   deletedAt: Date;
 
   @ManyToOne(() => Product)
-  @Field(() => Product)
+  @Field(() => Product, { nullable: true })
   product: Product;
 
   @JoinColumn()
   @OneToOne(() => Answer)
-  @Field(() => Answer)
+  @Field(() => Answer, { nullable: true })
   answer: Answer;
 
   @ManyToOne(() => User)

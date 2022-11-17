@@ -12,7 +12,7 @@ export class CreateProductInput {
   originPrice: number;
 
   @Field(() => Number, { nullable: false })
-  quantity: number;
+  originalQuantity: number;
 
   @Min(0)
   @Field(() => Number, { nullable: true })
@@ -83,9 +83,15 @@ export class CreateProductInput {
 
   @Field(() => String, {
     nullable: true,
-    description: 'color is seleted by user',
+    description: 'color is seleted by user about text color',
   })
-  color: string;
+  textColor: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'color is seleted by user about background color',
+  })
+  bgColor: string;
 
   @Field(() => String)
   userId: string;

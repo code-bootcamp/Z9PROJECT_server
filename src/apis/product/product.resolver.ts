@@ -20,50 +20,63 @@ export class ProductResolver {
   ) {}
 
   @Query(() => Product, { description: 'fetching single product by productId' })
-  fetchProduct(@Args('productId') productId: string) {
+  async fetchProduct(@Args('productId') productId: string) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Product Requested');
 
-    return this.productService.findOne({ productId });
+    return await this.productService.findOne({ productId });
   }
 
   @Query(() => [Product], { description: 'fetching multiple product' })
-  fetchProducts() {
+  async fetchProducts() {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products Requested');
 
-    return this.productService.findAll();
+    return await this.productService.findAll();
   }
 
   @Query(() => [Product], { description: 'fetching multiple product' })
-  fetchProductsByPages(@Args({ name: 'page', type: () => Int }) page: number) {
+  async fetchProductsByPages(
+    @Args({ name: 'page', type: () => Int }) page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Pages Requested');
 
-    return this.productService.findProductsByPages({ page });
+    return await this.productService.findProductsByPages({ page });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product], {
     description: 'fetching multiple product by creator id',
   })
-  fetchProductsByCreator(
+  async fetchProductsByCreator(
     @Context() ctx: IContext,
     @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Creator Requested');
 
-    return this.productService.findProductByCreator({
+    return await this.productService.findProductByCreator({
       userId: ctx.req.user.id,
       page,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Number)
+  async countProductByCreator(@Context() ctx: IContext) {
+    //LOGGING
+    console.log(new Date(), ' | API Count Product By Creator Requested');
+
+    return await this.productService.countProductByCreator({
+      userId: ctx.req.user.id,
     });
   }
 
   @Query(() => [Product], {
     description: 'fetching multiple product by status',
   })
-  fetchProductsByStatus(
+  async fetchProductsByStatus(
     @Args({ name: 'type', type: () => PRODUCT_SEARCH_TYPE })
     type: PRODUCT_SEARCH_TYPE,
     @Args({ name: 'option', type: () => PRODUCT_INCLUDE_OPTION })
@@ -74,15 +87,15 @@ export class ProductResolver {
     console.log(new Date(), ' | type: ', type);
     console.log(new Date(), ' | option: ', option);
 
-    return this.productService.findProductByStatus({ type, option });
+    return await this.productService.findProductByStatus({ type, option });
   }
 
   @Query(() => Number, { description: 'count product by userId' })
-  countProductByUserId(@Args('userId') userId: string) {
+  async countProductByUserId(@Args('userId') userId: string) {
     //LOGGING
     console.log(new Date(), ' | API Count Product By UserId Requested');
 
-    return this.productService.countProductByUserId({ userId });
+    return await this.productService.countProductByUserId({ userId });
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -97,7 +110,7 @@ export class ProductResolver {
     console.log(new Date(), ' | API Create Product Requested');
 
     await this.productService.checkBussinessNumber({ createProductInput });
-    return this.productService.create({
+    return await this.productService.create({
       userId: ctx.req.user.id,
       createProductInput,
       createProductDetailInput,
@@ -115,7 +128,7 @@ export class ProductResolver {
     console.log(new Date(), ' | API Update Product Requested');
 
     await this.productService.checkSoldout({ productId });
-    return this.productService.update({
+    return await this.productService.update({
       productId,
       updateProductInput,
       updateProductDetailInput,
@@ -127,6 +140,6 @@ export class ProductResolver {
     //LOGGING
     console.log(new Date(), ' | API Delete Product Requested');
 
-    return this.productService.delete({ productId });
+    return await this.productService.delete({ productId });
   }
 }

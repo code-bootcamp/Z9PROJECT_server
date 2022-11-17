@@ -15,6 +15,7 @@ import { Cache } from 'cache-manager';
 import { ISmsToken, SMS_TOKEN_KEY_PREFIX } from 'src/common/types/auth.types';
 import { CreateCreatorInput } from './dto/createCreator.input';
 import axios from 'axios';
+import { PointsService } from '../points/points.service';
 
 @Injectable()
 export class UsersService {
@@ -188,6 +189,8 @@ export class UsersService {
     const result = this.usersRepository.save({
       ...user,
       ...updateUserInput,
+      userType: user.userType,
+      point: user.point,
     });
 
     return result;
@@ -210,5 +213,32 @@ export class UsersService {
       id: userId,
     });
     return result.affected ? true : false;
+  }
+
+  async getAccessToken() {
+    const result = await axios.post('https://api.iamport.kr/users/getToken', {
+      imp_key: process.env.IAMPORT_REST_API_KEY,
+      imp_secret: process.env.IAMPORT_REST_API_SECRET,
+    });
+    return result;
+  }
+
+  async checkBankHolder({ createCreatorInput }) {
+    const { bank, account, accountName } = createCreatorInput;
+
+    const { data: accessTokenData } = await this.getAccessToken();
+
+    const isValidation = await axios
+      .get(
+        `https://api.iamport.kr/vbanks/holder?bank_code=${bank}&bank_num=${account}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessTokenData.response.access_token}`,
+          },
+        },
+      )
+      .catch((e) => console.log(e));
+    if (isValidation['data'].response.bank_holder !== `${accountName}`)
+      throw new ConflictException('예금주와 계좌정보가 일치하지 않습니다.');
   }
 }

@@ -6,6 +6,8 @@ import { UsersService } from './users.service';
 import { JwtAccessStrategy } from 'src/common/auth/jwt-access.strategy';
 import { Image } from '../images/entities/image.entity';
 import { Product } from '../product/entities/product.entity';
+import { PointsService } from '../points/points.service';
+import { Point } from '../points/entities/point.entity';
 
 @Module({
   imports: [
