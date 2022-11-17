@@ -90,11 +90,14 @@ type Product {
   productDetail: ProductDetail
   user: User
 
-  """skin is seleted by user"""
+  """skin is seleted by user about skin style"""
   skin: Float!
 
-  """color is seleted by user"""
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -228,6 +231,7 @@ type Query {
 
   """fetching multiple product by creator id"""
   fetchProductsByCreator(page: Int!): [Product!]!
+  countProductByCreator: Float!
 
   """fetching multiple product by status"""
   fetchProductsByStatus(type: PRODUCT_SEARCH_TYPE!, option: PRODUCT_INCLUDE_OPTION!): [Product!]!
@@ -336,7 +340,7 @@ type Mutation {
 input CreateProductInput {
   name: String!
   originPrice: Float!
-  quantity: Float!
+  originalQuantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -362,8 +366,11 @@ input CreateProductInput {
   """skin is seleted by user"""
   skin: Float!
 
-  """color is seleted by user"""
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   userId: String!
 }
 
@@ -388,7 +395,7 @@ input CreateProductDetailInput {
 input UpdateProductInput {
   name: String
   originPrice: Float
-  quantity: Float
+  originalQuantity: Float
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String
@@ -414,10 +421,12 @@ input UpdateProductInput {
   """skin is seleted by user"""
   skin: Float
 
-  """color is seleted by user"""
-  color: String
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
   userId: String
-  originalQuantity: Float!
 }
 
 input UpdateProductDetailInput {
