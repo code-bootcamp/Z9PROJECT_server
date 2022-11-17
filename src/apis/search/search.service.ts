@@ -1,8 +1,6 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Cache } from 'cache-manager';
 import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
-import { SearchCreatorOutput } from './dto/search.creator.output';
-import { SearchProductOutput } from './dto/search.product.output';
 
 export const CREATOR_IDX = 'zero9creator';
 export const PRODUCT_IDX = 'zero9product';
@@ -41,6 +39,37 @@ export class SearchService {
   searchProducts = async (word: string) =>
     await this.searchInES(word, PRODUCT_IDX);
 
+  /** !주의: product ES검색에서 크리에이터 정보 구성시엔 사용하지 말것! */
+  private getCreator = (mapElement) => {
+    const d = mapElement._source;
+    return {
+      id: d.id,
+      email: d.email,
+      userType: d.usertype,
+      nickname: d.nickname,
+      phoneNumber: d.phonenumber,
+      zipcode: d.zipcode,
+      address: d.address,
+      addressDetail: d.addressdetail,
+      profileImg: d.profileImg,
+      creatorAuthImg: d.creatorauthimg,
+      isAuthedCreator: d.isauthedcreator,
+      snsId: d.snsid,
+      snsName: d.snsname,
+      snsChannel: d.snschannel,
+      followerNumber: d.followernumber,
+      mainContents: d.maincontents,
+      introduce: d.introduce,
+      bank: d.bank,
+      account: d.account,
+      accountName: d.accountname,
+      point: d.point,
+      createdAt: d.createdat,
+      updatedAt: d.updatedat,
+      deletedAt: d.deletedat,
+    };
+  };
+
   /** 엘라스틱서치에서 조회 */
   async searchInES(word: string, esIndex: string) {
     let fields = null;
@@ -48,7 +77,7 @@ export class SearchService {
       fields = ['nickname', 'snsname'];
     } else {
       // PRODUCT_IDX
-      fields = ['name^2', 'user_nickname'];
+      fields = ['name', 'user_nickname'];
     }
 
     let esResults = null;
@@ -68,30 +97,7 @@ export class SearchService {
       const d = el._source;
 
       if (esIndex === CREATOR_IDX) {
-        rst = {
-          id: d.id,
-          email: d.email,
-          userType: d.usertype,
-          nickname: d.nickname,
-          phoneNumber: d.phonenumber,
-          zipcode: d.zipcode,
-          address: d.address,
-          addressDetail: d.addressdetail,
-          profileImg: d.profileImg,
-          creatorAuthImg: d.creatorauthimg,
-          isAuthedCreator: d.isauthedcreator,
-          snsId: d.snsid,
-          snsName: d.snsname,
-          snsChannel: d.snschannel,
-          followerNumber: d.followernumber,
-          mainContents: d.maincontents,
-          introduce: d.introduce,
-          bank: d.bank,
-          account: d.account,
-          accountName: d.accountname,
-          point: d.point,
-          createdAt: d.createdat,
-        };
+        rst = this.getCreator(el);
       } else {
         // PRODUCT_IDX
         rst = {
@@ -105,9 +111,9 @@ export class SearchService {
           isSoldout: d.issoldout,
           delivery: d.delivery,
           endType: d.endtype,
-          validFrom: new Date(d.validfrom),
-          validUntil: new Date(d.validuntil),
-          images: d.images,
+          validFrom: d.validfrom,
+          validUntil: d.validuntil,
+          images: d.images?.split(','),
           // detailImages: d.detailimages,
           content: d.content,
           option1: d.option1,
@@ -132,7 +138,9 @@ export class SearchService {
             profileImg: d.user_profileimg,
             creatorAuthImg: d.user_creatorAuthImg,
             isAuthedCreator: d.user_isauthedcreator,
+            snsId: d.user_snsid,
             snsName: d.user_snsname,
+            snsChannel: d.snschannel,
             followerNumber: d.user_follwernumber,
             mainContents: d.user_maincontents,
             introduce: d.user_introduce,
