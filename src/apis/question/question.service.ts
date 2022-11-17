@@ -1,5 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { skip } from 'rxjs';
 import { Repository } from 'typeorm';
 import { Answer } from '../answer/entites/answer.entity';
 import { Product } from '../product/entities/product.entity';
@@ -40,7 +41,7 @@ export class QuestionService {
     return result;
   }
 
-  async findAll({ productId }): Promise<Question[]> {
+  async findAll({ productId, page }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
@@ -50,7 +51,11 @@ export class QuestionService {
         createdAt: 'desc',
       },
       relations: ['user', 'product'],
+      skip: (page - 1) * 5,
+      take: 5,
+      cache: true,
     });
+
     console.log(result);
     return result;
   }
