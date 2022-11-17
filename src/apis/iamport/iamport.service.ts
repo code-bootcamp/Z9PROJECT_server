@@ -1,9 +1,13 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class IamportService {
-  private getAccessToken = async () => {
+  private getImpAccessToken = async () => {
     //LOGGING
     console.log(new Date(), ' | IamportService.getAccessToken()');
 
@@ -18,7 +22,7 @@ export class IamportService {
     console.log(new Date(), ' | IamportService.validatePayment()');
 
     // get access token from iamport
-    const { data: accessTokenData } = await this.getAccessToken();
+    const { data: accessTokenData } = await this.getImpAccessToken();
 
     // get payment data from iamport
     const { data: paymentData } = await axios
@@ -46,7 +50,7 @@ export class IamportService {
     console.log(new Date(), ' | IamportService.refundPayment()');
 
     // get access token from iamport
-    const { data: accessTokenData } = await this.getAccessToken();
+    const { data: accessTokenData } = await this.getImpAccessToken();
 
     // get payment data from iamport
     const { data: paymentData } = await axios
@@ -72,5 +76,29 @@ export class IamportService {
     //LOGGING
     console.log(`${new Date()} | Payment Refunded : ${impUid}`);
     return paymentData;
+  }
+
+  async checkBankHolder({ createCreatorInput }) {
+    const { bank, account, accountName } = createCreatorInput;
+
+    if (!bank || !account || !accountName)
+      throw new UnprocessableEntityException(
+        '은행, 계좌, 예금주명을 확인해 주세요.',
+      );
+
+    const { data: accessTokenData } = await this.getImpAccessToken();
+
+    const isValidation = await axios
+      .get(
+        `https://api.iamport.kr/vbanks/holder?bank_code=${bank}&bank_num=${account}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessTokenData.response.access_token}`,
+          },
+        },
+      )
+      .catch((e) => console.log(e));
+    if (isValidation['data']?.response.bank_holder !== `${accountName}`)
+      throw new ConflictException('예금주와 계좌정보가 일치하지 않습니다.');
   }
 }

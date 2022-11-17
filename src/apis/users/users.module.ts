@@ -6,8 +6,7 @@ import { UsersService } from './users.service';
 import { JwtAccessStrategy } from 'src/common/auth/jwt-access.strategy';
 import { Image } from '../images/entities/image.entity';
 import { Product } from '../product/entities/product.entity';
-import { PointsService } from '../points/points.service';
-import { Point } from '../points/entities/point.entity';
+import { IamportService } from '../iamport/iamport.service';
 
 @Module({
   imports: [
@@ -21,6 +20,7 @@ import { Point } from '../points/entities/point.entity';
     JwtAccessStrategy, //
     UsersResolver,
     UsersService,
+    IamportService,
   ],
 })
 export class UsersModule {}
