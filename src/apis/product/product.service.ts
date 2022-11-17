@@ -222,13 +222,17 @@ export class ProductService {
       calcDiscountRate < 0 ||
       createProductInput.discountPrice < 0
     ) {
-      throw new UnprocessableEntityException('그딴 미친 할인은 안돼');
+      throw new UnprocessableEntityException(
+        '100프로를 초과하거나 0프로 미만인 할인율을 책정할 수 없습니다',
+      );
     }
     if (
       createProductInput.originPrice <= 0 ||
       createProductInput.discountPrice <= 0
     ) {
-      throw new UnprocessableEntityException('그딴 미친 가격은 안돼');
+      throw new UnprocessableEntityException(
+        '원가보다 낮은 할인가를 입력할 수 없습니다',
+      );
     }
 
     const user = await this.usersService.findOneByUserId(userId);
