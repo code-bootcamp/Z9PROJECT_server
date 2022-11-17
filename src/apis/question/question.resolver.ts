@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QuestionService } from './question.service';
 import { CreateQuestionInput } from './dto/createQuestion.input';
 import { Question } from './entities/question.entity';
@@ -45,7 +45,7 @@ export class QuestionResolver {
   })
   async fetchQuestions(
     @Args('productId') productId: string, //
-    @Args('page') page: number,
+    @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGING
     console.log(new Date(), ' | API Fetch Questions Requested');

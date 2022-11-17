@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { Order } from './entities/order.entity';
@@ -55,7 +55,7 @@ export class OrdersResolver {
     startDate: Date,
     @Args({ name: 'endDate', nullable: true, defaultValue: null })
     endDate: Date,
-    @Args('page') page: number,
+    @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Orders By User Id Requested');
@@ -98,7 +98,7 @@ export class OrdersResolver {
     startDate: Date,
     @Args({ name: 'endDate', nullable: true, defaultValue: null })
     endDate: Date,
-    @Args('page') page: number,
+    @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Orders By Creator Id Requested');
