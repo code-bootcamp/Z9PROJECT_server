@@ -7,6 +7,9 @@ import { JwtAccessStrategy } from 'src/common/auth/jwt-access.strategy';
 import { Image } from '../images/entities/image.entity';
 import { Product } from '../product/entities/product.entity';
 import { IamportService } from '../iamport/iamport.service';
+import { ProductService } from '../product/product.service';
+import { ProductDetailService } from '../productDetail/productDetail.service';
+import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 
 @Module({
   imports: [
@@ -14,6 +17,7 @@ import { IamportService } from '../iamport/iamport.service';
       User, //
       Image,
       Product,
+      ProductDetail,
     ]),
   ],
   providers: [
@@ -21,6 +25,8 @@ import { IamportService } from '../iamport/iamport.service';
     UsersResolver,
     UsersService,
     IamportService,
+    ProductService,
+    ProductDetailService,
   ],
 })
 export class UsersModule {}
