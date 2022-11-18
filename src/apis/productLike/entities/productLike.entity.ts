@@ -17,11 +17,11 @@ export class ProductLike {
   @Field(() => String, { nullable: false })
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @Field(() => User, { nullable: true })
   user: User;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, { nullable: true })
   @Field(() => Product, { nullable: true })
   product: Product;
 

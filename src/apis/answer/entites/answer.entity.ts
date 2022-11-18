@@ -35,7 +35,7 @@ export class Answer {
   deletedAt: Date;
 
   @JoinColumn()
-  @OneToOne(() => Question)
+  @OneToOne(() => Question, { nullable: true })
   @Field(() => Question, { nullable: true })
   question: Question;
 }
