@@ -6,15 +6,17 @@ import { UpdateUserInput } from './dto/updateUser.input';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
-import { UseGuards } from '@nestjs/common';
+import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
 import { SmsAuth } from '../auth/sms.service';
 import { IamportService } from '../iamport/iamport.service';
+import { ProductService } from '../product/product.service';
 
 @Resolver()
 export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
     private readonly iamportService: IamportService,
+    private readonly productService: ProductService,
   ) {}
 
   @Query(() => [User], { description: 'fetching multiple creators' })
@@ -165,6 +167,19 @@ export class UsersResolver {
     //LOGGING
     console.log(new Date(), ' | API delete user requested');
 
+    if (await this.hasSellingProducts(ctx.req.user.id)) {
+      throw new UnprocessableEntityException(
+        '회원 탈퇴 전에 판매 중인 상품을 종료 해주세요',
+      );
+    }
+
     return await this.usersService.delete(ctx.req.user.id);
+  }
+
+  async hasSellingProducts(userId: string) {
+    const rst = await this.productService.findProgressProducts(userId);
+    if (!rst || rst?.length === 0) return false;
+
+    return true;
   }
 }
