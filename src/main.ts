@@ -4,7 +4,6 @@ import axios from 'axios';
 import { graphqlUploadExpress } from 'graphql-upload';
 import { join } from 'path';
 import { AppModule } from './app.module';
-import bodyParser from 'body-parser';
 import { json, urlencoded } from 'express';
 
 const originList = process.env.ORIGIN_LIST.split(',');
