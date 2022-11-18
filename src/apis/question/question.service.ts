@@ -50,6 +50,7 @@ export class QuestionService {
       order: {
         createdAt: 'desc',
       },
+      withDeleted: true,
       relations: ['user', 'product'],
       skip: (page - 1) * 5,
       take: 5,
@@ -77,7 +78,8 @@ export class QuestionService {
 
     return await this.questionRepository.findOne({
       where: { id: questionId },
-      relations: ['user', 'product'],
+      withDeleted: true,
+      relations: ['user', 'product', 'answer'],
     });
   }
 

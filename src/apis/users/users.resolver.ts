@@ -75,11 +75,6 @@ export class UsersResolver {
 
     await this.iamportService.checkBankHolder({ createCreatorInput });
 
-    await this.usersService.checkUserBeforeCreate(signupId, {
-      ...createCreatorInput,
-      userType: USER_TYPE_ENUM.CREATOR,
-    });
-
     if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.YOUTUBE) {
       const data = await this.usersService.getYoutubeInfo({
         chennelId: createCreatorInput.snsId,
@@ -96,6 +91,10 @@ export class UsersResolver {
       createCreatorInput.followerNumber = 0;
     }
 
+    await this.usersService.checkUserBeforeCreate(signupId, {
+      ...createCreatorInput,
+      userType: USER_TYPE_ENUM.CREATOR,
+    });
     const user: User = await this.usersService.createUserInFinalStep({
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,

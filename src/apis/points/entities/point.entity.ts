@@ -53,7 +53,7 @@ export class Point {
   @Field(() => Date)
   createdAt: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @Field(() => User, { nullable: true })
   user: User;
 

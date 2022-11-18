@@ -201,6 +201,7 @@ export class UsersService {
 
     const user = await this.usersRepository.findOne({
       where: { id: userId },
+      withDeleted: true,
     });
 
     if (!user)
