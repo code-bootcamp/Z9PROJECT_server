@@ -4,12 +4,14 @@ import axios from 'axios';
 import { graphqlUploadExpress } from 'graphql-upload';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import bodyParser from 'body-parser';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(graphqlUploadExpress());
+  app.use(bodyParser.json({ limit: '50mb' }));
   app.useStaticAssets(join(__dirname, '..', 'static'));
 
   app.enableCors({
