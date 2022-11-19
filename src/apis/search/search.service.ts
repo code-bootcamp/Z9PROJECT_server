@@ -77,7 +77,7 @@ export class SearchService {
       fields = ['nickname', 'snsname'];
     } else {
       // PRODUCT_IDX
-      fields = ['name', 'user_nickname'];
+      fields = ['name', 'user_snsname'];
     }
 
     let esResults = null;
@@ -115,7 +115,7 @@ export class SearchService {
           validUntil: d.validuntil,
           images: d.images?.split(','),
           // detailImages: d.detailimages,
-          content: d.content,
+          // content: d.content,
           option1: d.option1,
           option2: d.option2,
           option3: d.option3,

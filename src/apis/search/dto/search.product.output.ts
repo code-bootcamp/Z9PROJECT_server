@@ -6,6 +6,7 @@ export class SearchProductOutput extends OmitType(
   Product,
   [
     'productDetail',
+    'content',
     'validFrom',
     'validUntil',
     'updatedAt',
