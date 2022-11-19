@@ -1,9 +1,13 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Cache } from 'cache-manager';
 import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
+import { SearchCreatorOutput } from './dto/search.creator.output';
+import { SearchProductOutput } from './dto/search.product.output';
 
-export const CREATOR_IDX = 'zero9creator';
-export const PRODUCT_IDX = 'zero9product';
+export enum ES_IDX_TYPE {
+  CREATOR_IDX = 'zero9creator',
+  PRODUCT_IDX = 'zero9product',
+}
 
 @Injectable()
 export class SearchService {
@@ -14,7 +18,7 @@ export class SearchService {
     private readonly cacheManager: Cache,
   ) {}
 
-  async setCache(key: string, data: any[], mode) {
+  async setCache(key: string, data: any[], mode: ES_IDX_TYPE) {
     const isSaved = await this.cacheManager.set(`${mode}:${key}`, data, {
       ttl: 10,
     });
@@ -22,22 +26,41 @@ export class SearchService {
     return isSaved;
   }
 
-  async getCache(key: string, mode) {
-    const searchResultInCache = await this.cacheManager.get(`${mode}:${key}`);
+  async getCache(key: string, mode: ES_IDX_TYPE) {
+    const searchResultInCache: Partial<
+      SearchCreatorOutput[] | SearchProductOutput[]
+    > = await this.cacheManager.get(`${mode}:${key}`);
+
     if (searchResultInCache) {
       console.log(
         'Redis searchResult:',
         JSON.stringify(searchResultInCache, null, ' '),
       );
+
+      if (mode === ES_IDX_TYPE.CREATOR_IDX) {
+        searchResultInCache.forEach((el) => {
+          el.createdAt = new Date(el.createdAt);
+          el.deletedAt = el.deletedAt ? new Date(el.deletedAt) : null;
+        });
+      } else {
+        searchResultInCache.forEach((el) => {
+          el.validFrom = el.validFrom ? new Date(el.validFrom) : null;
+          el.validUntil = el.validUntil ? new Date(el.validUntil) : null;
+          el.createdAt = new Date(el.createdAt);
+          el.deletedAt = el.deletedAt ? new Date(el.deletedAt) : null;
+          el.updatedAt = new Date(el.updatedAt);
+        });
+      }
+
       return searchResultInCache;
     }
   }
 
   searchCreators = async (word: string) =>
-    await this.searchInES(word, CREATOR_IDX);
+    await this.searchInES(word, ES_IDX_TYPE.CREATOR_IDX);
 
   searchProducts = async (word: string) =>
-    await this.searchInES(word, PRODUCT_IDX);
+    await this.searchInES(word, ES_IDX_TYPE.PRODUCT_IDX);
 
   /** !주의: product ES검색에서 크리에이터 정보 구성시엔 사용하지 말것! */
   private getCreator = (mapElement) => {
@@ -64,16 +87,15 @@ export class SearchService {
       account: d.account,
       accountName: d.accountname,
       point: d.point,
-      createdAt: d.createdat,
-      updatedAt: d.updatedat,
-      deletedAt: d.deletedat,
+      createdAt: new Date(d.createdat),
+      deletedAt: d.deletedat ? new Date(d.deletedat) : null,
     };
   };
 
   /** 엘라스틱서치에서 조회 */
   async searchInES(word: string, esIndex: string) {
     let fields = null;
-    if (esIndex === CREATOR_IDX) {
+    if (esIndex === ES_IDX_TYPE.CREATOR_IDX) {
       fields = ['nickname', 'snsname'];
     } else {
       // PRODUCT_IDX
@@ -96,7 +118,7 @@ export class SearchService {
       let rst = null;
       const d = el._source;
 
-      if (esIndex === CREATOR_IDX) {
+      if (esIndex === ES_IDX_TYPE.CREATOR_IDX) {
         rst = this.getCreator(el);
       } else {
         // PRODUCT_IDX
@@ -111,8 +133,8 @@ export class SearchService {
           isSoldout: d.issoldout,
           delivery: d.delivery,
           endType: d.endtype,
-          validFrom: d.validfrom,
-          validUntil: d.validuntil,
+          validFrom: d.validfrom ? new Date(d.validfrom) : null,
+          validUntil: d.validuntil ? new Date(d.validuntil) : null,
           images: d.images?.split(','),
           // detailImages: d.detailimages,
           // content: d.content,
@@ -155,8 +177,9 @@ export class SearchService {
           skin: d.skin,
           textColor: d.textcolor,
           bgColor: d.bgColor,
-          createdAt: d.createdat,
-          deletedAt: d.deletedat,
+          createdAt: new Date(d.createdat),
+          deletedAt: d.deletedat ? new Date(d.deletedat) : null,
+          updatedAt: new Date(d.product_updatedat * 1000), // unix_timestamp to Date()
         };
       }
 

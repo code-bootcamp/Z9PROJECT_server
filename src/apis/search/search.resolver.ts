@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CREATOR_IDX, PRODUCT_IDX, SearchService } from './search.service';
+import { ES_IDX_TYPE, SearchService } from './search.service';
 import { SearchProductOutput } from './dto/search.product.output';
 import { SearchCreatorOutput } from './dto/search.creator.output';
 
@@ -24,7 +24,10 @@ export class SearchResolver {
     //LOGGING
     console.log('검색 Creator api: ');
 
-    const cacheRst = await this.searchService.getCache(word, CREATOR_IDX);
+    const cacheRst = await this.searchService.getCache(
+      word,
+      ES_IDX_TYPE.CREATOR_IDX,
+    );
     if (cacheRst) {
       return cacheRst;
     }
@@ -33,7 +36,11 @@ export class SearchResolver {
       await this.searchService.searchCreators(word);
 
     if (creatorSearchRst) {
-      await this.searchService.setCache(word, creatorSearchRst, CREATOR_IDX);
+      await this.searchService.setCache(
+        word,
+        creatorSearchRst,
+        ES_IDX_TYPE.CREATOR_IDX,
+      );
     }
 
     return creatorSearchRst;
@@ -42,7 +49,7 @@ export class SearchResolver {
   @Query(() => [SearchProductOutput], {
     nullable: true,
     description:
-      'searching products In Product List Page by product name or creator nickname',
+      'searching products In Product List Page by product name or creator snsName',
   })
   async searchProducts(
     @Args({
@@ -56,7 +63,10 @@ export class SearchResolver {
     //LOGGING
     console.log('검색 Product api: ');
 
-    const cacheRst = await this.searchService.getCache(word, PRODUCT_IDX);
+    const cacheRst = await this.searchService.getCache(
+      word,
+      ES_IDX_TYPE.PRODUCT_IDX,
+    );
     if (cacheRst) {
       return cacheRst;
     }
@@ -65,7 +75,11 @@ export class SearchResolver {
       await this.searchService.searchProducts(word);
 
     if (productSearchRst) {
-      await this.searchService.setCache(word, productSearchRst, PRODUCT_IDX);
+      await this.searchService.setCache(
+        word,
+        productSearchRst,
+        ES_IDX_TYPE.PRODUCT_IDX,
+      );
     }
 
     return productSearchRst;
