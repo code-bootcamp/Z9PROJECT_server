@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { QuestionService } from './question.service';
 import { CreateQuestionInput } from './dto/createQuestion.input';
 import { Question } from './entities/question.entity';
@@ -45,11 +45,20 @@ export class QuestionResolver {
   })
   async fetchQuestions(
     @Args('productId') productId: string, //
+    @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGING
     console.log(new Date(), ' | API Fetch Questions Requested');
 
-    return await this.questionService.findAll({ productId });
+    return await this.questionService.findAll({ productId, page });
+  }
+
+  @Query(() => Int)
+  async fetchCountOfQuestions(@Args('productId') productId: string) {
+    //LOGGING
+    console.log(new Date(), ' | API Fetch Count Of Questions Requested');
+
+    return await this.questionService.findCountQuestions({ productId });
   }
 
   // 내 아이디를 기준으로 나한테 달린 질문리스트를 뽑는다.()

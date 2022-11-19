@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { Point } from './entities/point.entity';
@@ -37,7 +37,7 @@ export class PointsResolver {
     startDate: Date,
     @Args({ name: 'endDate', nullable: true, defaultValue: null })
     endDate: Date,
-    @Args('page') page: number,
+    @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Point History Requested');

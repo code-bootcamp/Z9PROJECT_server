@@ -90,7 +90,7 @@ type Product {
   productDetail: ProductDetail
   user: User
 
-  """skin is seleted by user about skin style"""
+  """skin is seleted by user about skin style about skin style"""
   skin: Float!
 
   """color is seleted by user about text color"""
@@ -314,7 +314,6 @@ type Query {
 
   """fetching multiple product by creator id"""
   fetchProductsByCreator(page: Int!): [Product!]!
-  countProductByCreator: Float!
 
   """fetching multiple product by status"""
   fetchProductsByStatus(type: PRODUCT_SEARCH_TYPE!, option: PRODUCT_INCLUDE_OPTION!): [Product!]!
@@ -338,20 +337,21 @@ type Query {
   fetchQuestion(questionId: String!): Question!
 
   """ fetching Questions"""
-  fetchQuestions(productId: String!): [Question!]!
+  fetchQuestions(productId: String!, page: Int!): [Question!]!
+  fetchCountOfQuestions(productId: String!): Int!
 
   """fetching Questions by creators and commonUsers using userId"""
   fetchMyQuestions: [Question!]!
   fetchLoginUserAnswer(questionId: String!): [Answer!]!
-  fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Point!]!
+  fetchPointHistory(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Point!]!
   fetchCountOfPointHistory(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchMyPoint: Float!
   fetchOrder(orderId: String!): Order!
   fetchOrdersByProductId(productId: String!): [Order!]!
   fetchCountOfOrderByUserId(startDate: DateTime = null, endDate: DateTime = null): Float!
-  fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchOrdersByUserId(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Order!]!
   fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
-  fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Float!): [Order!]!
+  fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Order!]!
   fetchSalesTotal(productId: String!): Float! @deprecated(reason: "Use Product's quantity and originalQuantity instead")
 
   """
@@ -488,7 +488,7 @@ input CreateProductDetailInput {
 input UpdateProductInput {
   name: String
   originPrice: Float
-  originalQuantity: Float!
+  originalQuantity: Float
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String

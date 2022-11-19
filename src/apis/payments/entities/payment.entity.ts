@@ -53,12 +53,12 @@ export class Payment {
   @Field(() => Date, { nullable: true })
   updatedAt: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @Field(() => User, { nullable: true })
   user: User;
 
   @JoinColumn()
-  @OneToOne(() => Point)
+  @OneToOne(() => Point, { nullable: true })
   @Field(() => Point, { nullable: true })
   point: Point;
 }

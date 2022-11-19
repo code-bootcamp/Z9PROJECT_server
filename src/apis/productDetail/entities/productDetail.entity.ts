@@ -16,7 +16,9 @@ export class ProductDetail {
   id: string;
 
   @JoinColumn()
-  @OneToOne(() => Product, (product) => product.productDetail)
+  @OneToOne(() => Product, (product) => product.productDetail, {
+    nullable: true,
+  })
   product: Product;
 
   @Column({ type: 'varchar', length: 200, nullable: false })

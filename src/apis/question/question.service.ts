@@ -1,5 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { skip } from 'rxjs';
 import { Repository } from 'typeorm';
 import { Answer } from '../answer/entites/answer.entity';
 import { Product } from '../product/entities/product.entity';
@@ -40,7 +41,7 @@ export class QuestionService {
     return result;
   }
 
-  async findAll({ productId }): Promise<Question[]> {
+  async findAll({ productId, page }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
 
@@ -49,10 +50,26 @@ export class QuestionService {
       order: {
         createdAt: 'desc',
       },
+      withDeleted: true,
       relations: ['user', 'product'],
+      skip: (page - 1) * 5,
+      take: 5,
+      cache: true,
     });
+
     console.log(result);
     return result;
+  }
+
+  async findCountQuestions({ productId }) {
+    //LOGGING
+    console.log(new Date(), ' | QuestionService.findCountQuestions()');
+
+    return await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('question.product = :productId', { productId })
+      .getCount();
   }
 
   async findOne({ questionId }): Promise<Question> {
@@ -61,7 +78,8 @@ export class QuestionService {
 
     return await this.questionRepository.findOne({
       where: { id: questionId },
-      relations: ['user', 'product'],
+      withDeleted: true,
+      relations: ['user', 'product', 'answer'],
     });
   }
 
