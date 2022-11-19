@@ -209,6 +209,14 @@ export class UsersService {
         '해당 유저 정보를 찾을 수 없습니다.',
       );
 
+    const upRst = await this.usersRepository.save({
+      ...user,
+      id: userId,
+      email: null,
+      password: null,
+      nickname: user.nickname + '(탈퇴)',
+    });
+
     const result = await this.usersRepository.softDelete({
       id: userId,
     });

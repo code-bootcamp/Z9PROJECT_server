@@ -172,6 +172,21 @@ export class ProductService {
       .getMany();
   }
 
+  async findProgressProducts(userId: string) {
+    //LOGGING
+    console.log(new Date(), ' | ProductService.findProgressProducts()');
+
+    // 크리에이터가 판매중이고, 매진이 안된 상품 쿼리
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .innerJoinAndSelect('product.user', 'user')
+      .where('user.id = :userId', { userId })
+      .andWhere('product.validFrom <= :now', { now: new Date() })
+      .andWhere('product.validUntil >= :now', { now: new Date() })
+      .andWhere('product.isSoldout = :isSoldout', { isSoldout: false })
+      .getMany();
+  }
+
   async countProductByCreator({ userId }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.countProductByCreator()');
