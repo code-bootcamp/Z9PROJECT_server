@@ -17,6 +17,7 @@ import { PaymentsModule } from './apis/payments/payments.module';
 import { PointsModule } from './apis/points/points.module';
 import { OrdersModule } from './apis/orders/orders.module';
 import { SearchModule } from './apis/search/search.module';
+import { ProductViewModule } from './apis/productView/productView.module';
 
 const originList = process.env.ORIGIN_LIST.split(',');
 
@@ -24,6 +25,7 @@ const originList = process.env.ORIGIN_LIST.split(',');
   imports: [
     ProductModule,
     ProductLikeModule,
+    ProductViewModule,
     ImageModule,
     AuthModule,
     UsersModule,
