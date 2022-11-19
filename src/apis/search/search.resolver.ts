@@ -1,6 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CREATOR_IDX, PRODUCT_IDX, SearchService } from './search.service';
-import { SearchOutput } from './dto/search.output';
 import { SearchProductOutput } from './dto/search.product.output';
 import { SearchCreatorOutput } from './dto/search.creator.output';
 
