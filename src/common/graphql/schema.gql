@@ -324,6 +324,7 @@ type Query {
   fetchAllLikes: [Product!]!
   fetchLikeCount(productId: String!): Int!
   fetchIsLiked(productId: String!): Boolean!
+  fetchProductViewCount(productId: String!): Int!
 
   """fetching multiple creators"""
   fetchCreators(usersId: [String!]!): [User!]!
@@ -388,6 +389,7 @@ type Mutation {
   """delete product"""
   deleteProduct(productId: String!): Boolean!
   likeProduct(productId: String!): Boolean!
+  addProductViewCount(productId: String!): Int!
   uploadImage(image: Upload!): Image!
   uploadImages(images: [Upload!]!): [Image!]!
   login(email: String!, password: String!): String!
@@ -489,7 +491,7 @@ input CreateProductDetailInput {
 input UpdateProductInput {
   name: String
   originPrice: Float
-  originalQuantity: Float
+  originalQuantity: Float!
   discountPrice: Float
   delivery: String = "택배(무료배송)"
   option1: String

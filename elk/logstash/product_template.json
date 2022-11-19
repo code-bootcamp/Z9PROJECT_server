@@ -24,7 +24,7 @@
         "type": "text",
         "analyzer": "product_ngram_analyzer"
       },
-      "user_nickname": {
+      "user_snsName": {
         "type": "text",
         "analyzer": "product_ngram_analyzer"
       }

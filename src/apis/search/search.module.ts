@@ -23,7 +23,7 @@ import { ProductDetailService } from '../productDetail/productDetail.service';
       node:
         process.env.DEPLOY_ENV === 'LOCAL'
           ? `${process.env.ELASTIC_HOST}:${process.env.ELASTIC_PORT}`
-          : `elastic.brian-hong.tech:9200`,
+          : `http://elastic.brian-hong.tech:9200`,
     }),
   ],
   providers: [
