@@ -219,6 +219,89 @@ enum PAYMENT_STATUS_ENUM {
   COMPLETE
 }
 
+type SearchProductOutput {
+  id: String!
+  name: String!
+  originPrice: Float!
+  quantity: Float!
+  originalQuantity: Float
+  discountRate: Float
+  discountPrice: Float
+  isSoldout: Boolean!
+
+  """delivery method is one method."""
+  delivery: String!
+  endType: PRODUCT_END_TYPE!
+  images: [String!]
+  content: String
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  youtubeLink: String
+  shopName: String!
+  ceo: String!
+
+  """brn is business_registraion_number"""
+  brn: String!
+
+  """mobn is mail_order_business_number"""
+  mobn: String!
+  user: User
+
+  """skin is seleted by user about skin style"""
+  skin: Float!
+
+  """color is seleted by user about text color"""
+  textColor: String
+
+  """color is seleted by user about background color"""
+  bgColor: String
+  validFrom: String
+  validUntil: String
+  createdAt: String
+  deletedAt: String
+}
+
+type SearchCreatorOutput {
+  id: String!
+  email: String
+  userType: USER_TYPE_ENUM
+  nickname: String
+  phoneNumber: String
+  zipcode: String
+  address: String
+  addressDetail: String
+
+  """Need Img URL to be saved"""
+  profileImg: String
+
+  """Need Img URL to be saved"""
+  creatorAuthImg: String
+  isAuthedCreator: Boolean
+  snsId: String
+
+  """YOUTUBE ChannelName or INSTA Name"""
+  snsName: String
+
+  """YOUTUBE or INSTAGRAM"""
+  snsChannel: SNS_TYPE_ENUM
+  followerNumber: Int
+  mainContents: String
+  introduce: String
+  bank: String
+
+  """Account Number"""
+  account: String
+
+  """Account Owner Name (only Creator)"""
+  accountName: String
+  point: Int
+  createdAt: String
+  deletedAt: String
+}
+
 type Query {
   """fetching single product by productId"""
   fetchProduct(productId: String!): Product!
@@ -271,6 +354,16 @@ type Query {
   fetchCountOfOrderByCreatorId(startDate: DateTime = null, endDate: DateTime = null): Float!
   fetchOrdersByCreatorId(startDate: DateTime = null, endDate: DateTime = null, page: Int!): [Order!]!
   fetchSalesTotal(productId: String!): Float! @deprecated(reason: "Use Product's quantity and originalQuantity instead")
+
+  """
+  searching creators In Creator Page by nickname or UtubeChannelName/InstaName
+  """
+  searchCreators(word: String = ""): [SearchCreatorOutput!]
+
+  """
+  searching products In Product List Page by product name or creator nickname
+  """
+  searchProducts(word: String = ""): [SearchProductOutput!]
 }
 
 enum PRODUCT_SEARCH_TYPE {
