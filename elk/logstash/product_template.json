@@ -1,0 +1,33 @@
+{
+  "template": "*",
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "product_ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "product_ngram_tokenizer"
+        }
+      },
+      "tokenizer": {
+        "product_ngram_tokenizer": {
+          "type": "nGram",
+          "min_gram": "2",
+          "max_gram": "15"
+        }
+      }
+    },
+    "max_ngram_diff": "15"
+  },
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "product_ngram_analyzer"
+      },
+      "user_snsName": {
+        "type": "text",
+        "analyzer": "product_ngram_analyzer"
+      }
+    }
+  }
+}

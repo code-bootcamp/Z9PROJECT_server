@@ -29,3 +29,18 @@ services:
   zero9-redis:
     image: redis:alpine
     container_name: zero9-redis
+
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+
+  logstash:
+    image: logstash:7.17.0
+    volumes:
+      - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
+      - ./elk/logstash/creator_template.json:/usr/share/logstash/creator_template.json
+      - ./elk/logstash/product_template.json:/usr/share/logstash/product_template.json
