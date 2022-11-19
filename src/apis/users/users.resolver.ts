@@ -8,26 +8,14 @@ import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { UseGuards } from '@nestjs/common';
 import { SmsAuth } from '../auth/sms.service';
-import { CreateUserInput } from './dto/createUser.input';
+import { IamportService } from '../iamport/iamport.service';
 
 @Resolver()
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
-
-  // @Query(() => User, { description: 'fetching single creator by userId' })
-  // async fetchCreator(@Args('userId') userId: string) {
-  //   //LOGGING
-  //   console.log(new Date(), ' | API fetch creator requested');
-
-  //   const creator = await this.usersService.findOneByUserId(userId);
-  //   if (!creator || creator.userType !== USER_TYPE_ENUM.CREATOR) {
-  //     throw new UnprocessableEntityException(
-  //       'userId가 잘못됐거나, 해당 유저가 인플루언서가 아닙니다.',
-  //     );
-  //   }
-
-  //   return creator;
-  // }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly iamportService: IamportService,
+  ) {}
 
   @Query(() => [User], { description: 'fetching multiple creators' })
   async fetchCreators(
@@ -85,12 +73,7 @@ export class UsersResolver {
       createCreatorInput.phoneNumber,
     );
 
-    await this.usersService.checkBankHolder({ createCreatorInput });
-
-    await this.usersService.checkUserBeforeCreate(signupId, {
-      ...createCreatorInput,
-      userType: USER_TYPE_ENUM.CREATOR,
-    });
+    await this.iamportService.checkBankHolder({ createCreatorInput });
 
     if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.YOUTUBE) {
       const data = await this.usersService.getYoutubeInfo({
@@ -108,6 +91,10 @@ export class UsersResolver {
       createCreatorInput.followerNumber = 0;
     }
 
+    await this.usersService.checkUserBeforeCreate(signupId, {
+      ...createCreatorInput,
+      userType: USER_TYPE_ENUM.CREATOR,
+    });
     const user: User = await this.usersService.createUserInFinalStep({
       ...createCreatorInput,
       userType: USER_TYPE_ENUM.CREATOR,

@@ -57,16 +57,16 @@ export class Question {
   @Field(() => Date, { nullable: true })
   deletedAt: Date;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, { nullable: true })
   @Field(() => Product, { nullable: true })
   product: Product;
 
   @JoinColumn()
-  @OneToOne(() => Answer)
+  @OneToOne(() => Answer, { nullable: true })
   @Field(() => Answer, { nullable: true })
   answer: Answer;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @Field(() => User)
   user: User;
 }

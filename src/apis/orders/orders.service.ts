@@ -151,7 +151,7 @@ export class OrdersService {
       let count = 0;
       await Promise.all(
         productIds.map(async (product) => {
-          count += await this.orderRepository
+          const data = await this.orderRepository
             .createQueryBuilder('order')
             .leftJoinAndSelect('order.user', 'user')
             .leftJoinAndSelect('order.product', 'product')
@@ -161,21 +161,27 @@ export class OrdersService {
               endDate,
             })
             .getCount();
+          console.log(data);
+          count += data;
         }),
       );
+      console.log(count);
       return count;
     } else {
       let count = 0;
       await Promise.all(
         productIds.map(async (product) => {
-          count += await this.orderRepository
+          const data = await this.orderRepository
             .createQueryBuilder('order')
             .leftJoinAndSelect('order.user', 'user')
             .leftJoinAndSelect('order.product', 'product')
             .where('product.id = :productId', { productId: product.id })
             .getCount();
+          console.log(data);
+          count += data;
         }),
       );
+      console.log(count);
       return count;
     }
   }
@@ -195,6 +201,7 @@ export class OrdersService {
           endDate,
         })
         .getCount();
+      console.log(count);
       return count;
     } else {
       const count = await this.orderRepository
@@ -203,6 +210,7 @@ export class OrdersService {
         .leftJoinAndSelect('order.product', 'product')
         .where('user.id = :userId', { userId })
         .getCount();
+      console.log(count);
       return count;
     }
   }

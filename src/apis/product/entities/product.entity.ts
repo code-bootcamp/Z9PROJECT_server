@@ -90,7 +90,7 @@ export class Product {
   // @Field(() => [String], { nullable: true })
   // detailImages: string[];
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'mediumtext', nullable: true })
   @Field(() => String, { nullable: true })
   content: string;
 
@@ -140,11 +140,13 @@ export class Product {
   })
   mobn: string;
 
-  @OneToOne(() => ProductDetail, (productDetail) => productDetail.product)
+  @OneToOne(() => ProductDetail, (productDetail) => productDetail.product, {
+    nullable: true,
+  })
   @Field(() => ProductDetail, { nullable: true })
   productDetail: ProductDetail;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @Field(() => User, { nullable: true })
   user: User;
 
