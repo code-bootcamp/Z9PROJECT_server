@@ -33,13 +33,23 @@ export class UsersService {
     return await bcrypt.hash(inputPassword, parseInt(process.env.BCRYPT_SALT));
   };
 
-  async findAllCreator() {
+  async findAllCreator({ page }) {
     //LOGGING
     console.log(new Date(), ' | UsersService.findAllCreator()');
+
+    if (!page)
+      return await this.usersRepository
+        .createQueryBuilder('user')
+        .where('user.userType = :userType', {
+          userType: USER_TYPE_ENUM.CREATOR,
+        })
+        .getMany();
 
     return await this.usersRepository
       .createQueryBuilder('user')
       .where('user.userType = :userType', { userType: USER_TYPE_ENUM.CREATOR })
+      .skip((page - 1) * 6)
+      .take(6)
       .getMany();
   }
 

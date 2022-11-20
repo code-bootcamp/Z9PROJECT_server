@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { CreateCommonUserInput } from './dto/createCommonUser.input';
 import { CreateCreatorInput } from './dto/createCreator.input';
 import { UpdateUserInput } from './dto/updateUser.input';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/common/auth/gql-auth.guard';
 import { IContext } from 'src/common/types/context';
 import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
@@ -20,11 +20,13 @@ export class UsersResolver {
   ) {}
 
   @Query(() => [User], { description: 'fetching multiple creators' })
-  async fetchCreators() {
+  async fetchCreators(
+    @Args({ name: 'page', type: () => Int, nullable: true }) page: number,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API fetch creators requested');
 
-    return await this.usersService.findAllCreator();
+    return await this.usersService.findAllCreator({ page });
   }
 
   @Query(() => [User], {
