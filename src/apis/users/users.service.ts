@@ -67,7 +67,7 @@ export class UsersService {
     return await this.usersRepository
       .createQueryBuilder('user')
       .where('user.userType = :userType', { userType: USER_TYPE_ENUM.CREATOR })
-      .andWhere('user.snsType = :snsType', { snsType })
+      .andWhere('user.snsChannel = :snsType', { snsType })
       .getMany();
   }
 
