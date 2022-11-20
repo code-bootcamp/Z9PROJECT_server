@@ -232,6 +232,8 @@ type SearchProductOutput {
   """delivery method is one method."""
   delivery: String!
   endType: PRODUCT_END_TYPE!
+  validFrom: DateTime!
+  validUntil: DateTime!
   images: [String!]
   option1: String
   option2: String
@@ -257,10 +259,9 @@ type SearchProductOutput {
 
   """color is seleted by user about background color"""
   bgColor: String
-  validFrom: String
-  validUntil: String
-  createdAt: String
-  deletedAt: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 type SearchCreatorOutput {
@@ -297,8 +298,8 @@ type SearchCreatorOutput {
   """Account Owner Name (only Creator)"""
   accountName: String
   point: Int
-  createdAt: String
-  deletedAt: String
+  createdAt: DateTime
+  deletedAt: DateTime
 }
 
 type Query {
@@ -361,7 +362,7 @@ type Query {
   searchCreators(word: String = ""): [SearchCreatorOutput!]
 
   """
-  searching products In Product List Page by product name or creator nickname
+  searching products In Product List Page by product name or creator snsName
   """
   searchProducts(word: String = ""): [SearchProductOutput!]
 }

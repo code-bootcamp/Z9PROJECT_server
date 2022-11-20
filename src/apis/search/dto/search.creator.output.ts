@@ -4,12 +4,9 @@ import { User } from '../../users/entities/user.entity';
 @ObjectType()
 export class SearchCreatorOutput extends OmitType(
   User,
-  ['updatedAt', 'deletedAt', 'createdAt'],
+  [
+    // 'deletedAt', //
+    'updatedAt',
+  ],
   ObjectType,
-) {
-  @Field(() => String, { nullable: true })
-  createdAt: string;
-
-  @Field(() => String, { nullable: true })
-  deletedAt: string;
-}
+) {}
