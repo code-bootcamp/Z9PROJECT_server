@@ -20,13 +20,24 @@ export class UsersResolver {
   ) {}
 
   @Query(() => [User], { description: 'fetching multiple creators' })
-  async fetchCreators(
-    @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
-  ) {
+  async fetchCreators() {
     //LOGGING
     console.log(new Date(), ' | API fetch creators requested');
 
     return await this.usersService.findAllCreator();
+  }
+
+  @Query(() => [User], {
+    description: 'fetching multiple creator with snstype option',
+  })
+  async fetchCreatorsBySnsType(
+    @Args({ name: 'snsType', type: () => SNS_TYPE_ENUM })
+    snsType: SNS_TYPE_ENUM,
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API fetch creators by sns type requested');
+
+    return await this.usersService.findAllCreatorBySnsType({ snsType });
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -90,7 +101,7 @@ export class UsersResolver {
       createCreatorInput.snsName = data.items[0].snippet.title;
     } else if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.INSTAGRAM) {
       createCreatorInput.snsName = createCreatorInput.snsId;
-      createCreatorInput.followerNumber = 0;
+      createCreatorInput.followerNumber = Math.random() * 1000000;
     }
 
     await this.usersService.checkUserBeforeCreate(signupId, {

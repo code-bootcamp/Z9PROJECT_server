@@ -50,6 +50,17 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id: userId } });
   }
 
+  async findAllCreatorBySnsType({ snsType }) {
+    //LOGGING
+    console.log(new Date(), ' | UsersService.findAllCreatorBySnsType()');
+
+    return await this.usersRepository
+      .createQueryBuilder('user')
+      .where('user.userType = :userType', { userType: USER_TYPE_ENUM.CREATOR })
+      .andWhere('user.snsType = :snsType', { snsType })
+      .getMany();
+  }
+
   async findOneByEmail(email) {
     //LOGGING
     console.log(new Date(), ' | UsersService.findOneByEmail()');
