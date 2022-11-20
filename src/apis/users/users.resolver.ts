@@ -102,7 +102,7 @@ export class UsersResolver {
       }
       createCreatorInput.snsName = data.items[0].snippet.title;
     } else if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.INSTAGRAM) {
-      createCreatorInput.snsId = createCreatorInput.snsName;
+      createCreatorInput.snsName = createCreatorInput.snsId;
       createCreatorInput.followerNumber = Math.random() * 1000000;
     }
 
