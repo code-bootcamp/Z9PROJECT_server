@@ -313,7 +313,7 @@ type Query {
   fetchProductsByPages(page: Int!): [Product!]!
 
   """fetching multiple product by creator id"""
-  fetchProductsByCreator(page: Int!): [Product!]!
+  fetchProductsByCreator(userId: String!, page: Int!): [Product!]!
   countProductByCreator: Float!
 
   """fetching multiple product by status"""
@@ -327,7 +327,10 @@ type Query {
   fetchProductViewCount(productId: String!): Int!
 
   """fetching multiple creators"""
-  fetchCreators(usersId: [String!]!): [User!]!
+  fetchCreators: [User!]!
+
+  """fetching multiple creator with snstype option"""
+  fetchCreatorsBySnsType(snsType: SNS_TYPE_ENUM!): [User!]!
 
   """fetching user details logined"""
   fetchUser: User!
