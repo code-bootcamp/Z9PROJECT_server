@@ -20,9 +20,7 @@ export class UsersResolver {
   ) {}
 
   @Query(() => [User], { description: 'fetching multiple creators' })
-  async fetchCreators(
-    @Args({ name: 'usersId', type: () => [String] }) usersId: string[],
-  ) {
+  async fetchCreators() {
     //LOGGING
     console.log(new Date(), ' | API fetch creators requested');
 
