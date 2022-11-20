@@ -45,19 +45,18 @@ export class ProductResolver {
     return await this.productService.findProductsByPages({ page });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product], {
     description: 'fetching multiple product by creator id',
   })
   async fetchProductsByCreator(
-    @Context() ctx: IContext,
+    @Args('userId') userId: string,
     @Args({ name: 'page', type: () => Int }) page: number,
   ) {
     //LOGGING
     console.log(new Date(), ' | API Fetch Products By Creator Requested');
 
     return await this.productService.findProductByCreator({
-      userId: ctx.req.user.id,
+      userId,
       page,
     });
   }

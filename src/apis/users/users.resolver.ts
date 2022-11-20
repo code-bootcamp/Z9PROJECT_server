@@ -29,6 +29,19 @@ export class UsersResolver {
     return await this.usersService.findAllCreator();
   }
 
+  @Query(() => [User], {
+    description: 'fetching multiple creator with snstype option',
+  })
+  async fetchCreatorsBySnsType(
+    @Args({ name: 'snsType', type: () => SNS_TYPE_ENUM })
+    snsType: SNS_TYPE_ENUM,
+  ) {
+    //LOGGING
+    console.log(new Date(), ' | API fetch creators by sns type requested');
+
+    return await this.usersService.findAllCreatorBySnsType({ snsType });
+  }
+
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User, { description: 'fetching user details logined' })
   async fetchUser(@Context() context: IContext) {
