@@ -51,13 +51,12 @@ export class SmsAuth {
 
     const messageService = new coolsms(SMS_API_KEY, SMS_API_SECRET);
     /** 프론트 연동 점검시 아래 주석 풀고 실제 폰으로 인증번호 받을 것 */
-    // const response = await messageService.sendOne({
-    //   to: phoneNumber,
-    //   from: SMS_SENDER_TEL,
-    //   text: `[zero9.shop] 안녕하세요. 요청하신 인증번호는 [${result}] 입니다.`,
-    //   autoTypeDetect: true,
-    // });
-    // console.log(response);
+    const response = await messageService.sendOne({
+      to: phoneNumber,
+      from: SMS_SENDER_TEL,
+      text: `[zero9.shop] 안녕하세요. 요청하신 인증번호는 [${result}] 입니다.`,
+      autoTypeDetect: true,
+    });
     console.log(
       `${new Date()} | ${phoneNumber}번호로 인증번호 ${result}를 전송합니다!!!`,
     );
