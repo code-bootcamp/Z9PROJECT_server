@@ -87,7 +87,7 @@ export class AuthResolver {
 
     await SmsAuth.sendSmsTokenToPhone(phoneNumber, smsToken);
 
-    const smsAuthTime = 120;
+    const smsAuthTime = 180;
     await this.cacheManager.set(
       SMS_TOKEN_KEY_PREFIX + phoneNumber,
       { isAuth: false, smsToken },

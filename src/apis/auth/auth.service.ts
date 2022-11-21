@@ -105,14 +105,27 @@ export class AuthService {
     const accToken = req.headers['authorization'].replace('Bearer ', '');
     const refreshToken = req.headers['cookie'].replace('refreshToken=', '');
 
-    this.verifyToken(accToken, refreshToken);
+    const { decodedAccToken, decodedRefreshToken } = this.verifyToken(
+      accToken,
+      refreshToken,
+    );
 
-    const expireTTL = 60 * 30; // 추후 ttl 계산로직 수정
+    const accTtl = Math.floor(
+      (new Date(decodedAccToken.exp * 1000).getTime() - new Date().getTime()) /
+        1000,
+    );
+
+    const refTtl = Math.floor(
+      (new Date(decodedRefreshToken.exp * 1000).getTime() -
+        new Date().getTime()) /
+        1000,
+    );
+
     await this.cacheManager.set(`accessToken:${accToken}`, accToken, {
-      ttl: expireTTL,
+      ttl: accTtl,
     });
     await this.cacheManager.set(`refreshToken:${refreshToken}`, refreshToken, {
-      ttl: expireTTL,
+      ttl: refTtl,
     });
 
     if (process.env.DEPLOY_ENV === 'LOCAL') {

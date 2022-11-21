@@ -5,7 +5,8 @@
       "analyzer": {
         "product_ngram_analyzer": {
           "type": "custom",
-          "tokenizer": "product_ngram_tokenizer"
+          "tokenizer": "product_ngram_tokenizer",
+          "filter": ["product_stop_filter", "lowercase"]
         }
       },
       "tokenizer": {
@@ -13,6 +14,12 @@
           "type": "nGram",
           "min_gram": "2",
           "max_gram": "15"
+        }
+      },
+      "filter": {
+        "product_stop_filter": {
+          "type": "stop",
+          "stopwords": ["in", "the", "an", "a"]
         }
       }
     },

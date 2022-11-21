@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ES_IDX_TYPE, SearchService } from './search.service';
 import { SearchProductOutput } from './dto/search.product.output';
 import { SearchCreatorOutput } from './dto/search.creator.output';
@@ -13,13 +13,9 @@ export class SearchResolver {
       'searching creators In Creator Page by nickname or UtubeChannelName/InstaName',
   })
   async searchCreators(
-    @Args({
-      name: 'word',
-      type: () => String,
-      nullable: true,
-      defaultValue: '',
-    })
-    word: string,
+    @Args({ name: 'word', type: () => String, nullable: true }) word: string,
+    @Args({ name: 'page', type: () => Int, nullable: true }) page: number,
+    @Args({ name: 'size', type: () => Int, nullable: true }) size: number,
   ) {
     //LOGGING
     console.log('검색 Creator api: ');
@@ -33,7 +29,7 @@ export class SearchResolver {
     }
 
     const creatorSearchRst: SearchCreatorOutput[] =
-      await this.searchService.searchCreators(word);
+      await this.searchService.searchCreators(word, page, size);
 
     if (creatorSearchRst) {
       await this.searchService.setCache(
@@ -52,13 +48,9 @@ export class SearchResolver {
       'searching products In Product List Page by product name or creator snsName',
   })
   async searchProducts(
-    @Args({
-      name: 'word',
-      type: () => String,
-      nullable: true,
-      defaultValue: '',
-    })
-    word: string,
+    @Args({ name: 'word', type: () => String, nullable: true }) word: string,
+    @Args({ name: 'page', type: () => Int, nullable: true }) page: number,
+    @Args({ name: 'size', type: () => Int, nullable: true }) size: number,
   ) {
     //LOGGING
     console.log('검색 Product api: ');
@@ -72,7 +64,7 @@ export class SearchResolver {
     }
 
     const productSearchRst: SearchProductOutput[] =
-      await this.searchService.searchProducts(word);
+      await this.searchService.searchProducts(word, page, size);
 
     if (productSearchRst) {
       await this.searchService.setCache(
