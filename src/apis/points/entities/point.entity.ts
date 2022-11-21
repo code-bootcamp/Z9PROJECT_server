@@ -12,6 +12,8 @@ import {
 export enum POINT_STATUS_ENUM {
   // 충전 시 +
   CHARGED = 'CHARGED',
+  // 선물 포인트 +
+  GIFTED = 'GIFTED',
   // 결제 취소 시 포인트 복구 +
   RESTORED = 'RESTORED',
   // 결제 시 -

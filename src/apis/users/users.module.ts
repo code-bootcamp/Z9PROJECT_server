@@ -10,6 +10,7 @@ import { IamportService } from '../iamport/iamport.service';
 import { ProductService } from '../product/product.service';
 import { ProductDetailService } from '../productDetail/productDetail.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
+import { Point } from '../points/entities/point.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProductDetail } from '../productDetail/entities/productDetail.entity';
       Image,
       Product,
       ProductDetail,
+      Point,
     ]),
   ],
   providers: [

@@ -1,9 +1,5 @@
 import { UsersService } from './../users/users.service';
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -11,6 +7,7 @@ import axios from 'axios';
 import { ProductDetailService } from '../productDetail/productDetail.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 import { registerEnumType } from '@nestjs/graphql';
+import { Order } from '../orders/entities/order.entity';
 
 export enum PRODUCT_SEARCH_TYPE {
   PENDING = 'PENDING',
@@ -39,6 +36,8 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
     private readonly productDetailService: ProductDetailService,
     private readonly usersService: UsersService,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
   ) {}
 
   async findOne({ productId }) {
@@ -167,6 +166,7 @@ export class ProductService {
       .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .where('user.id = :userId', { userId })
+      .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
       .getMany();
@@ -203,7 +203,12 @@ export class ProductService {
     //LOGGING
     console.log(new Date(), ' | ProductService.findAll()');
 
-    return await this.productRepository.find();
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
+      .orderBy('product.createdAt', 'DESC')
+      .getMany();
   }
 
   async findProductsByPages({ page }) {
@@ -214,6 +219,7 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.productDetail', 'productDetail')
       .leftJoinAndSelect('product.user', 'user')
+      .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 4)
       .take(4)
       .getMany();
@@ -296,7 +302,7 @@ export class ProductService {
     const { discountRate, images, originalQuantity, ...product } =
       updateProductInput;
 
-    if (originProduct.quantity <= originalQuantity) {
+    if (originProduct.quantity < originalQuantity) {
       throw new UnprocessableEntityException(
         '남은 수량 이하로 재고를 변경할 수 없습니다',
       );
@@ -335,6 +341,17 @@ export class ProductService {
     //LOGGING
     console.log(new Date(), ' | ProductService.delete()');
 
+    const isOrderExist = await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.product', 'product')
+      .where('product.id = :productId', { productId })
+      .getOne();
+
+    if (isOrderExist) {
+      throw new UnprocessableEntityException(
+        '주문이 존재하는 상품은 삭제할 수 없습니다',
+      );
+    }
     await this.productRepository.softDelete({ id: productId }).catch(() => {
       throw new UnprocessableEntityException('삭제 실패');
     });

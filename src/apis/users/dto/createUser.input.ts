@@ -63,7 +63,4 @@ export class CreateUserInput {
 
   @Field(() => String, { nullable: true })
   accountName: string;
-
-  @Field(() => Int, { defaultValue: 0 })
-  point: number;
 }

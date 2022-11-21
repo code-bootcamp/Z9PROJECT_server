@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
 import { Point, POINT_STATUS_ENUM } from './entities/point.entity';
 
 @Injectable()

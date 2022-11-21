@@ -1,6 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { skip } from 'rxjs';
 import { Repository } from 'typeorm';
 import { Answer } from '../answer/entites/answer.entity';
 import { Product } from '../product/entities/product.entity';
@@ -50,7 +49,6 @@ export class QuestionService {
       order: {
         createdAt: 'desc',
       },
-      withDeleted: true,
       relations: ['user', 'product'],
       skip: (page - 1) * 5,
       take: 5,
@@ -78,7 +76,6 @@ export class QuestionService {
 
     return await this.questionRepository.findOne({
       where: { id: questionId },
-      withDeleted: true,
       relations: ['user', 'product', 'answer'],
     });
   }
