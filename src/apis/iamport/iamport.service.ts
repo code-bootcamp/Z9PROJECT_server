@@ -87,7 +87,7 @@ export class IamportService {
       );
 
     const { data: accessTokenData } = await this.getImpAccessToken();
-
+    let error = null;
     const isValidation = await axios
       .get(
         `https://api.iamport.kr/vbanks/holder?bank_code=${bank}&bank_num=${account}`,
@@ -97,7 +97,13 @@ export class IamportService {
           },
         },
       )
-      .catch((e) => console.log(e));
+      .catch(function (e) {
+        const result = e.response.data.message;
+        error = result;
+      });
+    if (error) {
+      return error;
+    }
     if (isValidation['data']?.response.bank_holder !== `${accountName}`)
       throw new ConflictException('예금주와 계좌정보가 일치하지 않습니다.');
   }
