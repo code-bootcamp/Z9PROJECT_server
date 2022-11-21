@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Answer } from '../answer/entites/answer.entity';
+import { Order } from '../orders/entities/order.entity';
+import { Point } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
@@ -19,6 +22,8 @@ import { QuestionService } from './question.service';
       User,
       ProductDetail,
       Answer,
+      Order,
+      Point,
     ]),
   ],
   providers: [
@@ -27,6 +32,7 @@ import { QuestionService } from './question.service';
     ProductService,
     UsersService,
     ProductDetailService,
+    PointsService,
   ],
 })
 export class QuestionModule {}

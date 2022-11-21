@@ -7,6 +7,9 @@ import { Product } from './entities/product.entity';
 import { ProductResolver } from './product.resolver';
 import { ProductService } from './product.service';
 import { User } from '../users/entities/user.entity';
+import { Order } from '../orders/entities/order.entity';
+import { Point } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
 
 @Module({
   imports: [
@@ -14,6 +17,8 @@ import { User } from '../users/entities/user.entity';
       Product, //
       ProductDetail,
       User,
+      Order,
+      Point,
     ]),
   ],
   providers: [
@@ -21,6 +26,7 @@ import { User } from '../users/entities/user.entity';
     ProductService,
     ProductDetailService,
     UsersService,
+    PointsService,
   ],
 })
 export class ProductModule {}

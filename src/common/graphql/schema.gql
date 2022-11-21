@@ -56,6 +56,25 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ProductDetail {
+  id: String!
+  type: String!
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
+  option6: String
+  option7: String
+  option8: String
+  option9: String
+  option10: String
+  option11: String
+  option12: String
+  option13: String
+  option14: String
+}
+
 type Product {
   id: String!
   name: String!
@@ -108,23 +127,42 @@ enum PRODUCT_END_TYPE {
   TOTAL_QTY
 }
 
-type ProductDetail {
+type Order {
   id: String!
-  type: String!
-  option1: String
-  option2: String
-  option3: String
-  option4: String
-  option5: String
-  option6: String
-  option7: String
-  option8: String
-  option9: String
-  option10: String
-  option11: String
-  option12: String
-  option13: String
-  option14: String
+  price: Int!
+  quantity: Int!
+  status: ORDER_STATUS!
+  createdAt: DateTime
+  updatedAt: DateTime
+  user: User
+  product: Product
+}
+
+enum ORDER_STATUS {
+  PENDING
+  PAID
+  PENDING_REFUND
+  CANCELED
+}
+
+type Point {
+  id: String!
+  point: Float!
+  status: POINT_STATUS_ENUM!
+  createdAt: DateTime!
+  user: User
+  order: Order
+}
+
+enum POINT_STATUS_ENUM {
+  CHARGED
+  GIFTED
+  RESTORED
+  USED
+  CANCELED
+  REFUNDED
+  SOLD
+  CANCELED_SOLD
 }
 
 type Image {
@@ -163,43 +201,6 @@ type Answer {
   updatedAt: DateTime
   deletedAt: DateTime
   question: Question
-}
-
-type Order {
-  id: String!
-  price: Int!
-  quantity: Int!
-  status: ORDER_STATUS!
-  createdAt: DateTime
-  updatedAt: DateTime
-  user: User
-  product: Product
-}
-
-enum ORDER_STATUS {
-  PENDING
-  PAID
-  PENDING_REFUND
-  CANCELED
-}
-
-type Point {
-  id: String!
-  point: Float!
-  status: POINT_STATUS_ENUM!
-  createdAt: DateTime!
-  user: User
-  order: Order
-}
-
-enum POINT_STATUS_ENUM {
-  CHARGED
-  RESTORED
-  USED
-  CANCELED
-  REFUNDED
-  SOLD
-  CANCELED_SOLD
 }
 
 type Payment {
@@ -561,7 +562,6 @@ input CreateCommonUserInput {
   bank: String
   account: String
   accountName: String
-  point: Int = 0
 }
 
 input CreateCreatorInput {
@@ -584,7 +584,6 @@ input CreateCreatorInput {
   bank: String
   account: String
   accountName: String
-  point: Int = 0
 }
 
 input UpdateUserInput {
@@ -608,7 +607,6 @@ input UpdateUserInput {
   bank: String
   account: String
   accountName: String
-  point: Int = 0
 }
 
 input CreateQuestionInput {

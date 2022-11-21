@@ -11,6 +11,8 @@ import { ProductService } from '../product/product.service';
 import { ProductDetailService } from '../productDetail/productDetail.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 import { Point } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
+import { Order } from '../orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { Point } from '../points/entities/point.entity';
       Product,
       ProductDetail,
       Point,
+      Order,
     ]),
   ],
   providers: [
@@ -29,6 +32,7 @@ import { Point } from '../points/entities/point.entity';
     IamportService,
     ProductService,
     ProductDetailService,
+    PointsService,
   ],
 })
 export class UsersModule {}

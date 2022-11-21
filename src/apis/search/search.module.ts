@@ -10,6 +10,9 @@ import { SearchService } from './search.service';
 import { ProductService } from '../product/product.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
 import { ProductDetailService } from '../productDetail/productDetail.service';
+import { Point } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
+import { Order } from '../orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -18,6 +21,8 @@ import { ProductDetailService } from '../productDetail/productDetail.service';
       Image,
       Product,
       ProductDetail,
+      Point,
+      Order,
     ]),
     ElasticsearchModule.register({
       node:
@@ -32,6 +37,7 @@ import { ProductDetailService } from '../productDetail/productDetail.service';
     UsersService,
     ProductService,
     ProductDetailService,
+    PointsService,
   ],
 })
 export class SearchModule {}

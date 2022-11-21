@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Order } from '../orders/entities/order.entity';
+import { Point } from '../points/entities/point.entity';
+import { PointsService } from '../points/points.service';
 import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { ProductDetail } from '../productDetail/entities/productDetail.entity';
@@ -20,6 +23,8 @@ import { Answer } from './entites/answer.entity';
       Question,
       Product,
       ProductDetail,
+      Point,
+      Order,
     ]),
   ],
   providers: [
@@ -29,6 +34,7 @@ import { Answer } from './entites/answer.entity';
     QuestionService,
     ProductService,
     ProductDetailService,
+    PointsService,
   ],
 })
 export class AnswerModule {}
