@@ -56,11 +56,11 @@ export class SearchService {
     }
   }
 
-  searchCreators = async (word: string) =>
-    await this.searchInES(word, ES_IDX_TYPE.CREATOR_IDX);
+  searchCreators = async (word: string, page: number, size: number) =>
+    await this.searchInES(word, ES_IDX_TYPE.CREATOR_IDX, page, size);
 
-  searchProducts = async (word: string) =>
-    await this.searchInES(word, ES_IDX_TYPE.PRODUCT_IDX);
+  searchProducts = async (word: string, page: number, size: number) =>
+    await this.searchInES(word, ES_IDX_TYPE.PRODUCT_IDX, page, size);
 
   /** !주의: product ES검색에서 크리에이터 정보 구성시엔 사용하지 말것! */
   private getCreator = (mapElement) => {
@@ -93,7 +93,7 @@ export class SearchService {
   };
 
   /** 엘라스틱서치에서 조회 */
-  async searchInES(word: string, esIndex: string) {
+  async searchInES(word: string, esIndex: string, page: number, size: number) {
     let fields = null;
     if (esIndex === ES_IDX_TYPE.CREATOR_IDX) {
       fields = ['nickname', 'snsname'];
@@ -112,6 +112,8 @@ export class SearchService {
           fields: fields,
         },
       },
+      from: page ? (page - 1) * size : 0,
+      size: size ? size : 1000,
     });
 
     esResults = esResults?.hits?.hits?.map((el) => {
