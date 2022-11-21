@@ -327,7 +327,7 @@ type Query {
   fetchProductViewCount(productId: String!): Int!
 
   """fetching multiple creators"""
-  fetchCreators: [User!]!
+  fetchCreators(page: Int): [User!]!
 
   """fetching multiple creator with snstype option"""
   fetchCreatorsBySnsType(snsType: SNS_TYPE_ENUM!): [User!]!
@@ -362,12 +362,12 @@ type Query {
   """
   searching creators In Creator Page by nickname or UtubeChannelName/InstaName
   """
-  searchCreators(word: String = ""): [SearchCreatorOutput!]
+  searchCreators(word: String, page: Int, size: Int): [SearchCreatorOutput!]
 
   """
   searching products In Product List Page by product name or creator snsName
   """
-  searchProducts(word: String = ""): [SearchProductOutput!]
+  searchProducts(word: String, page: Int, size: Int): [SearchProductOutput!]
 }
 
 enum PRODUCT_SEARCH_TYPE {

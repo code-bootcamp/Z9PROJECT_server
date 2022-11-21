@@ -5,7 +5,8 @@
       "analyzer": {
         "creator_ngram_analyzer": {
           "type": "custom",
-          "tokenizer": "creator_ngram_tokenizer"
+          "tokenizer": "creator_ngram_tokenizer",
+          "filter": "lowercase"
         }
       },
       "tokenizer": {
