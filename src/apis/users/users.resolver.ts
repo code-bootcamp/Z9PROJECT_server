@@ -88,7 +88,13 @@ export class UsersResolver {
       createCreatorInput.phoneNumber,
     );
 
-    await this.iamportService.checkBankHolder({ createCreatorInput });
+    const result = await this.iamportService.checkBankHolder({
+      createCreatorInput,
+    });
+
+    if (result) {
+      throw new UnprocessableEntityException(result);
+    }
 
     if (createCreatorInput.snsChannel === SNS_TYPE_ENUM.YOUTUBE) {
       const data = await this.usersService.getYoutubeInfo({
