@@ -134,11 +134,18 @@ export class ProductResolver {
     });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean, { description: 'delete product' })
-  async deleteProduct(@Args('productId') productId: string) {
+  async deleteProduct(
+    @Args('productId') productId: string,
+    @Context() ctx: IContext,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Delete Product Requested');
 
-    return await this.productService.delete({ productId });
+    return await this.productService.delete({
+      productId,
+      userId: ctx.req.user.id,
+    });
   }
 }

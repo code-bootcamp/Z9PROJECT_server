@@ -1,5 +1,5 @@
 import { UsersService } from './../users/users.service';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -337,15 +337,30 @@ export class ProductService {
     return product;
   }
 
-  async delete({ productId }) {
+  async delete({ productId, userId }) {
     //LOGGING
     console.log(new Date(), ' | ProductService.delete()');
+
+    const user = await this.usersService.findOneByUserId(userId);
 
     const isOrderExist = await this.orderRepository
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.product', 'product')
       .where('product.id = :productId', { productId })
       .getOne();
+    
+    const product = await this.productRepository
+    .createQueryBuilder('product')
+    .leftJoinAndSelect('product.productDetail', 'productDetail')
+    .leftJoinAndSelect('product.user', 'user')
+    .where('product.id = :productId', { productId })
+    .getOne();
+
+    if (product.user.id !== user.id) {
+      throw new UnauthorizedException('상품을 삭제할 권한이 없습니다');
+    }
+
+    if (isOrderExist) {
 
     if (isOrderExist) {
       throw new UnprocessableEntityException(
