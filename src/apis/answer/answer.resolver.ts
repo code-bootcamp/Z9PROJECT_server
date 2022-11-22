@@ -64,15 +64,24 @@ export class AnswerResolver {
   updateAnswer(
     @Args('answerId') answerId: string,
     @Args('updateAnswerInput') updateAnswerInput: UpdateAnswerInput, //
+    @Context() ctx: IContext,
   ) {
-    return this.answerSerivce.update({ answerId, updateAnswerInput });
+    return this.answerSerivce.update({
+      answerId,
+      updateAnswerInput,
+      userId: ctx.req.user.id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteAnswer(
     @Args('answerId') answerId: string, //
+    @Context() ctx: IContext,
   ) {
-    return this.answerSerivce.remove({ answerId });
+    return this.answerSerivce.remove({
+      answerId, //
+      userId: ctx.req.user.id,
+    });
   }
 }

@@ -55,7 +55,7 @@ export class AnswerService {
     });
   }
 
-  async update({ answerId, updateAnswerInput }): Promise<Answer> {
+  async update({ answerId, updateAnswerInput, userId }): Promise<Answer> {
     const newQuestsion: Answer = {
       ...updateAnswerInput,
       id: answerId,
@@ -63,7 +63,7 @@ export class AnswerService {
     return await this.AnswerRepository.save(newQuestsion);
   }
 
-  async remove({ answerId }): Promise<boolean> {
+  async remove({ answerId, userId }): Promise<boolean> {
     const result = await this.AnswerRepository.softDelete({ id: answerId });
     return result.affected ? true : false;
   }
