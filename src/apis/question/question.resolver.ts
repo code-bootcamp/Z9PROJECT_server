@@ -81,13 +81,17 @@ export class QuestionResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
   async updateQuestion(
+    @Context() ctx: IContext,
     @Args('questionId') questionId: string,
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
   ) {
     //LOGGING
     console.log(new Date(), ' | API Update Question Requested');
 
-    await this.questionService.checkUpdate({ questionId });
+    await this.questionService.checkUpdate({
+      questionId,
+      userId: ctx.req.user.id,
+    });
 
     return this.questionService.update({ questionId, updateQuestionInput });
   }

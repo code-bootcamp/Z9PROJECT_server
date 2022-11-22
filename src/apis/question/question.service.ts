@@ -134,13 +134,19 @@ export class QuestionService {
       );
   }
 
-  async checkUpdate({ questionId }) {
+  async checkUpdate({ questionId, userId }) {
     const status = await this.questionRepository.findOne({
       where: {
         id: questionId,
         status: QUESTION_STATUS_TYPE_ENUM.SOLVED,
       },
+      relations: ['user'],
     });
+    if (status.user.id !== userId) {
+      throw new UnprocessableEntityException(
+        '내가 작성한 질문만 수정이 가능합니다',
+      );
+    }
     if (status)
       throw new UnprocessableEntityException(
         '답변이 완료된 질문은 수정 할 수 없습니다.',
