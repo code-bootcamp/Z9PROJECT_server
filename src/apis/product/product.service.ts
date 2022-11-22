@@ -1,5 +1,9 @@
 import { UsersService } from './../users/users.service';
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -348,32 +352,32 @@ export class ProductService {
       .leftJoinAndSelect('order.product', 'product')
       .where('product.id = :productId', { productId })
       .getOne();
-    
+
     const product = await this.productRepository
-    .createQueryBuilder('product')
-    .leftJoinAndSelect('product.productDetail', 'productDetail')
-    .leftJoinAndSelect('product.user', 'user')
-    .where('product.id = :productId', { productId })
-    .getOne();
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productDetail', 'productDetail')
+      .leftJoinAndSelect('product.user', 'user')
+      .where('product.id = :productId', { productId })
+      .getOne();
 
     if (product.user.id !== user.id) {
       throw new UnauthorizedException('상품을 삭제할 권한이 없습니다');
     }
 
     if (isOrderExist) {
-
-    if (isOrderExist) {
-      throw new UnprocessableEntityException(
-        '주문이 존재하는 상품은 삭제할 수 없습니다',
-      );
+      if (isOrderExist) {
+        throw new UnprocessableEntityException(
+          '주문이 존재하는 상품은 삭제할 수 없습니다',
+        );
+      }
+      await this.productRepository.softDelete({ id: productId }).catch(() => {
+        throw new UnprocessableEntityException('삭제 실패');
+      });
+      await this.productDetailService.deleteDetail({ productId }).catch(() => {
+        throw new UnprocessableEntityException('삭제 실패');
+      });
+      return true;
     }
-    await this.productRepository.softDelete({ id: productId }).catch(() => {
-      throw new UnprocessableEntityException('삭제 실패');
-    });
-    await this.productDetailService.deleteDetail({ productId }).catch(() => {
-      throw new UnprocessableEntityException('삭제 실패');
-    });
-    return true;
   }
 
   async checkBussinessNumber({ createProductInput }) {
