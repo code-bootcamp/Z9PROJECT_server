@@ -43,17 +43,16 @@ export class QuestionService {
   async findAll({ productId, page }): Promise<Question[]> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.findAll()');
-
-    const result = await this.questionRepository.find({
-      where: { product: { id: productId } },
-      order: {
-        createdAt: 'desc',
-      },
-      relations: ['user', 'product'],
-      skip: (page - 1) * 5,
-      take: 5,
-      cache: true,
-    });
+    const result = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .leftJoinAndSelect('question.user', 'user')
+      .leftJoinAndSelect('question.answer', 'answer')
+      .where('question.product = :productId', { productId })
+      .orderBy('question.createdAt', 'DESC')
+      .skip((page - 1) * 5)
+      .take(5)
+      .getMany();
 
     console.log(result);
     return result;
