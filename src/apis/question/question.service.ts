@@ -113,7 +113,7 @@ export class QuestionService {
     return await this.questionRepository.save(newQuestsion);
   }
 
-  async remove({ questionId }): Promise<boolean> {
+  async remove({ questionId, userId }): Promise<boolean> {
     //LOGGING
     console.log(new Date(), ' | QuestionService.remove()');
 

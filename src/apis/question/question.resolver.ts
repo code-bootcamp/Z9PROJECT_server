@@ -94,12 +94,18 @@ export class QuestionResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  async deleteQuestion(@Args('questionId') questionId: string) {
+  async deleteQuestion(
+    @Args('questionId') questionId: string, //
+    @Context() ctx: IContext,
+  ) {
     //LOGGING
     console.log(new Date(), ' | API Delete Question Requested');
 
     await this.questionService.checkAnswer({ questionId });
 
-    return this.questionService.remove({ questionId });
+    return this.questionService.remove({
+      questionId,
+      userId: ctx.req.user.id,
+    });
   }
 }
